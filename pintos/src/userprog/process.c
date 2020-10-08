@@ -20,7 +20,7 @@
 
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
-
+void argument_stack(cahr **parse, int count, void **esp);
 
 /* Starts a new thread running a user program loaded from
    FILENAME.  The new thread may be scheduled (and may even exit)
@@ -32,8 +32,9 @@ process_execute (const char *file_name)
 {
   char *fn_copy;
   tid_t tid;
-  char program[64];
-  int file_name_length = strlen(file_name)+1;
+
+ // char program[64];
+  //int file_name_length = strlen(file_name)+1;
   char *save_ptr=NULL;
   char *token;
   /* Make a copy of FILE_NAME.
@@ -43,9 +44,9 @@ process_execute (const char *file_name)
     return TID_ERROR;
   strlcpy (fn_copy, file_name, PGSIZE);
   printf("break");
-  strlcpy(program, file_name,file_name_length); //modified
+  //strlcpy(program, file_name, file_name_length); //modified
 
-  token = strtok_r(program, " ", &save_ptr); //tokenize
+  token = strtok_r(fn_copy, " ", &save_ptr); //tokenize
 
   /* Create a new thread to execute FILE_NAME. */
   tid = thread_create (token, PRI_DEFAULT, start_process, fn_copy);
