@@ -77,12 +77,10 @@ process_execute (const char *file_name)
         //hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
       }
       arg_addr[i] = *esp;/* esp현재위치를 arg_addr에 저장*/
-      printf("%d \n", arg_addr[i]);
     }
 
     // debug
     //hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
-
 
     /* word-align */
     int addr = *(int *)*esp;
@@ -97,14 +95,19 @@ process_execute (const char *file_name)
     *(int *)(*esp) = 0;
 
     // debug
-    hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
+    //hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
 
-    /* argv push */
+    /* argv element addr push */
     for(i=count-1; i >-1; i--)
     {
       *esp -=4;
       *(int *)(*esp) = (int)arg_addr[i]; /*arg_addr에 저장된 주소값을 현재 esp의 값으로 저장*/
     }
+
+    // argv addr push
+    int argv_addr = *esp
+    *esp-=4;
+    *(int *) *esp = argv_addr
 
     // debug
     hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
