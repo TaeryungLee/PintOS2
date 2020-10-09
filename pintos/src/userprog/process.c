@@ -43,7 +43,6 @@ process_execute (const char *file_name)
   if (fn_copy == NULL)
     return TID_ERROR;
   strlcpy (fn_copy, file_name, PGSIZE);
-  printf("break");
   //strlcpy(program, file_name, file_name_length); //modified
 
   token = strtok_r(fn_copy, " ", &save_ptr); //tokenize
@@ -59,7 +58,7 @@ process_execute (const char *file_name)
 /* Modified 2.1 */
   void argument_stack(char **parse, int count, void **esp)
   {
-    unsigned int arg_addr[count-1]; // argv의 주소값을 저장할 변수
+    int arg_addr[count-1]; // argv의 주소값을 저장할 변수
 
     /*argument push*/
     int i, j;
@@ -75,7 +74,7 @@ process_execute (const char *file_name)
     }
 
     /* word-align */
-    int addr = *(int *)*esp;
+    int addr = *esp;
     for(i=0; i < 4 - (addr%4); i++)
     {
       *esp -= 1;
@@ -89,7 +88,7 @@ process_execute (const char *file_name)
     for(i=count-1; i >-1; i--)
     {
       *esp -=4;
-      *(void **)(*esp) = arg_addr[i]; /*arg_addr에 저장된 주소값을 현재 esp의 값으로 저장*/
+      *(int *)*esp = (int)arg_addr[i]; /*arg_addr에 저장된 주소값을 현재 esp의 값으로 저장*/
     }
 
     /* argc push */
@@ -123,7 +122,7 @@ start_process (void *file_name_)
   token = strtok_r(fn_copy, " ", &save_ptr); //tokenize
   */
 
-  for(token = strtok_r(*file_name, " ", &save_ptr); token != NULL; token = strtok_r(NULL, " ", &save_ptr))
+  for(token = strtok_r(file_name, " ", &save_ptr); token != NULL; token = strtok_r(NULL, " ", &save_ptr))
   {
     parse[count] = token;
     printf("%c", &parse[count]);
