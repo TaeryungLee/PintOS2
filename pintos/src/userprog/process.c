@@ -72,7 +72,8 @@ process_execute (const char *file_name)
       {
         *esp -= 1;
         **(char **)esp = parse[i][j];
-        printf("%d, %d, %#x, %c\n", i, j, *esp, parse[i][j]);
+        // debug
+        printf("%d, %d, %#x, %c, %c\n", i, j, *esp, parse[i][j], **esp);
       }
       arg_addr[i] = *(int *) *esp;/* esp현재위치를 arg_addr에 저장*/
     }
