@@ -33,8 +33,8 @@ process_execute (const char *file_name)
   char *fn_copy;
   tid_t tid;
 
- // char program[64];
-  //int file_name_length = strlen(file_name)+1;
+  char program[64];
+  int file_name_length = strlen(file_name)+1;
   char *save_ptr=NULL;
   char *token;
   /* Make a copy of FILE_NAME.
@@ -43,9 +43,9 @@ process_execute (const char *file_name)
   if (fn_copy == NULL)
     return TID_ERROR;
   strlcpy (fn_copy, file_name, PGSIZE);
-  //strlcpy(program, file_name, file_name_length); //modified
+  strlcpy(program, file_name, file_name_length); //modified
 
-  token = strtok_r(fn_copy, " ", &save_ptr); //tokenize
+  token = strtok_r(program, " ", &save_ptr); //tokenize
 
   /* Create a new thread to execute FILE_NAME. */
   tid = thread_create (token, PRI_DEFAULT, start_process, fn_copy);
@@ -69,38 +69,35 @@ process_execute (const char *file_name)
         *esp -= 1;
         **(char **)esp = parse[i][j];
       }
-      //msg("%d", *(int*)*esp);
+      printf("%x", *(int*)*esp);
       arg_addr[i] = *(int *) *esp;/* esp현재위치를 arg_addr에 저장*/
     }
 
     /* word-align */
-    int addr = arg_addr[count-1];
+    int addr = *(int *)*esp;
     for(i=0; i < 4 - (addr%4); i++)
     {
       *esp -= 1;
-      **(int**)(esp) = 0;
+      *(int*)(*esp) = 0;
     }
 
     *esp -= 4;
-    **(int **)esp = 0;
+    *(int *)(*esp) = 0;
 
     /* argv push */
     for(i=count-1; i >-1; i--)
     {
       *esp -=4;
-      **(char* **)esp = (char *)arg_addr[i]; /*arg_addr에 저장된 주소값을 현재 esp의 값으로 저장*/
+      *(int *)(*esp) = (int)arg_addr[i]; /*arg_addr에 저장된 주소값을 현재 esp의 값으로 저장*/
     }
 
-    int argv_address = *(int *)esp;
-    *esp-=4;
-    **(char* **)esp=(char *)argv_address;  
     /* argc push */
     *esp -= 4;
-    **(int **)esp = count;
+    *(int *)(*esp) = count;
 
     /*fake address push */
     *esp -= 4;
-    **(int **)esp = 0;
+    *(int*)(*esp) = 0;
   }
   
 /* A thread function that loads a user process and starts it
@@ -125,10 +122,10 @@ start_process (void *file_name_)
   token = strtok_r(fn_copy, " ", &save_ptr); //tokenize
   */
 
-  for(token = strtok_r(file_name, " ", &save_ptr); token != NULL; token = strtok_r(NULL, " ", &save_ptr))
+  for(token = strtok_r(*file_name, " ", &save_ptr); token != NULL; token = strtok_r(NULL, " ", &save_ptr))
   {
     parse[count] = token;
-    //printf("%c", &parse[count]);
+    printf("%c", &parse[count]);
     count ++;
   }
   printf("%d", count);
@@ -141,7 +138,6 @@ start_process (void *file_name_)
 
   argument_stack(parse, count, &if_.esp);
   hex_dump(if_.esp, if_.esp, PHYS_BASE - if_.esp, true);
-  
   /* If load failed, quit. */
   palloc_free_page (file_name);
   if (!success) 
@@ -157,7 +153,7 @@ start_process (void *file_name_)
   asm volatile ("movl %0, %%esp; jmp intr_exit" : : "g" (&if_) : "memory");
   NOT_REACHED ();
 
-  //free(parse);
+  free(parse);
 }
 
 /* Waits for thread TID to die and returns its exit status.  If
