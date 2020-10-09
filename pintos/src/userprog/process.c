@@ -80,7 +80,7 @@ process_execute (const char *file_name)
     }
 
     // debug
-    hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
+    //hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
 
 
     /* word-align */
@@ -105,6 +105,9 @@ process_execute (const char *file_name)
       *(int *)(*esp) = (int)arg_addr[i]; /*arg_addr에 저장된 주소값을 현재 esp의 값으로 저장*/
     }
 
+    // debug
+    hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
+    
     /* argc push */
     *esp -= 4;
     *(int *)(*esp) = count;
