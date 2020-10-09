@@ -79,6 +79,10 @@ process_execute (const char *file_name)
       arg_addr[i] = *(int *) *esp;/* esp현재위치를 arg_addr에 저장*/
     }
 
+    // debug
+    hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
+
+
     /* word-align */
     int addr = *(int *)*esp;
     for(i=0; i < 4 - (addr%4); i++)
