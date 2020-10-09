@@ -43,8 +43,8 @@ process_execute (const char *file_name)
   if (fn_copy == NULL)
     return TID_ERROR;
   strlcpy (fn_copy, file_name, PGSIZE);
+  
   strlcpy(program, file_name, file_name_length); //modified
-
   token = strtok_r(program, " ", &save_ptr); //tokenize
 
   /* Create a new thread to execute FILE_NAME. */
@@ -117,16 +117,12 @@ start_process (void *file_name_)
   char *token;
   int count = 0;
   char *parse[128];
+  char program[64];
+  int file_name_length = strlen(file_name)+1;
 
-  /*fn_copy = palloc_get_page (0);
-  if (fn_copy == NULL)
-    return TID_ERROR;
-  strlcpy (fn_copy, file_name, PGSIZE);
-  printf("break");
-  token = strtok_r(fn_copy, " ", &save_ptr); //tokenize
-  */
-
-  for(token = strtok_r(file_name, " ", &save_ptr); token != NULL; token = strtok_r(NULL, " ", &save_ptr))
+  strlcpy (program, file_name, file_name_length);
+  
+  for(token = strtok_r(program, " ", &save_ptr); token != NULL; token = strtok_r(NULL, " ", &save_ptr))
   {
     parse[count] = token;
     count ++;
