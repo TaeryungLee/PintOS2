@@ -73,9 +73,8 @@ process_execute (const char *file_name)
         *esp -= 1;
         **(char **)esp = parse[i][j];
         // debug
-        printf("%d, %d, %#x, %c\n", i, j, *esp, parse[i][j]);
-        hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
-
+        //printf("%d, %d, %#x, %c\n", i, j, *esp, parse[i][j]);
+        //hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
       }
       arg_addr[i] = *(int *) *esp;/* esp현재위치를 arg_addr에 저장*/
     }
@@ -88,8 +87,12 @@ process_execute (const char *file_name)
       *(int*)(*esp) = 0;
     }
 
+    // argv[argc] = NULL
     *esp -= 4;
     *(int *)(*esp) = 0;
+
+    // debug
+    hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
 
     /* argv push */
     for(i=count-1; i >-1; i--)
