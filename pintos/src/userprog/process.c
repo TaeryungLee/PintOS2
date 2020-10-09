@@ -110,7 +110,7 @@ process_execute (const char *file_name)
     *(int *) *esp = argv_addr;
 
     // debug
-    hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
+    //hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
 
     /* argc push */
     *esp -= 4;
