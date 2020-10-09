@@ -60,6 +60,11 @@ process_execute (const char *file_name)
   {
     int arg_addr[count-1]; // argv의 주소값을 저장할 변수
 
+    if (parse == NULL)
+    {
+      return;
+    }
+    
     /*argument push*/
     int i, j;
     for(i = count-1; i > -1; i--)
