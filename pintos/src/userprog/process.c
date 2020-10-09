@@ -88,7 +88,7 @@ process_execute (const char *file_name)
     for(i=0; i < (addr%4); i++)
     {
       *esp -= 1;
-      *(int*)(*esp) = 0;
+      *(char *)(*esp) = 0;
     }
 
     // argv[argc] = NULL
