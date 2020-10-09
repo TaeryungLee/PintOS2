@@ -77,6 +77,7 @@ process_execute (const char *file_name)
         //hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
       }
       arg_addr[i] = *(int *) *esp;/* esp현재위치를 arg_addr에 저장*/
+      printf("%d \n", arg_addr[i]);
     }
 
     // debug
@@ -107,7 +108,7 @@ process_execute (const char *file_name)
 
     // debug
     hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
-    
+
     /* argc push */
     *esp -= 4;
     *(int *)(*esp) = count;
