@@ -64,7 +64,7 @@ process_execute (const char *file_name)
     {
       return;
     }
-    
+
     /*argument push*/
     int i, j;
     for(i = count-1; i > -1; i--)
@@ -116,7 +116,7 @@ start_process (void *file_name_)
   char *save_ptr=NULL;
   char *token;
   int count = 0;
-  char *parse[64];
+  char *parse[128];
 
   /*fn_copy = palloc_get_page (0);
   if (fn_copy == NULL)
@@ -126,7 +126,7 @@ start_process (void *file_name_)
   token = strtok_r(fn_copy, " ", &save_ptr); //tokenize
   */
 
-  for(token = strtok_r(*file_name, " ", &save_ptr); token != NULL; token = strtok_r(NULL, " ", &save_ptr))
+  for(token = strtok_r(file_name, " ", &save_ptr); token != NULL; token = strtok_r(NULL, " ", &save_ptr))
   {
     parse[count] = token;
     count ++;
