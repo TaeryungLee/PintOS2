@@ -69,7 +69,6 @@ process_execute (const char *file_name)
         *esp -= 1;
         **(char **)esp = parse[i][j];
       }
-      printf("%x", *(int*)*esp);
       arg_addr[i] = *(int *) *esp;/* esp현재위치를 arg_addr에 저장*/
     }
 
@@ -125,10 +124,9 @@ start_process (void *file_name_)
   for(token = strtok_r(*file_name, " ", &save_ptr); token != NULL; token = strtok_r(NULL, " ", &save_ptr))
   {
     parse[count] = token;
-    printf("%c", &parse[count]);
     count ++;
   }
-  printf("%d", count);
+
   /* Initialize interrupt frame and load executable. */
   memset (&if_, 0, sizeof if_);
   if_.gs = if_.fs = if_.es = if_.ds = if_.ss = SEL_UDSEG;
