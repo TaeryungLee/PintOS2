@@ -76,7 +76,7 @@ process_execute (const char *file_name)
         //printf("%d, %d, %#x, %c\n", i, j, *esp, parse[i][j]);
         //hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
       }
-      arg_addr[i] = *(int *) *esp;/* esp현재위치를 arg_addr에 저장*/
+      arg_addr[i] = *esp;/* esp현재위치를 arg_addr에 저장*/
       printf("%d \n", arg_addr[i]);
     }
 
