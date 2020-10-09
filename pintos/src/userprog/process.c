@@ -64,7 +64,6 @@ process_execute (const char *file_name)
     {
       return;
     }
-
     /*argument push*/
     int i, j;
     for(i = count-1; i > -1; i--)
@@ -73,6 +72,7 @@ process_execute (const char *file_name)
       {
         *esp -= 1;
         **(char **)esp = parse[i][j];
+        printf("%d, %d, %c", i, j, parse[i][j]);
       }
       arg_addr[i] = *(int *) *esp;/* esp현재위치를 arg_addr에 저장*/
     }
