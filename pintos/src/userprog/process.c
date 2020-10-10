@@ -84,6 +84,7 @@ process_execute (const char *file_name)
 
     /* word-align */
     int addr = - (int) *esp;
+    printf("%d\n", addr%4);
     for(i=0; i < addr%4; i++)
     {
       *esp -= 1;
