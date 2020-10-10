@@ -84,7 +84,7 @@ process_execute (const char *file_name)
 
     /* word-align */
     int addr = - (int) *esp;
-    for(i=0; i < (((addr + 2)%4)+((2-(addr%2)*2)); i++))
+    for(i=0; i < (((addr + 2)%4)+((2-(addr%2)*2))); i++)
     {
       *esp -= 1;
       *(char *)(*esp) = 0;
