@@ -83,8 +83,8 @@ process_execute (const char *file_name)
     //hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
 
     /* word-align */
-    int addr = - (int) *esp;
-    printf("%d\n", addr%4);
+    int addr = (- (int) *esp)%4;
+    printf("%d, %d\n", addr, (addr + (2*addr%2)) %4);
     for(i=0; i < ( (addr + (2*addr%2)) %4 ); i++)
     {
       *esp -= 1;
