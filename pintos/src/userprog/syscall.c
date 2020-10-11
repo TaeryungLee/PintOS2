@@ -27,6 +27,9 @@ Memory access handler
 
 struct lock memory;
 
+// address of return value
+uint32_t *ret_val_addr;
+
 /* 
 Handler Functions
 */
@@ -75,7 +78,7 @@ syscall_handler (struct intr_frame *f UNUSED)
   read(&call_no, esp, 4);
 
   // Return value must go to eax
-  uint32_t *ret_val_addr = &(f->eax);
+  *ret_val_addr = &(f->eax);
 
   //debug
   //printf("syscall number: %d", call_no);
