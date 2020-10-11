@@ -181,7 +181,7 @@ check(void *addr, int count)
   for(int i=0; i < count; i++)
   {
     if(!check_byte((void *)(addr + i)))
-      sys_exit(-1,NULL);
+      exit(-1,NULL);
   }
 }
 
