@@ -68,14 +68,15 @@ syscall_handler (struct intr_frame *f)
   thread_exit ();
   */
   void *esp = f->esp;
-
+  printf("1\n");
   // Check if esp is valid
   check(esp, 4);
-
+	printf("2\n");
   // fetch syscall number
   int call_no;
-  read_addr(&call_no, esp, 4);
 
+  read_addr(&call_no, esp, 4);
+	printf("3\n");
   // Return value must go to eax
   *ret_val_addr = &(f->eax);
 
