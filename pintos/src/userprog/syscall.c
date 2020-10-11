@@ -79,7 +79,7 @@ syscall_handler (struct intr_frame *f)
 	printf("3\n");
   // Return value must go to eax
   *ret_val_addr = &(f->eax);
-
+	printf("4\n");
   //debug
   printf("syscall number: %d", call_no);
 
