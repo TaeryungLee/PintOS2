@@ -51,7 +51,7 @@ void close(int fd, struct intr_frame *f);
 Main Functions
 */
 void syscall_init(void);
-static void syscall_handler(struct intr_frame *f UNUSED);
+static void syscall_handler(struct intr_frame *f);
 
 void
 syscall_init (void) 
@@ -61,13 +61,13 @@ syscall_init (void)
 }
 
 static void
-syscall_handler (struct intr_frame *f UNUSED) 
+syscall_handler (struct intr_frame *f) 
 {
 	/*
   printf ("system call!\n");
   thread_exit ();
   */
-	check(f, sizeof(intr_frame));
+	check(f, sizeof(f));
   void *esp = f->esp;
 
   // Check if esp is valid
@@ -75,7 +75,7 @@ syscall_handler (struct intr_frame *f UNUSED)
 
   // fetch syscall number
   int call_no;
-  read(&call_no, esp, 4);
+  read_addr(&call_no, esp, 4);
 
   // Return value must go to eax
   *ret_val_addr = &(f->eax);
@@ -86,20 +86,26 @@ syscall_handler (struct intr_frame *f UNUSED)
   switch (call_no)
   {
   	case SYS_HALT:
+  	{
   		shutdown_power_off();
   		break;
+  	}
 
   	case SYS_EXIT:
+  	{
   		int exit_code;
   		read_addr(&exit_code, esp+4, 4);
   		exit(exit_code, f);
   		break;
+  	}
 
   	case SYS_EXEC:
+  	{
   		char *file;
       read_addr(&file, esp+4, 4);
       exec(file, f);
       break;
+    }
 
 
 
@@ -108,6 +114,7 @@ syscall_handler (struct intr_frame *f UNUSED)
 
 
     case SYS_CREATE:
+    {
     	check(esp + 4, 4);
       char *name;
       size_t size;
@@ -115,12 +122,15 @@ syscall_handler (struct intr_frame *f UNUSED)
       read_addr(&size, esp+8, 4);
       create(name, size, f);
       break;
+    }
 
     case SYS_REMOVE:
+    {
       char *name;
       read_addr(&name, esp+4, 4);
       remove(name, f);
       break;
+    }
 
   }
 }
