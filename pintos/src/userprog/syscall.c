@@ -81,7 +81,7 @@ syscall_handler (struct intr_frame *f)
   *ret_val_addr = &(f->eax);
 
   //debug
-  //printf("syscall number: %d", call_no);
+  printf("syscall number: %d", call_no);
 
   switch (call_no)
   {
