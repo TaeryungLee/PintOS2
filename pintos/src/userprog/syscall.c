@@ -34,7 +34,7 @@ uint32_t *ret_val_addr;
 Handler Functions
 */
 
-void exit(int exit_code, struct intr_frame *f);
+void exits(int exit_code, struct intr_frame *f);
 void exec(char *file, struct intr_frame *f);
 void wait(int tid, struct intr_frame *f);
 void create(char *name, size_t size, struct intr_frame *f);
@@ -67,7 +67,6 @@ syscall_handler (struct intr_frame *f)
   printf ("system call!\n");
   thread_exit ();
   */
-	check(f, sizeof(f));
   void *esp = f->esp;
 
   // Check if esp is valid
@@ -95,7 +94,7 @@ syscall_handler (struct intr_frame *f)
   	{
   		int exit_code;
   		read_addr(&exit_code, esp+4, 4);
-  		exit(exit_code, f);
+  		exits(exit_code, f);
   		break;
   	}
 
@@ -181,7 +180,7 @@ check(void *addr, int count)
   for(int i=0; i < count; i++)
   {
     if(!check_byte((void *)(addr + i)))
-      exit(-1,NULL);
+      exits(-1,NULL);
   }
 }
 
@@ -192,7 +191,7 @@ Handler Functions
 */
 
 void 
-exit(int exit_code, struct intr_frame *f)
+exits(int exit_code, struct intr_frame *f)
 {
 	printf("%s: exit(%d)\n", thread_current()->name, exit_code);
 	thread_exit();
