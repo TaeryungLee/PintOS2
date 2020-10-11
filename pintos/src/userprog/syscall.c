@@ -15,9 +15,9 @@ static void syscall_handler (struct intr_frame *);
 /* 
 Helper Functions
 */
-void read(void *dest, char *src, int count);
+void read_addr(void *dest, char *src, int count);
 int read_byte(char *addr);
-bool write(char *dest, char byte);
+bool write_addr(char *dest, char byte);
 bool check_byte(void *addr);
 void check(void *addr, int count);
 
@@ -91,13 +91,13 @@ syscall_handler (struct intr_frame *f UNUSED)
 
   	case SYS_EXIT:
   		int exit_code;
-  		read(&exit_code, esp+4, 4);
+  		read_addr(&exit_code, esp+4, 4);
   		exit(exit_code, f);
   		break;
 
   	case SYS_EXEC:
   		char *file;
-      read(&file, esp+4, 4);
+      read_addr(&file, esp+4, 4);
       exec(file, f);
       break;
 
@@ -111,14 +111,14 @@ syscall_handler (struct intr_frame *f UNUSED)
     	check(esp + 4, 4);
       char *name;
       size_t size;
-      read(&name, esp+4, 4);
-      read(&size, esp+8, 4);
+      read_addr(&name, esp+4, 4);
+      read_addr(&size, esp+8, 4);
       create(name, size, f);
       break;
 
     case SYS_REMOVE:
       char *name;
-      read(&name, esp+4, 4);
+      read_addr(&name, esp+4, 4);
       remove(name, f);
       break;
 
@@ -130,7 +130,7 @@ syscall_handler (struct intr_frame *f UNUSED)
 Helper Functions
 */
 void 
-read(void *dest, char *src, int count)
+read_addr(void *dest, char *src, int count)
 {
 	check(src, count);
 	for (int i=0; i<count; i++)
@@ -146,7 +146,7 @@ read_byte(char *addr)
 }
 
 bool 
-write(char *dest, char byte)
+write_addr(char *dest, char byte)
 {
 	if (check_byte(dest))
 	{
