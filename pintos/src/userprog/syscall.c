@@ -72,7 +72,7 @@ syscall_handler (struct intr_frame *f)
   read_addr(&call_no, esp, 4);
 
   //debug
-  printf("syscall number: %d", call_no);
+  printf("syscall number: %d\n", call_no);
 
   switch (call_no)
   {
@@ -120,6 +120,23 @@ syscall_handler (struct intr_frame *f)
       char *name;
       read_addr(&name, esp+4, 4);
       remove(name, f);
+      break;
+    }
+
+
+
+
+
+
+    case SYS_WRITE:
+    {
+      int fd;
+      unsigned size;
+      void *buffer;
+      read_addr(&fd, esp+4, 4);
+      read_addr(&buffer, esp+8, 4);
+      read_addr(&size, esp+12, 4);
+      write(fd, buffer, size, f);
       break;
     }
 
@@ -218,7 +235,12 @@ remove(char *name, struct intr_frame *f)
 void open(char *name, struct intr_frame *f);
 void filesize(int fd, struct intr_frame *f);
 void read(int fd, void* buffer, int size, struct intr_frame *f);
-void write(int fd, void* buffer, int size, struct intr_frame *f);
+
+void 
+write(int fd, void* buffer, int size, struct intr_frame *f)
+{
+	printf("222\n");
+}
 void seek(int fd, int count, struct intr_frame *f);
 void tell(int fd, struct intr_frame *f);
 void close(int fd, struct intr_frame *f);
