@@ -136,6 +136,7 @@ syscall_handler (struct intr_frame *f)
       read_addr(&fd, esp+4, 4);
       read_addr(&buffer, esp+8, 4);
       read_addr(&size, esp+12, 4);
+      printf("%d, %d, %c\n", fd, size, &buffer);
       write(fd, buffer, size, f);
       break;
     }
@@ -239,7 +240,7 @@ void read(int fd, void* buffer, int size, struct intr_frame *f);
 void 
 write(int fd, void* buffer, int size, struct intr_frame *f)
 {
-	printf("222\n");
+
 }
 void seek(int fd, int count, struct intr_frame *f);
 void tell(int fd, struct intr_frame *f);
