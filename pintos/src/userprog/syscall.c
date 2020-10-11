@@ -24,11 +24,7 @@ void check(void *addr, int count);
 /* 
 Memory access handler
 */
-
 struct lock memory;
-
-// address of return value
-uint32_t *ret_val_addr;
 
 /* 
 Handler Functions
@@ -68,18 +64,13 @@ syscall_handler (struct intr_frame *f)
   thread_exit ();
   */
   void *esp = f->esp;
-  printf("1\n");
   // Check if esp is valid
   check(esp, 4);
-	printf("2\n");
   // fetch syscall number
   int call_no;
 
   read_addr(&call_no, esp, 4);
-	printf("3\n");
-  // Return value must go to eax
-  *ret_val_addr = &(f->eax);
-	printf("4\n");
+
   //debug
   printf("syscall number: %d", call_no);
 
@@ -211,7 +202,7 @@ create(char *name, size_t size, struct intr_frame *f)
 {
   check(name, sizeof(name));
   lock_acquire(&memory);
-  *ret_val_addr = filesys_create(name, size);
+  f->eax = filesys_create(name, size);
   lock_release(&memory);
 }
 
@@ -220,7 +211,7 @@ remove(char *name, struct intr_frame *f)
 {
   check(name, sizeof(name));
   lock_acquire(&memory);
-  *ret_val_addr = filesys_remove(name);
+  f->eax = filesys_remove(name);
   lock_release(&memory);
 }
 
