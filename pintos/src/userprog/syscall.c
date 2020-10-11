@@ -136,7 +136,7 @@ syscall_handler (struct intr_frame *f)
       read_addr(&fd, esp+4, 4);
       read_addr(&buffer, esp+8, 4);
       read_addr(&size, esp+12, 4);
-      printf("%d, %d, %c\n", fd, size, &buffer);
+      printf("%d, %d, %s\n", fd, size, &buffer);
       write(fd, buffer, size, f);
       break;
     }
