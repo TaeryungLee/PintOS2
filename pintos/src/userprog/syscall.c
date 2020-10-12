@@ -103,7 +103,7 @@ syscall_handler (struct intr_frame *f)
     {
     	int tid;
       read_addr(&tid, esp+4, sizeof(tid));
-      f->eax = sys_wait(tid, f);
+      f->eax = wait(tid, f);
       break;
     }
 
