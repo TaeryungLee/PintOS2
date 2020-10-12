@@ -102,8 +102,8 @@ struct thread
     struct list children;               // list of children
     struct list_elem child_elem;        // list element used for children list
 
-    struct semaphore *exit_sema;        // semaphore used in wait
-    struct semaphore *load_sema;        // semaphore used in load
+    struct semaphore exit_sema;        // semaphore used in wait
+    struct semaphore load_sema;        // semaphore used in load
 
     int exit_status;                    // exit status
     int is_exited;                      // 1 if exited

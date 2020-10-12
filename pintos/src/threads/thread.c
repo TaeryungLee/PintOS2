@@ -219,6 +219,7 @@ thread_create (const char *name, int priority,
   // semaphore initialized to 0
   sema_init(&t->exit_sema, 0);
   sema_init(&t->load_sema, 0);
+  
   printf("4 %d\n", t->magic);
 
   /* Add to run queue. */
