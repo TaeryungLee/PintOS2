@@ -220,6 +220,7 @@ thread_create (const char *name, int priority,
   sema_init(&t->exit_sema, 0);
   sema_init(&t->load_sema, 0);
   printf("3\n");
+  printf("%d\n", t->magic);
 
   /* Add to run queue. */
   thread_unblock (t);
