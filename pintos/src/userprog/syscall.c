@@ -136,7 +136,6 @@ syscall_handler (struct intr_frame *f)
       read_addr(&fd, esp+4, 4);
       read_addr(&buffer, esp+8, 4);
       read_addr(&size, esp+12, 4);
-      printf("%d, %d, %s\n", fd, size, &buffer);
       write(fd, buffer, size, f);
       break;
     }
@@ -210,7 +209,7 @@ exits(int exit_code, struct intr_frame *f)
 void 
 exec(char *file, struct intr_frame *f)
 {
-
+	process_execute(file);
 }
 
 void wait(int tid, struct intr_frame *f);
@@ -240,7 +239,19 @@ void read(int fd, void* buffer, int size, struct intr_frame *f);
 void 
 write(int fd, void* buffer, int size, struct intr_frame *f)
 {
-
+	check(buffer, size);
+  lock_acquire(&memory);
+  if(fd == STDOUT)
+  {
+    putbuf(buffer, size);
+    lock_release(&memory);
+    f->eax=size;
+  }
+  else if(fd == STDIN)
+  {
+    f->eax =- 1;
+    lock_release(&memory);
+  }
 }
 void seek(int fd, int count, struct intr_frame *f);
 void tell(int fd, struct intr_frame *f);
