@@ -209,7 +209,7 @@ thread_create (const char *name, int priority,
   // add parent
   t->parent = parent;
   // add to children list
-  list_push_back(&parent->children, &t->child_elem)
+  list_push_back(&parent->children, &t->child_elem);
 
   // not loaded and exited
   t->is_loaded = 0;
@@ -247,7 +247,7 @@ struct thread *get_child (int tid)
 void *remove_child (struct thread *child)
 {
   list_remove(&child->child_elem);
-  
+
   // this will be done in parent
   // palloc_free_page(child);
 }
