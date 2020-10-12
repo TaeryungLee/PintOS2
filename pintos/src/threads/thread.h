@@ -3,6 +3,7 @@
 
 #include <debug.h>
 #include <list.h>
+#include <synch.h>
 #include <stdint.h>
 
 /* States in a thread's life cycle. */
