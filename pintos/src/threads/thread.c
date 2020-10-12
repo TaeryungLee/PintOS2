@@ -113,9 +113,7 @@ thread_start (void)
   /* Create the idle thread. */
   struct semaphore idle_started;
   sema_init (&idle_started, 0);
-  printf("11\n");
   thread_create ("idle", PRI_MIN, idle, &idle_started);
-  printf("12\n");
 
   /* Start preemptive thread scheduling. */
   intr_enable ();
@@ -205,6 +203,7 @@ thread_create (const char *name, int priority,
   sf->eip = switch_entry;
   sf->ebp = 0;
 
+  printf("1\n");
   // Modified 2.3
   // current thread is parent for new thread
   struct thread *parent = thread_current();
@@ -212,7 +211,7 @@ thread_create (const char *name, int priority,
   t->parent = parent;
   // add to children list
   list_push_back(&parent->children, &t->child_elem);
-
+  printf("2\n");
   // not loaded and exited
   t->is_loaded = 0;
   t->is_exited = 0;
@@ -220,6 +219,7 @@ thread_create (const char *name, int priority,
   // semaphore initialized to 0
   sema_init(&t->exit_sema, 0);
   sema_init(&t->load_sema, 0);
+  printf("3\n");
 
   /* Add to run queue. */
   thread_unblock (t);
