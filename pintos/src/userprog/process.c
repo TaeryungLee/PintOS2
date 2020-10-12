@@ -56,7 +56,7 @@ process_execute (const char *file_name)
 }
 
 /* Modified 2.1 */
-  void argument_stack(char **parse, int count, void **esp)
+void argument_stack(char **parse, int count, void **esp)
   {
     int arg_addr[count-1]; // argv의 주소값을 저장할 변수
 
@@ -137,6 +137,9 @@ start_process (void *file_name_)
   char program[64];
   int file_name_length = strlen(file_name)+1;
 
+  // Modified 2.3
+  struct thread *new = thread_current();
+
   strlcpy (program, file_name, file_name_length);
   
   for(token = strtok_r(program, " ", &save_ptr); token != NULL; token = strtok_r(NULL, " ", &save_ptr))
@@ -153,12 +156,18 @@ start_process (void *file_name_)
   success = load (parse[0], &if_.eip, &if_.esp);
 
   argument_stack(parse, count, &if_.esp);
+  sema_up(&new->load_sema);
+
   //hex_dump(if_.esp, if_.esp, PHYS_BASE - if_.esp, true);
   /* If load failed, quit. */
   palloc_free_page (file_name);
-  if (!success) 
+  if (!success)
+  {
+    new->is_loaded = -1;
     thread_exit ();
-
+  }
+  else
+    new->is_loaded = 1;
 
   /* Start the user process by simulating a return from an
      interrupt, implemented by intr_exit (in
@@ -181,14 +190,20 @@ start_process (void *file_name_)
 
    This function will be implemented in problem 2-2.  For now, it
    does nothing. */
+// Modified 2.3
 int
-process_wait (tid_t child_tid UNUSED) 
+process_wait (tid_t child_tid) 
 {
-  for (int i = 0; i < 1000000000; i ++)
-  {
+  struct thread *child = get_child(child_tid);
+  int exit_status = child->exit_status;
+  sema_down(&child->exit_sema);
 
-  }
-  return 0;
+  if (exit_status < 0)
+    return exit_status;
+
+  palloc_free_page(child);
+
+  return exit_status;
 }
 
 /* Free the current process's resources. */
@@ -200,6 +215,11 @@ process_exit (void)
 
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
+
+  // Modified 2.3
+  cur->is_exited = 1;
+  sema_up(&cur->exit_sema);
+
   pd = cur->pagedir;
   if (pd != NULL) 
     {

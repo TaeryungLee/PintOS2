@@ -96,6 +96,18 @@ struct thread
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
     uint32_t *pagedir;                  /* Page directory. */
+
+    // Modified 2.3
+    struct thread *parent;              // parent thread
+    struct list children;               // list of children
+    struct list_elem child_elem;        // list element used for children list
+
+    struct semaphore exit_sema;         // semaphore used in wait
+    struct semaphore load_sema;         // semaphore used in load
+
+    int exit_status;                    // exit status
+    int is_exited;                      // 1 if exited
+    int is_loaded;                      // 1 if loaded
 #endif
 
     /* Owned by thread.c. */
@@ -137,5 +149,10 @@ int thread_get_nice (void);
 void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
+
+// Modified 2.3
+void *remove_child (struct thread *child);
+struct thread *get_child (int tid);
+
 
 #endif /* threads/thread.h */

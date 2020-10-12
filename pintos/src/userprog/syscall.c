@@ -31,8 +31,8 @@ Handler Functions
 */
 
 void exits(int exit_code, struct intr_frame *f);
-void exec(char *file, struct intr_frame *f);
-void wait(int tid, struct intr_frame *f);
+tid_t exec(char *file, struct intr_frame *f);
+int wait(int tid, struct intr_frame *f);
 void create(char *name, size_t size, struct intr_frame *f);
 void remove(char *name, struct intr_frame *f);
 void open(char *name, struct intr_frame *f);
@@ -94,7 +94,16 @@ syscall_handler (struct intr_frame *f)
   	{
   		char *file;
       read_addr(&file, esp+4, 4);
-      exec(file, f);
+      tid_t tid = exec(file, f);
+      f->eax = tid;
+      break;
+    }
+
+    case SYS_WAIT:
+    {
+    	int tid;
+      read_addr(&tid, esp+4, sizeof(tid));
+      f->eax = sys_wait(tid, f);
       break;
     }
 
@@ -203,16 +212,24 @@ void
 exits(int exit_code, struct intr_frame *f)
 {
 	printf("%s: exit(%d)\n", thread_current()->name, exit_code);
+	thread_current()->exit_status = exit_code;
 	thread_exit();
 }
 
-void 
+tid_t
 exec(char *file, struct intr_frame *f)
 {
-	process_execute(file);
+	tid_t tid = process_execute(file);
+	struct thread *new = get_child(tid);
+	sema_down(&new->load_sema);
+	return tid
 }
 
-void wait(int tid, struct intr_frame *f);
+int wait(int tid, struct intr_frame *f)
+{
+	int result = process_wait(tid);
+	return result;
+}
 
 void 
 create(char *name, size_t size, struct intr_frame *f)

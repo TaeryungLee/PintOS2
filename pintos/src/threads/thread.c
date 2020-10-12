@@ -71,6 +71,11 @@ static void schedule (void);
 void thread_schedule_tail (struct thread *prev);
 static tid_t allocate_tid (void);
 
+// Modified 2.3
+struct thread *get_child (int tid);
+void *remove_child (struct thread *child);
+
+
 /* Initializes the threading system by transforming the code
    that's currently running into a thread.  This can't work in
    general and it is possible in this case only because loader.S
@@ -198,10 +203,53 @@ thread_create (const char *name, int priority,
   sf->eip = switch_entry;
   sf->ebp = 0;
 
+  // Modified 2.3
+  // current thread is parent for new thread
+  struct thread *parent = thread_current();
+  // add parent
+  t->parent = parent;
+  // add to children list
+  list_push_back(&parent->children, &t->child_elem)
+
+  // not loaded and exited
+  t->is_loaded = 0;
+  t->is_exited = 0;
+
+  // semaphore initialized to 0
+  sema_init(&t->exit_sema, 0);
+  sema_init(&t->load_sema, 0);
+
   /* Add to run queue. */
   thread_unblock (t);
 
   return tid;
+}
+
+// Modified 2.3
+// Get child with given tid
+struct thread *get_child (int tid)
+{
+  struct list_elem *e;
+  struct thread *cur = thread_current();
+  for (e = list_begin (&cur->children); e != list_end (&cur->children); e = list_next (e))
+  {
+    struct thread *iter = list_entry(e, struct thread, child_elem);
+    if (iter->tid == tid)
+    {
+      return iter;
+    }
+  }
+  return NULL;
+}
+
+// Modified 2.3
+// remove given child
+void *remove_child (struct thread *child)
+{
+  list_remove(&child->child_elem);
+  
+  // this will be done in parent
+  // palloc_free_page(child);
 }
 
 /* Puts the current thread to sleep.  It will not be scheduled
@@ -466,6 +514,8 @@ init_thread (struct thread *t, const char *name, int priority)
 
   old_level = intr_disable ();
   list_push_back (&all_list, &t->allelem);
+  // Modified 2.3
+  list_init(&t->children);
   intr_set_level (old_level);
 }
 
@@ -538,7 +588,8 @@ thread_schedule_tail (struct thread *prev)
   if (prev != NULL && prev->status == THREAD_DYING && prev != initial_thread) 
     {
       ASSERT (prev != cur);
-      palloc_free_page (prev);
+      // Modified 2.3: Do not free page here
+      //palloc_free_page (prev);
     }
 }
 
