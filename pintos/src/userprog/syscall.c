@@ -222,7 +222,7 @@ exec(char *file, struct intr_frame *f)
 	tid_t tid = process_execute(file);
 	struct thread *new = get_child(tid);
 	sema_down(&new->load_sema);
-	return tid
+	return tid;
 }
 
 int wait(int tid, struct intr_frame *f)
