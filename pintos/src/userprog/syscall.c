@@ -241,13 +241,13 @@ write(int fd, void* buffer, int size, struct intr_frame *f)
 {
 	check(buffer, size);
   lock_acquire(&memory);
-  if(fd == STDOUT)
+  if(fd == 0)
   {
     putbuf(buffer, size);
     lock_release(&memory);
     f->eax=size;
   }
-  else if(fd == STDIN)
+  else if(fd == 1)
   {
     f->eax =- 1;
     lock_release(&memory);
