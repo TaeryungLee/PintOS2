@@ -202,25 +202,20 @@ thread_create (const char *name, int priority,
   sf = alloc_frame (t, sizeof *sf);
   sf->eip = switch_entry;
   sf->ebp = 0;
-  printf("0 %d\n", t->magic);
+
   // Modified 2.3
   // current thread is parent for new thread
   struct thread *parent = thread_current();
-  printf("1 %d\n", t->magic);
   // add parent
   t->parent = parent;
   // add to children list
   list_push_back(&parent->children, &t->child_elem);
-  printf("2 %d\n", t->magic);
   // not loaded and exited
   t->is_loaded = 0;
   t->is_exited = 0;
-  printf("3 %d\n", t->magic);
   // semaphore initialized to 0
   sema_init(&t->exit_sema, 0);
   sema_init(&t->load_sema, 0);
-  
-  printf("4 %d\n", t->magic);
 
   /* Add to run queue. */
   thread_unblock (t);
