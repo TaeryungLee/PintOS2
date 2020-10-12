@@ -110,18 +110,14 @@ main (void)
   timer_init ();
   kbd_init ();
   input_init ();
-  printf("0");
 #ifdef USERPROG
   exception_init ();
   syscall_init ();
 #endif
-  printf("1");
   /* Start thread scheduler and enable interrupts. */
   thread_start ();
-  printf("1~2");
   serial_init_queue ();
   timer_calibrate ();
-  printf("2");
 
 #ifdef FILESYS
   /* Initialize file system. */
