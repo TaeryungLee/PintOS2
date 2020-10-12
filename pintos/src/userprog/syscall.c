@@ -252,6 +252,7 @@ write(int fd, void* buffer, int size, struct intr_frame *f)
     f->eax =- 1;
     lock_release(&memory);
   }
+  printf("fucked");
 }
 void seek(int fd, int count, struct intr_frame *f);
 void tell(int fd, struct intr_frame *f);
