@@ -202,7 +202,7 @@ thread_create (const char *name, int priority,
   sf = alloc_frame (t, sizeof *sf);
   sf->eip = switch_entry;
   sf->ebp = 0;
-
+  printf("%d\n", t->magic);
   printf("1\n");
   // Modified 2.3
   // current thread is parent for new thread
