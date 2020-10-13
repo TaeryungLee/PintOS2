@@ -66,10 +66,7 @@ syscall_handler (struct intr_frame *f)
   void *esp = f->esp;
   // Check if esp is valid
   check(esp, 4);
-  printf("%#x, %#x \n", esp, &esp);
   bool res = check_byte(esp);
-  printf("%d \n", res);
-  printf("%d \n", is_user_vaddr(&esp));
   // fetch syscall number
   int call_no;
 
@@ -187,15 +184,21 @@ write_addr(char *dest, char byte)
 bool 
 check_byte(void *addr)
 {
+	unsigned int a = (unsigned int) addr;
+	unsigned int b = (unsigned int) PHYS_BASE;
+	printf("%d, %d, %#x, %#x\n", a, b, a, b);
+
   if((addr != NULL) && (((unsigned int)addr) < ((unsigned int)PHYS_BASE)))
+  {
     return true;
+  }
   else
   	return false;
 }
 void 
 check(void *addr, int count)
 {
-	char *c = addr;
+	unsigned char *c = addr;
   for(int i=0; i < count; i++)
   {
     if(!check_byte((void *)(c + i)))
