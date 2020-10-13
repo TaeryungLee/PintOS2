@@ -31,7 +31,7 @@ Handler Functions
 */
 
 void exits(int exit_code, struct intr_frame *f);
-tid_t exec(char *file, struct intr_frame *f);
+tid_t execs(char *file, struct intr_frame *f);
 int wait(int tid, struct intr_frame *f);
 void create(char *name, size_t size, struct intr_frame *f);
 void remove(char *name, struct intr_frame *f);
@@ -240,7 +240,7 @@ exits(int exit_code, struct intr_frame *f)
 }
 
 tid_t
-exec(char *file, struct intr_frame *f)
+execs(char *file, struct intr_frame *f)
 {
 	tid_t tid = process_execute(file);
 	struct thread *new = get_child(tid);
