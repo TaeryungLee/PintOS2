@@ -184,11 +184,13 @@ write_addr(char *dest, char byte)
 bool 
 check_byte(void *addr)
 {
-	/* debug */
-	
+	/* debug 
+
 	unsigned int a = (unsigned int) addr;
 	unsigned int b = (unsigned int) PHYS_BASE;
 	printf("%d, %d, %#x, %#x, %d, %d\n", a, b, a, b, (a < b), (a > (unsigned int) 0x8048000));
+
+	*/
 
   if((addr != NULL) && (((unsigned int)addr) < ((unsigned int)PHYS_BASE)) && (((unsigned int)addr) > ((unsigned int) 0x8048000)))
   {
@@ -200,6 +202,11 @@ check_byte(void *addr)
 void 
 check(void *addr, int count)
 {
+	void *down = pg_round_down(addr);
+	void *up = pg_round_up(addr);
+
+	printf("%#x, %#x, %#x \n", down, addr, up);
+
 	unsigned char *c = addr;
   for(int i=0; i < count; i++)
   {
