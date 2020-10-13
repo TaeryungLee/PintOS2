@@ -38,7 +38,7 @@ void remove(char *name, struct intr_frame *f);
 void open(char *name, struct intr_frame *f);
 void filesize(int fd, struct intr_frame *f);
 void read(int fd, void* buffer, int size, struct intr_frame *f);
-void write(int fd, void* buffer, int size, struct intr_frame *f);
+int write(int fd, void* buffer, int size, struct intr_frame *f);
 void seek(int fd, int count, struct intr_frame *f);
 void tell(int fd, struct intr_frame *f);
 void close(int fd, struct intr_frame *f);
@@ -249,7 +249,7 @@ void open(char *name, struct intr_frame *f);
 void filesize(int fd, struct intr_frame *f);
 void read(int fd, void* buffer, int size, struct intr_frame *f);
 
-void 
+int
 write(int fd, void* buffer, int size, struct intr_frame *f)
 {
 	check(buffer, size);
