@@ -202,16 +202,18 @@ check_byte(void *addr)
 void 
 check(void *addr, int count)
 {
-	void *down = pg_round_down(addr);
-	void *up = pg_round_up(addr);
+	unsigned int *down = (unsigned int) pg_round_down(addr);
+	unsigned int *up = (unsigned int) pg_round_up(addr);
 
-	printf("%#x, %#x, %#x \n", down, addr, up);
+	//printf("%#x, %#x, %#x \n", down, addr, up);
 
 	unsigned char *c = addr;
   for(int i=0; i < count; i++)
   {
     if(!check_byte((void *)(c + i)))
       exits(-1,NULL);
+    if(((unsigned int) addr + count - 1) > up)
+    	exits(-1,NULL);
   }
 }
 
