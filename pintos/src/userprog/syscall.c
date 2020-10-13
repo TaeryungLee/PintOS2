@@ -205,7 +205,7 @@ check(void *addr, int count)
 	unsigned int *down = (unsigned int) pg_round_down(addr);
 	unsigned int *up = (unsigned int) pg_round_up(addr);
 
-	//printf("%#x, %#x, %#x \n", down, addr, up);
+	printf("%#x, %#x, %#x \n", down, addr, up);
 
 	unsigned char *c = addr;
   for(int i=0; i < count; i++)
