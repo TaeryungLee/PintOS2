@@ -205,7 +205,7 @@ process_wait (tid_t child_tid)
   int exit_status = child->exit_status;
   sema_down(&child->exit_sema);
 
-  remove_child(child_tid);
+  remove_child(child);
 
   if (exit_status < 0)
     return exit_status;
