@@ -252,6 +252,7 @@ void
 write(int fd, void* buffer, int size, struct intr_frame *f)
 {
 	hex_dump(f->esp, f->esp, PHYS_BASE-f->esp, 1); 
+	printf("%s\n", buffer);
 	check(buffer, size);
   lock_acquire(&memory);
   if(fd == 0)
