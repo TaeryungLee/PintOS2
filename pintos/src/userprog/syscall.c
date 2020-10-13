@@ -213,7 +213,12 @@ check(void *addr, int count)
     if(!check_byte((void *)(c + i)))
       exits(-1,NULL);
     if(((unsigned int) addr + count - 1) > up)
-    	exits(-1,NULL);
+    	if (((unsigned int) addr == up) && ((unsigned int) addr == down))
+    	{
+
+    	}
+    	else
+    		exits(-1,NULL);
   }
 }
 
