@@ -254,16 +254,16 @@ write(int fd, void* buffer, int size, struct intr_frame *f)
 {
 	check(buffer, size);
   lock_acquire(&memory);
-  if(fd == 0)
+  if(fd == 1)
   {
     putbuf(buffer, size);
     lock_release(&memory);
     return size;
   }
-  else if(fd == 1)
+  else if(fd == 0)
   {
-    return -1;
     lock_release(&memory);
+    return -1;
   }
 }
 void seek(int fd, int count, struct intr_frame *f);
