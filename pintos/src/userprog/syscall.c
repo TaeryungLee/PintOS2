@@ -69,6 +69,7 @@ syscall_handler (struct intr_frame *f)
   printf("%#x \n", esp);
   bool res = check_byte(esp);
   printf("%d \n", res);
+  printf("%d \n", is_user_vaddr(esp));
   // fetch syscall number
   int call_no;
 
