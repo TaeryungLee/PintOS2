@@ -48,6 +48,7 @@ process_execute (const char *file_name)
   token = strtok_r(program, " ", &save_ptr); //tokenize
 
   printf("%s", &token);
+  printf("%d", filesys_open(token));
   if (filesys_open(token) == NULL)
     return -1;
 
