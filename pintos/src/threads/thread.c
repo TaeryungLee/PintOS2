@@ -245,6 +245,7 @@ struct thread *get_child (int tid)
 void *remove_child (struct thread *child)
 {
   list_remove(&child->child_elem);
+  palloc_free_page(child);
 
   // this will be done in parent
   // palloc_free_page(child);

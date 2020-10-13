@@ -198,17 +198,17 @@ int
 process_wait (tid_t child_tid) 
 {
   struct thread *child = get_child(child_tid);
+  printf("11 %d, %d \n", child, (child == NULL));
   if (child == NULL)
     return -1;
+
   int exit_status = child->exit_status;
   sema_down(&child->exit_sema);
+
   remove_child(child_tid);
 
   if (exit_status < 0)
     return exit_status;
-
-  palloc_free_page(child);
-
   return exit_status;
 }
 
