@@ -140,7 +140,8 @@ syscall_handler (struct intr_frame *f)
       read_addr(&fd, esp+4, 4);
       read_addr(&buffer, esp+8, 4);
       read_addr(&size, esp+12, 4);
-      write(fd, buffer, size, f);
+      int ret = write(fd, buffer, size, f);
+      f->eax = ret;
       break;
     }
 
@@ -251,19 +252,17 @@ void read(int fd, void* buffer, int size, struct intr_frame *f);
 void 
 write(int fd, void* buffer, int size, struct intr_frame *f)
 {
-	hex_dump(f->esp, f->esp, PHYS_BASE-f->esp, 1); 
-	printf("%s\n", buffer);
 	check(buffer, size);
   lock_acquire(&memory);
   if(fd == 0)
   {
     putbuf(buffer, size);
     lock_release(&memory);
-    f->eax=size;
+    return size;
   }
   else if(fd == 1)
   {
-    f->eax =- 1;
+    return -1;
     lock_release(&memory);
   }
 }
