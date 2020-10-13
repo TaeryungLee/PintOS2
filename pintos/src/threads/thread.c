@@ -246,6 +246,7 @@ void *remove_child (struct thread *child)
 {
   printf("start to child %d removed\n", child);
   list_remove(&child->child_elem);
+  printf("list to child %d removed\n", child);
   palloc_free_page(child);
   printf("child %d removed\n", child);
 
