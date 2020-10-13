@@ -47,8 +47,6 @@ process_execute (const char *file_name)
   strlcpy(program, file_name, file_name_length); //modified
   token = strtok_r(program, " ", &save_ptr); //tokenize
 
-  printf("%s", &token);
-  printf("%d", filesys_open(token));
   if (filesys_open(token) == NULL)
     return -1;
 
