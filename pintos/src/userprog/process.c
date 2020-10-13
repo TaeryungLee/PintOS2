@@ -47,6 +47,9 @@ process_execute (const char *file_name)
   strlcpy(program, file_name, file_name_length); //modified
   token = strtok_r(program, " ", &save_ptr); //tokenize
 
+  if (filesys_open(token) == NULL)
+    return -1;
+  
   /* Create a new thread to execute FILE_NAME. */
   tid = thread_create (token, PRI_DEFAULT, start_process, fn_copy);
   if (tid == TID_ERROR)
