@@ -66,7 +66,7 @@ syscall_handler (struct intr_frame *f)
   void *esp = f->esp;
   // Check if esp is valid
   check(esp, 4);
-  printf("%#x \n", esp);
+  printf("%#x, %#x \n", esp, &esp);
   bool res = check_byte(esp);
   printf("%d \n", res);
   printf("%d \n", is_user_vaddr(&esp));
