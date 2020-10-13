@@ -186,7 +186,7 @@ write_addr(char *dest, char byte)
 bool 
 check_byte(void *addr)
 {
-  if((addr != NULL) && (((unsigned int)addr) < ((unsigned int)PHYS_BASE)))
+  if((addr != NULL) && (is_user_vaddr(addr)))
     return true;
   else
   	return false;
