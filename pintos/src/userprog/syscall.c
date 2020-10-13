@@ -67,6 +67,8 @@ syscall_handler (struct intr_frame *f)
   // Check if esp is valid
   check(esp, 4);
   printf("%#x \n", esp);
+  bool res = check_byte(esp);
+  printf("%d \n", res);
   // fetch syscall number
   int call_no;
 
