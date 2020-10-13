@@ -198,7 +198,6 @@ int
 process_wait (tid_t child_tid) 
 {
   struct thread *child = get_child(child_tid);
-  printf("11 %d, %d \n", child, (child == NULL));
   if (child == NULL)
     return -1;
 
