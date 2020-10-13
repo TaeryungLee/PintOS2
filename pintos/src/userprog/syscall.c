@@ -66,7 +66,7 @@ syscall_handler (struct intr_frame *f)
   void *esp = f->esp;
   // Check if esp is valid
   check(esp, 4);
-  printf("%#x %#x", esp, (int *) *esp);
+  printf("%#x \n", esp);
   // fetch syscall number
   int call_no;
 
