@@ -96,7 +96,7 @@ syscall_handler (struct intr_frame *f)
   		char *file;
       read_addr(&file, esp+4, 4);
       check(file, 4);
-      tid_t tid = exec(file, f);
+      tid_t tid = execs(file, f);
       f->eax = tid;
       break;
     }
