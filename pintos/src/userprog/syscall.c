@@ -108,11 +108,6 @@ syscall_handler (struct intr_frame *f)
     }
 
 
-
-
-
-
-
     case SYS_CREATE:
     {
     	check(esp + 4, 4);
@@ -256,6 +251,7 @@ void read(int fd, void* buffer, int size, struct intr_frame *f);
 void 
 write(int fd, void* buffer, int size, struct intr_frame *f)
 {
+	hex_dump(f->esp, f->esp, PHYS_BASE-f->esp, 1); 
 	check(buffer, size);
   lock_acquire(&memory);
   if(fd == 0)
