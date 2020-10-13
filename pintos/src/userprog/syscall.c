@@ -245,6 +245,9 @@ tid_t
 execs(char *file, struct intr_frame *f)
 {
 	tid_t tid = process_execute(file);
+
+	if (tid == -1)
+		return tid;
 	struct thread *new = get_child(tid);
 	sema_down(&new->load_sema);
 	return tid;
