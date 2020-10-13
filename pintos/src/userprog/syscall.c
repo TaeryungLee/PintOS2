@@ -186,9 +186,9 @@ check_byte(void *addr)
 {
 	unsigned int a = (unsigned int) addr;
 	unsigned int b = (unsigned int) PHYS_BASE;
-	printf("%d, %d, %#x, %#x, %d\n", a, b, a, b, (a < b));
+	printf("%d, %d, %#x, %#x, %d, %d\n", a, b, a, b, (a < b), (a > (unsigned int) 0x8048000));
 
-  if((addr != NULL) && (((unsigned int)addr) < ((unsigned int)PHYS_BASE)))
+  if((addr != NULL) && (((unsigned int)addr) < ((unsigned int)PHYS_BASE)) && (((unsigned int)addr) > ((unsigned int) 0x8048000)))
   {
     return true;
   }
