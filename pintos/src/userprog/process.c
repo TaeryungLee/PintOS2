@@ -7,7 +7,6 @@
 #include <string.h>
 #include "userprog/gdt.h"
 #include "userprog/pagedir.h"
-#include "userprog/syscall.h"
 #include "userprog/tss.h"
 #include "filesys/directory.h"
 #include "filesys/file.h"
@@ -94,7 +93,6 @@ void argument_stack(char **parse, int count, void **esp)
       for(j = strlen(parse[i]); j > -1; j--)
       {
         *esp -= 1;
-        check(*esp, 1);
         **(char **)esp = parse[i][j];
         // debug
         //printf("%d, %d, %#x, %c\n", i, j, *esp, parse[i][j]);
