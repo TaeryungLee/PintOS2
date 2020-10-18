@@ -198,8 +198,6 @@ int process_add_file(struct file *f)
 
   cur->files[next] = f;
   cur->fd_next ++;
-
-  printf("file put, %d, %d, %d\n", next, f, cur->files[next]);
   return next;
 }
 
@@ -207,7 +205,6 @@ int process_add_file(struct file *f)
 struct file *process_get_file(int fd)
 {
   struct thread *cur = thread_current();
-  printf("getting file, %d, %d\n", fd, cur->files[fd]);
   return cur->files[fd];
 }
 
@@ -216,14 +213,11 @@ void process_close_file(int fd)
 {
   struct thread *cur = thread_current();
   struct file *close = process_get_file(fd);
-  printf("file obtained %d, %d\n", fd, close);
   if (close != NULL)
   {
     file_close(close);
-    printf("fileclose called\n");
     cur->files[fd - 2] = NULL;
   }
-  printf("file closed\n");
 }
 
 
