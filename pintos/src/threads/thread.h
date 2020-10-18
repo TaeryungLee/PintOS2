@@ -112,7 +112,7 @@ struct thread
     int is_loaded;                      // 1 if loaded
 
     // Modified 2.4
-    struct file files[128];             // list of files
+    struct file* files[128];             // list of files
     int fd_next;                        // next file descriptor
 
     // struct semaphore rw_sema;           // semaphore used in read/write
