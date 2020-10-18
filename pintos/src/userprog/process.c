@@ -214,11 +214,13 @@ void process_close_file(int fd)
 {
   struct thread *cur = thread_current();
   struct file *close = process_get_file(fd);
+  printf("file obtained %d\n", fd);
   if (close != NULL)
   {
     file_close(close);
     cur->files[fd - 2] = NULL;
   }
+  printf("file closed\n");
 }
 
 
