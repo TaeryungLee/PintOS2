@@ -109,7 +109,6 @@ syscall_handler (struct intr_frame *f)
       break;
     }
 
-
     case SYS_CREATE:
     {
     	check(esp + 4, 4);
@@ -129,10 +128,34 @@ syscall_handler (struct intr_frame *f)
       break;
     }
 
+    case SYS_OPEN:
+    {
+      char *name;
+      read_addr(&name, esp+4, 4);
+      open(name, f);
+      break;
+    }
 
+    case SYS_FILESIZE:
+    {
+      int fd;
+      read_addr(&fd, esp+4, sizeof(fd));
+      filesize(fd, f);
+      break;
+    }
 
-
-
+    case SYS_READ:
+    {
+      int fd;
+      void *buffer;
+      size_t size;
+      read_addr(&fd, esp+4, 4);
+      read_addr(&buffer, esp+8, 4);
+      read_addr(&size, esp+12, 4);
+      int ret = read(fd, buffer, size, f);
+      f->eax = ret;
+      break;
+    }
 
     case SYS_WRITE:
     {
@@ -147,6 +170,31 @@ syscall_handler (struct intr_frame *f)
       break;
     }
 
+    case SYS_SEEK:
+    {
+      int fd;
+      int count;
+      read_addr(&fd, esp+4, 4);
+      read_addr(&count, esp+8, 4);
+      seek(fd, count, f);
+      break;
+    }
+
+    case SYS_TELL:
+    {
+      int fd;
+      read_addr(&fd, esp+4, 4);
+      tell(fd, f);
+      break;
+    }
+
+    case SYS_CLOSE:
+    {
+      int fd;
+      read_addr(&fd, esp+4, 4);
+      close(fd, f);
+      break;
+    }
   }
 }
 
@@ -277,9 +325,76 @@ remove(char *name, struct intr_frame *f)
   lock_release(&memory);
 }
 
-void open(char *name, struct intr_frame *f);
-void filesize(int fd, struct intr_frame *f);
-void read(int fd, void* buffer, int size, struct intr_frame *f);
+void open(char *name, struct intr_frame *f)
+{
+  struct file *new;
+  check(name, sizeof(name));
+  lock_acquire(&memory);
+  new = filesys_open(name);
+
+  if(new != NULL)
+  {
+    int new_fd = process_add_file(new);
+    f->eax = new_fd;
+  }
+  else
+  {
+    f->eax = -1;
+  }
+  lock_release(&memory);
+}
+
+void filesize(int fd, struct intr_frame *f)
+{
+  int size;
+  struct file *cur = process_get_file(fd);
+  if(cur != NULL)
+  {
+    size = file_length(cur);
+    f->eax = size;
+  }
+  else
+  {
+    f->eax = -1;
+  }
+}
+
+int read(int fd, void* buffer, int size, struct intr_frame *f)
+{
+  check(buffer, sizeof(buffer));
+  lock_acquire(&memory);
+  // printf("%d", fd);
+
+  if(fd == 0)
+  {
+    for (int i = 0; i < size; i++)
+    {
+      write_addr((char *) (buffer + i), input_getc());
+    }
+    lock_release(&memory);
+    return size;
+  }
+  else if(fd == 1)
+  {
+    lock_release(&memory);
+    return -1;
+  }
+  else
+  {
+    struct file *cur = process_get_file(fd);
+    int length = 0;
+
+    if(cur == NULL)
+    {
+      exits(-1, NULL);
+    }
+    // printf("fd!=0");
+
+    length = file_read(cur, buffer, size);
+    lock_release(&memory);
+    return length;
+  }
+}
 
 int
 write(int fd, void* buffer, int size, struct intr_frame *f)
@@ -297,15 +412,56 @@ write(int fd, void* buffer, int size, struct intr_frame *f)
     lock_release(&memory);
     return -1;
   }
+  else
+  {
+    struct file *cur_file = process_get_file(fd);
+    int length = 0;
+
+    if(cur_file == NULL)
+    {
+      lock_release(&memory);
+      return -1;
+    }
+
+    else
+    {
+      length = file_write(cur_file, buffer, size);
+      lock_release(&memory);
+      return length;
+    }   
+  }
 }
-void seek(int fd, int count, struct intr_frame *f);
-void tell(int fd, struct intr_frame *f);
-void close(int fd, struct intr_frame *f);
 
+void seek(int fd, int count, struct intr_frame *f)
+{
+  struct file *cur = process_get_file(fd);
+  if (cur != NULL)
+  {
+    file_seek(cur, count);
+  }
+}
 
+void tell(int fd, struct intr_frame *f)
+{
+  struct file *cur = process_get_file(fd);
+  unsigned int location = 0;
+  if(cur != NULL)
+  {
+    location = file_tell(cur);
+    f->eax = location;
+  }
+}
 
-
-
-
+void close(int fd, struct intr_frame *f)
+{
+  struct file *cur = process_get_file(fd);
+  struct thread *cur_thread = thread_current();
+  int fd_v = fd; //file descriptor value
+  if(cur != NULL)
+  {
+    file_close(cur);
+    cur_thread-> fd[fd_v] = NULL;
+  }
+}
 
 

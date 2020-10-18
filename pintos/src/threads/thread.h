@@ -103,12 +103,22 @@ struct thread
     struct list children;               // list of children
     struct list_elem child_elem;        // list element used for children list
 
-    struct semaphore exit_sema;        // semaphore used in wait
-    struct semaphore load_sema;        // semaphore used in load
+    struct semaphore exit_sema;         // semaphore used in wait
+    struct semaphore load_sema;         // semaphore used in load
 
     int exit_status;                    // exit status
     int is_exited;                      // 1 if exited
     int is_loaded;                      // 1 if loaded
+
+    // Modified 2.4
+    struct file files[128];             // list of files
+    int fd_next;                        // next file descriptor
+
+    // struct semaphore rw_sema;           // semaphore used in read/write
+
+    // Modified 2.5
+    // struct file *exec_file;
+
 #endif
 
     /* Owned by thread.c. */

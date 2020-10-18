@@ -21,6 +21,9 @@
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
 void argument_stack(char **parse, int count, void **esp);
+int process_add_file(struct file *f);
+struct file *process_get_file(int fd);
+void process_close_file(int fd);
 
 /* Starts a new thread running a user program loaded from
    FILENAME.  The new thread may be scheduled (and may even exit)
@@ -184,6 +187,41 @@ start_process (void *file_name_)
   free(parse);
 }
 
+/*Modified 2.4 */
+int process_add_file(struct file *f)
+{ 
+  struct thread *cur = thread_current();
+  int next = cur->fd_next;
+
+  if (cur->files[next - 1] != NULL)
+    return -1;
+
+  cur->files[next - 1] = f;
+  cur->fd_next ++;
+
+  return next + 1;
+}
+
+/*Modified 2.4*/
+struct file *process_get_file(int fd)
+{
+  struct thread *cur = thread_current();
+  return cur->files[fd - 2];
+}
+
+/*Modified 2.4*/
+void process_close_file(int fd)
+{
+  struct thread *cur = thread_current();
+  struct file *close = process_get_file(fd);
+  if (close != NULL)
+  {
+    file_close(close);
+    cur->files[fd - 2] = NULL;
+  }
+}
+
+
 /* Waits for thread TID to die and returns its exit status.  If
    it was terminated by the kernel (i.e. killed due to an
    exception), returns -1.  If TID is invalid or if it was not a
@@ -225,6 +263,12 @@ process_exit (void)
   cur->is_exited = 1;
   sema_up(&cur->exit_sema);
 
+  // Modified 2.4
+  for (int i = 0; i < cur->fd_next - 2; i++)
+  {
+    process_close_file(i);
+  }
+  
   pd = cur->pagedir;
   if (pd != NULL) 
     {

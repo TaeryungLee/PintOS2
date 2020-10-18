@@ -217,6 +217,16 @@ thread_create (const char *name, int priority,
   sema_init(&t->exit_sema, 0);
   sema_init(&t->load_sema, 0);
 
+  // Modified 2.4
+  t->fd_next = 2;
+
+  for (int i = 0; i < 128; i++)
+  {
+    t->files[i] = NULL;
+  }
+
+  // sema_init(&t->rw_sema, 1);
+
   /* Add to run queue. */
   thread_unblock (t);
 
