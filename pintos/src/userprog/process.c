@@ -178,19 +178,19 @@ start_process (void *file_name_)
   if_.eflags = FLAG_IF | FLAG_MBS;
   success = load (parse[0], &if_.eip, &if_.esp);
 
-  printf("%d", success);
-
+  if (!success)
+  {
+    new->is_loaded = -1;
+    thread_exit ();
+  }
+  
   argument_stack(parse, count, &if_.esp);
   sema_up(&new->load_sema);
 
   //hex_dump(if_.esp, if_.esp, PHYS_BASE - if_.esp, true);
   /* If load failed, quit. */
   palloc_free_page (file_name);
-  if (!success)
-  {
-    new->is_loaded = -1;
-    thread_exit ();
-  }
+
   else
     new->is_loaded = 1;
 
