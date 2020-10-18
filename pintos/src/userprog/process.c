@@ -265,7 +265,6 @@ process_wait (tid_t child_tid)
   sema_down(&child->exit_sema);
 
   int exit_status = child->exit_status;
-  printf("exit %d\n", exit_status);
   remove_child(child);
   return exit_status;
 }
