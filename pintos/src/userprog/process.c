@@ -240,11 +240,13 @@ process_wait (tid_t child_tid)
     return -1;
   printf("child tid is %d\n", child->tid);
 
-  int exit_status = child->exit_status;
-  sema_down(&child->exit_sema);
 
+  printf("now start to wait for child\n", child->tid);
+  sema_down(&child->exit_sema);
+  printf("child exited\n");
+  int exit_status = child->exit_status;
   remove_child(child);
-  printf("exit stat: %d\n", exit_status);
+  printf("child removed, exit stat: %d\n", exit_status);
   if (exit_status < 0)
     return exit_status;
   return exit_status;
