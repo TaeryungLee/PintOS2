@@ -216,7 +216,6 @@ void process_close_file(int fd)
   if (close != NULL)
   {
     file_close(close);
-    palloc_free_page(close);
     cur->files[fd] = NULL;
   }
 }
@@ -258,6 +257,14 @@ process_exit (void)
 
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
+
+  struct list_elem *e;
+  // Modified debug: multi-oom
+  for (e = list_begin (&cur->children); e != list_end (&cur->children); e = list_next (e))
+  {
+    struct thread *iter = list_entry(e, struct thread, child_elem);
+    palloc_free_page(iter);
+  }
 
   // Modified 2.3
   cur->is_exited = 1;
