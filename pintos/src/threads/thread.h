@@ -118,7 +118,7 @@ struct thread
     // struct semaphore rw_sema;           // semaphore used in read/write
 
     // Modified 2.5
-    struct file *exec_file;
+    //struct file *exec_file;
 
 #endif
 

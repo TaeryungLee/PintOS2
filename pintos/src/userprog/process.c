@@ -215,7 +215,6 @@ void process_close_file(int fd)
   struct file *close = process_get_file(fd);
   if (close != NULL)
   {
-    file_allow_write(close);
     file_close(close);
     cur->files[fd - 2] = NULL;
   }
@@ -411,9 +410,6 @@ load (const char *file_name, void (**eip) (void), void **esp)
       goto done; 
     }
 
-  // Modified 2.5
-  file_deny_write(file);
-  t->exec_file = file;
 
   /* Read program headers. */
   file_ofs = ehdr.e_phoff;
