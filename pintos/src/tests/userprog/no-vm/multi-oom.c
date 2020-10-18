@@ -163,7 +163,7 @@ main (int argc, char *argv[])
               i, howmany, expected_depth, reached_depth);
       ASSERT (expected_depth == reached_depth);
     }
-
+  printf("running\n");
   consume_some_resources ();
 
   if (n == 0)
