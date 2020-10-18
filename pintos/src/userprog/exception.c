@@ -154,7 +154,7 @@ page_fault (struct intr_frame *f)
   {
     exits(-1, NULL);
   }
-  if(not_present==true || user != true || is_kernel_vaddr(fault_addr))
+  if(not_present==true || is_kernel_vaddr(fault_addr))
   {
     exits(-1, NULL);
   }
