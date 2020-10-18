@@ -453,6 +453,8 @@ void tell(int fd, struct intr_frame *f)
 
 void close(int fd, struct intr_frame *f)
 {
+  if ((unsigned int) fd > 131)
+    exits(-1, NULL);
   struct file *cur = process_get_file(fd);
   struct thread *cur_thread = thread_current();
   int fd_v = fd; //file descriptor value
