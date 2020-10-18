@@ -93,6 +93,7 @@ void argument_stack(char **parse, int count, void **esp)
       for(j = strlen(parse[i]); j > -1; j--)
       {
         *esp -= 1;
+        printf("%d, %d\n", esp, *esp);
         **(char **)esp = parse[i][j];
         // debug
         //printf("%d, %d, %#x, %c\n", i, j, *esp, parse[i][j]);
