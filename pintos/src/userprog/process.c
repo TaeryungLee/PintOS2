@@ -11,37 +11,61 @@
 #include "filesys/directory.h"
 #include "filesys/file.h"
 #include "filesys/filesys.h"
-#include "userprog/syscall.h"
 #include "threads/flags.h"
 #include "threads/init.h"
 #include "threads/interrupt.h"
 #include "threads/palloc.h"
 #include "threads/thread.h"
 #include "threads/vaddr.h"
+#include "threads/malloc.h"
+
+struct list process_list;
+struct semaphore exec_sema;
 
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
-void argument_stack(char **parse, int count, void **esp);
-int process_add_file(struct file *f);
-struct file *process_get_file(int fd);
-void process_close_file(int fd);
 
+int free_process(struct process* target_process){
+  int exit_code = target_process->exit_code;
+  list_remove(&target_process->elem);
+  //free(target_process->process_name);
+  palloc_free_page(target_process);
+  return exit_code;
+}
+
+void processsys_init() {
+  list_init(&process_list);
+  //exec_sema = malloc(sizeof(struct semaphore));
+  sema_init(&exec_sema, 0);
+}
+
+struct process* get_process_by_pid(tid_t pid){
+  struct list_elem *e;
+  struct process *target = NULL;
+  for (e = list_begin(&process_list); e != list_tail(&process_list); e = list_next(e))
+  {
+    tid_t pid_curr = list_entry(e, struct process, elem)->pid;
+    if (pid_curr == pid){
+      target = list_entry(e, struct process, elem);
+      break;
+    }
+  }
+  return target;
+}
+
+struct process* get_current_process(void){
+  tid_t pid = thread_current()->tid;
+  return get_process_by_pid(pid);
+}
 /* Starts a new thread running a user program loaded from
    FILENAME.  The new thread may be scheduled (and may even exit)
    before process_execute() returns.  Returns the new process's
    thread id, or TID_ERROR if the thread cannot be created. */
-   /*Modified 2.1*/
 tid_t
 process_execute (const char *file_name) 
 {
   char *fn_copy;
   tid_t tid;
-
-  char program[64];
-  int file_name_length = strlen(file_name)+1;
-  char *save_ptr=NULL;
-  char *token;
-  struct list_elem* e;
 
   /* Make a copy of FILE_NAME.
      Otherwise there's a race between the caller and load(). */
@@ -49,154 +73,107 @@ process_execute (const char *file_name)
   if (fn_copy == NULL)
     return TID_ERROR;
   strlcpy (fn_copy, file_name, PGSIZE);
-  
-  strlcpy(program, file_name, file_name_length); //modified
-  token = strtok_r(program, " ", &save_ptr); //tokenize
-
-  if (filesys_open(token) == NULL)
-    return -1;
-
-  /* Create a new thread to execute FILE_NAME. */
-  tid = thread_create (token, PRI_DEFAULT, start_process, fn_copy);
-  if (tid == TID_ERROR)
+  tid = thread_create (file_name, PRI_DEFAULT, start_process, fn_copy);
+  if (tid == TID_ERROR) {
     palloc_free_page (fn_copy);
-
-  struct thread *child = get_child(tid);
-
-  //if (child->exit_status == -1)
-  //{
-  //  process_wait(tid);
-  //}
-  
-  for (e = list_begin(&thread_current()->children); e != list_end(&thread_current()->children); e = list_next(e))
-  {
-    struct thread *iter = list_entry(e, struct thread, child_elem);
-    if (iter->exit_status == -1)
-      process_wait(tid);
+    //sema_up(&exec_sema);
+  } else {
+    //sema_down(&exec_sema);
+    struct process* new_process = palloc_get_page(PAL_ZERO);
+    if(new_process == NULL){
+      sema_up(&exec_sema);
+      return -1;
+    }
+    list_push_back(&process_list, &new_process->elem);
+    new_process->pid = tid;
+    new_process->parent_pid = thread_current()->tid;
+    sema_init(&new_process->exec_sema, 0);
+    list_init(&new_process->fds);
+    sema_up(&exec_sema);
+    sema_down(&new_process->exec_sema);
   }
+  /*sema_down(&exec_sema);
+  struct process *new_process = get_process_by_pid(tid);
+  while(new_process == NULL){
+    new_process = get_process_by_pid(tid);
+  }
+  sema_down(&new_process->exec_sema);*/
+  //free(exec_sema);
+  //exec_sema = old_sema; //sema_init(&exec_sema, sema_old_val);
 
+  //printf("returning tid %d\n", tid);
+  
   return tid;
-  //free(program);
 }
 
-/* Modified 2.1 */
-void argument_stack(char **parse, int count, void **esp)
-  {
-    int arg_addr[count-1]; // argv의 주소값을 저장할 변수
-
-    if (parse == NULL)
-    {
-      return;
-    }
-    /*argument push*/
-    int i, j;
-    for(i = count-1; i > -1; i--)
-    {
-      for(j = strlen(parse[i]); j > -1; j--)
-      {
-        *esp -= 1;
-        **(char **)esp = parse[i][j];
-        // debug
-        //printf("%d, %d, %#x, %c\n", i, j, *esp, parse[i][j]);
-        //hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
-      }
-      arg_addr[i] = *esp;/* esp현재위치를 arg_addr에 저장*/
-    }
-
-    // debug
-    //hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
-
-    /* word-align */
-    int addr = (- (int) *esp)%4;
-    for(i=0; i < ( (addr + (2*(addr%2))) %4 ); i++)
-    {
-      *esp -= 1;
-      *(char *)(*esp) = 0;
-    }
-
-    // argv[argc] = NULL
-    *esp -= 4;
-    *(int *)(*esp) = 0;
-
-    // debug
-    //hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
-
-    /* argv element addr push */
-    for(i=count-1; i >-1; i--)
-    {
-      *esp -=4;
-      *(int *)(*esp) = (int)arg_addr[i]; /*arg_addr에 저장된 주소값을 현재 esp의 값으로 저장*/
-    }
-
-    // argv addr push
-    int argv_addr = *esp;
-    *esp-=4;
-    *(int *) *esp = argv_addr;
-
-    // debug
-    //hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
-
-    /* argc push */
-    *esp -= 4;
-    *(int *)(*esp) = count;
-
-    /*fake address push */
-    *esp -= 4;
-    *(int*)(*esp) = 0;
-  }
-  
-/* A thread function that loads a user process and starts it
+/* A thread function that loads a user process and makes it start
    running. */
-/* Modified 2.1 */
 static void
-start_process (void *file_name_)
+start_process (void *f_name)
 {
-  char *file_name = file_name_;
+  sema_down(&exec_sema);
+
+  char *file_name = f_name;
   struct intr_frame if_;
   bool success;
-  char *save_ptr=NULL;
-  char *token;
-  int count = 0;
-  char *parse[128];
-  char program[64];
-  int file_name_length = strlen(file_name)+1;
-
-  // Modified 2.3
-  struct thread *new = thread_current();
-
-  strlcpy (program, file_name, file_name_length);
-  
-  for(token = strtok_r(program, " ", &save_ptr); token != NULL; token = strtok_r(NULL, " ", &save_ptr))
+  struct process *current_process = get_current_process();
+  if (current_process == NULL)
   {
-    parse[count] = token;
-    count ++;
+    palloc_free_page(file_name);
+    thread_exit();
   }
-
   /* Initialize interrupt frame and load executable. */
-  memset (&if_, 0, sizeof if_);
+  memset(&if_, 0, sizeof if_);
   if_.gs = if_.fs = if_.es = if_.ds = if_.ss = SEL_UDSEG;
   if_.cs = SEL_UCSEG;
   if_.eflags = FLAG_IF | FLAG_MBS;
-  success = load (parse[0], &if_.eip, &if_.esp);
-
-  /* If load failed, quit. */
-  if (!success)
+  success = load(file_name, &if_.eip, &if_.esp);
+  //char *save_ptr;
+  //char* fname = strtok_r(file_name, " ", &save_ptr);
+  //int fnamelen = strlen(fname);
+  //current_process->process_name = PHYS_BASE - (fnamelen + 1);
+  /*char *process_name = palloc_get_page(PAL_ZERO); //malloc(strlen(file_name) +1);
+  if (process_name == NULL)
   {
-    palloc_free_page(file_name);
-    sema_up(&new->load_sema);
-    new->is_loaded = -1;
-    exits(-1, NULL);
+    success = false;
   }
   else
   {
-    new->is_loaded = 1;
-    argument_stack(parse, count, &if_.esp);
-    sema_up(&new->load_sema);
-
-    //hex_dump(if_.esp, if_.esp, PHYS_BASE - if_.esp, true);
-
-    palloc_free_page (file_name);
+    strlcpy(process_name, fname, strlen(fname) + 1);
+    current_process->process_name = process_name;
+  }*/
+  /* If load failed, quit. */
+  palloc_free_page(file_name);
+  if (!success)
+  {
+    current_process->exit_code = -1;
+    sema_up(&current_process->exec_sema);
+    //list_remove(&new_process->elem);
+    thread_exit();
   }
+  // If load was successful, set up struct process
+
+  sema_init(&current_process->exit_sema, 0);
+
+  current_process->lastfd = 2;
+
+  current_process->thread = thread_current();
+  char *fname = current_process->process_name;
+  current_process->execfile = filesys_open(fname);
+  if (current_process->execfile != NULL)
+  {
+    file_deny_write(current_process->execfile);
+  }
+  else
+  {
+    current_process->exit_code = -1;
+    sema_up(&current_process->exec_sema);
+    thread_exit();
+  }
+
+  //sema_up(&thread_current()->exec_sema);
+  sema_up(&current_process->exec_sema);
+  //printf("loading completed\n");
 
 
   /* Start the user process by simulating a return from an
@@ -205,45 +182,12 @@ start_process (void *file_name_)
      arguments on the stack in the form of a `struct intr_frame',
      we just point the stack pointer (%esp) to our stack frame
      and jump to it. */
-  asm volatile ("movl %0, %%esp; jmp intr_exit" : : "g" (&if_) : "memory");
+  asm volatile("movl %0, %%esp; jmp intr_exit"
+               :
+               : "g"(&if_)
+               : "memory");
   NOT_REACHED ();
-
-  free(parse);
 }
-
-/*Modified 2.4 */
-int process_add_file(struct file *f)
-{ 
-  struct thread *cur = thread_current();
-  int next = cur->fd_next;
-
-  if (cur->files[next] != NULL)
-    return -1;
-
-  cur->files[next] = f;
-  cur->fd_next ++;
-  return next;
-}
-
-/*Modified 2.4*/
-struct file *process_get_file(int fd)
-{
-  struct thread *cur = thread_current();
-  return cur->files[fd];
-}
-
-/*Modified 2.4*/
-void process_close_file(int fd)
-{
-  struct thread *cur = thread_current();
-  struct file *close = process_get_file(fd);
-  if (close != NULL)
-  {
-    file_close(close);
-    cur->files[fd] = NULL;
-  }
-}
-
 
 /* Waits for thread TID to die and returns its exit status.  If
    it was terminated by the kernel (i.e. killed due to an
@@ -254,53 +198,108 @@ void process_close_file(int fd)
 
    This function will be implemented in problem 2-2.  For now, it
    does nothing. */
-// Modified 2.3
 int
 process_wait (tid_t child_tid) 
 {
-  struct thread *child = get_child(child_tid);
-  if (child == NULL)
+
+  /*for (;;){
+    continue;
+  }*/
+  //return -1;
+  struct process *target_process = get_process_by_pid(child_tid);
+  if(target_process == NULL){
+    //printf("target process does not exist\n");
     return -1;
-
-  sema_down(&child->exit_sema);
-
-  int exit_status = child->exit_status;
-  remove_child(child);
-  return exit_status;
+  } else if(target_process->parent_pid != thread_current()->tid){
+    //printf("not waiting a child\n");
+    return -1;
+  } else if(!list_empty(&target_process->exit_sema.waiters)){
+    //printf("someone is already waiting\n");
+    return -1;
+  } else {
+    sema_down(&target_process->exit_sema);
+    //list_remove(&target_process->elem);
+    int exit_code = free_process(target_process);
+    //printf("exit code %d\n", exit_code);
+    return exit_code;
+  }
 }
 
 /* Free the current process's resources. */
 void
 process_exit (void)
 {
-  struct thread *cur = thread_current ();
+  struct thread *curr = thread_current ();
+  struct process *current_process = get_current_process();
+  if(current_process == NULL){
+    goto pd_destroy;
+  }
   uint32_t *pd;
 
+  if (current_process->thread != NULL)
+  {
+    // close all fd
+    if (current_process->execfile != NULL)
+    {
+      file_close(current_process->execfile);
+    }
+    //printf("pid %d \n", current_process->pid);
+    while (!list_empty(&current_process->fds))
+    {
+      //enum intr_level old_level = intr_disable();
+      //printf("begin %x, end %x\n", list_begin(&current_process->fds), list_end(&current_process->fds));
+      //printf("list_empty %d\n", !list_empty(&current_process->fds));
+      //printf("last fd num is %d\n", current_process->lastfd);
+
+      struct list_elem *e = list_pop_front(&current_process->fds);
+      //printf("removed %x\n", e);
+      struct fd *close_fd = list_entry(e, struct fd, elem);
+      file_close(close_fd->file);
+      free(close_fd);
+      //intr_set_level(old_level);
+    }
+    struct process *child = PHYS_BASE;
+    while(true){
+      child = NULL;
+      struct list_elem *e;
+      for (e = list_begin(&process_list); e != list_end(&process_list); e = list_next(e))
+      {
+        if (list_entry(e, struct process, elem)->parent_pid == current_process->pid)
+        {
+          child = list_entry(list_remove(e), struct process, elem);
+          break;
+        }
+      }
+      if (child == NULL){
+        break;
+      }
+      if (child->exit_sema.value == 1)
+      {
+        free_process(child);
+      }
+    }
+    struct list_elem *e;
+    bool orphaned = true;
+    if(current_process->parent_pid == 1){
+      orphaned = false;
+    }
+    for (e = list_begin(&process_list); e != list_tail(&process_list); e = list_next(e)){
+      if(list_entry(e, struct process, elem)->pid == current_process->parent_pid){
+        orphaned = false;
+        break;
+      }
+    }
+    sema_up(&current_process->exit_sema);
+    printf("%s: exit(%d)\n", current_process->process_name, current_process->exit_code);
+    if(orphaned){
+      //list_remove(&current_process->elem);
+      free_process(current_process);
+    }
+  } 
+  pd_destroy:
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
-
-  struct list_elem *e;
-  // Modified debug: multi-oom
-  for (e = list_begin (&cur->children); e != list_end (&cur->children); e = list_next (e))
-  {
-    struct thread *iter = list_entry(e, struct thread, child_elem);
-    palloc_free_page(iter);
-  }
-  // Modified 2.4
-  for (int i = 2; i < cur->fd_next; i++)
-  {
-    process_close_file(i);
-  }
-
-  // If orphan, remove itself
-  if (cur->parent->is_exited)
-    palloc_free_page(cur);
-
-  // Modified 2.3
-  cur->is_exited = 1;
-  sema_up(&cur->exit_sema);
-
-  pd = cur->pagedir;
+  pd = curr->pagedir;
   if (pd != NULL) 
     {
       /* Correct ordering here is crucial.  We must set
@@ -310,7 +309,7 @@ process_exit (void)
          directory before destroying the process's page
          directory, or our active page directory will be one
          that's been freed (and cleared). */
-      cur->pagedir = NULL;
+      curr->pagedir = NULL;
       pagedir_activate (NULL);
       pagedir_destroy (pd);
     }
@@ -414,15 +413,28 @@ load (const char *file_name, void (**eip) (void), void **esp)
   off_t file_ofs;
   bool success = false;
   int i;
-
+  char **stack_addresses = NULL;
+  char *filename_parse_temp = NULL;
   /* Allocate and activate page directory. */
   t->pagedir = pagedir_create ();
   if (t->pagedir == NULL) 
     goto done;
   process_activate ();
 
+  /* Parse the filename. */
+  filename_parse_temp = palloc_get_page(PAL_ZERO);
+  if (filename_parse_temp == NULL){
+    goto done;
+  }
+  strlcpy(filename_parse_temp, file_name, PGSIZE);
+  char *token;
+  char *save_ptr;
+  token = strtok_r(filename_parse_temp, " ", &save_ptr);
+  char *fname = malloc(strlen(token) + 1);
+  strlcpy(fname, token, strlen(token) + 1);
   /* Open executable file. */
-  file = filesys_open (file_name);
+  file = filesys_open (fname);
+  free(fname);
   if (file == NULL) 
     {
       printf ("load: %s: open failed\n", file_name);
@@ -504,15 +516,79 @@ load (const char *file_name, void (**eip) (void), void **esp)
   /* Set up stack. */
   if (!setup_stack (esp))
     goto done;
+  
+  /* Stack will be available for arguments after setup_stack. */
+  stack_addresses = (char**)palloc_get_page(PAL_ZERO);
+  if (stack_addresses == NULL){
+    goto done;
+  }
+  int argc = 0;
+  int total_size = 12;
+  //tokenizing command line
+  while(token != NULL){
+    int length = strlen(token) + 1;
+    *esp = (char*)*esp - length;
+    strlcpy((char *)*esp, token, length);
+    stack_addresses[argc] = (char*)*esp;
+    argc++;
+    total_size += length + 4;
+    if(total_size >= PGSIZE){
+      break; // use arguments within the page size
+    }
+    token = strtok_r(NULL, " ", &save_ptr);
+  }
+  //word-align
+  uint32_t alignment = (uint32_t)*esp % 4;
+  *esp = (char*)*esp - alignment;
+  memset(*esp, 0, alignment);
+  //Push the addresses of tokens one by one to the stack
 
+  int j = 0;
+  for (j = argc; j >= 0; j--){
+    *esp = (char *)*esp - sizeof(char*);
+    *(char **)(*esp) = stack_addresses[j];
+    //printf("stack_addresses[%d]:%x \n", j, stack_addresses[j]);
+  }
+  //printf("%x \n", *esp);
+
+  // argv
+  char **argv = (char**) *esp;
+  *esp = (char *)*esp - sizeof(char*);
+  *(char ***)(*esp) = argv;
+  //printf("after argv: %x \n", *esp);
+
+  // argc
+  *esp = (char*)(*esp) - sizeof(int);
+  *(int *)(*esp) = argc;
+  //printf("after argc: %x \n", *esp);
+
+  //fake return address
+  *esp = (char*)(*esp) - sizeof(int);
+  *(int *)(*esp) = 0;
+  //printf("fake return addr pushed:%x \n", *esp);
+  int execnamelen = strlen(stack_addresses[0]) + 1;
+  char *execname = malloc(execnamelen);
+  strlcpy(execname, stack_addresses[0], execnamelen);
+  get_current_process()->process_name = execname;
+  //printf("%x\n", *esp);
+  //hex_dump(*esp, *esp, 64, true);
+  //printf("Stack setup done\n");
   /* Start address. */
-  *eip = (void (*) (void)) ehdr.e_entry;
+  *eip = (void (*)(void))ehdr.e_entry;
+  //printf("%x \n", *eip);
 
   success = true;
 
  done:
   /* We arrive here whether the load is successful or not. */
-  file_close (file);
+  if(filename_parse_temp != NULL)
+    palloc_free_page(filename_parse_temp);
+  if(stack_addresses != NULL)
+    palloc_free_page(stack_addresses);
+  //get_current_process()->execfile = file;
+  //file_deny_write(file);
+  file_close(file);
+  //printf("esp after load %x\n", *esp);
   return success;
 }
 
@@ -590,7 +666,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
   file_seek (file, ofs);
   while (read_bytes > 0 || zero_bytes > 0) 
     {
-      /* Calculate how to fill this page.
+      /* Do calculate how to fill this page.
          We will read PAGE_READ_BYTES bytes from FILE
          and zero the final PAGE_ZERO_BYTES bytes. */
       size_t page_read_bytes = read_bytes < PGSIZE ? read_bytes : PGSIZE;

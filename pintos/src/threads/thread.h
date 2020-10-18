@@ -3,8 +3,6 @@
 
 #include <debug.h>
 #include <list.h>
-#include "threads/synch.h"
-#include "filesys/file.h"
 #include <stdint.h>
 
 /* States in a thread's life cycle. */
@@ -90,7 +88,6 @@ struct thread
     char name[16];                      /* Name (for debugging purposes). */
     uint8_t *stack;                     /* Saved stack pointer. */
     int priority;                       /* Priority. */
-    struct list_elem allelem;           /* List element for all threads list. */
 
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */
@@ -98,28 +95,6 @@ struct thread
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
     uint32_t *pagedir;                  /* Page directory. */
-
-    // Modified 2.3
-    struct thread *parent;              // parent thread
-    struct list children;               // list of children
-    struct list_elem child_elem;        // list element used for children list
-
-    struct semaphore exit_sema;         // semaphore used in wait
-    struct semaphore load_sema;         // semaphore used in load
-
-    int exit_status;                    // exit status
-    int is_exited;                      // 1 if exited
-    int is_loaded;                      // 1 if loaded
-
-    // Modified 2.4
-    struct file* files[131];             // list of files
-    int fd_next;                        // next file descriptor
-
-    // struct semaphore rw_sema;           // semaphore used in read/write
-
-    // Modified 2.5
-    //struct file *exec_file;
-
 #endif
 
     /* Owned by thread.c. */
@@ -150,10 +125,6 @@ const char *thread_name (void);
 void thread_exit (void) NO_RETURN;
 void thread_yield (void);
 
-/* Performs some operation on thread t, given auxiliary data AUX. */
-typedef void thread_action_func (struct thread *t, void *aux);
-void thread_foreach (thread_action_func *, void *);
-
 int thread_get_priority (void);
 void thread_set_priority (int);
 
@@ -161,10 +132,5 @@ int thread_get_nice (void);
 void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
-
-// Modified 2.3
-void *remove_child (struct thread *child);
-struct thread *get_child (int tid);
-
 
 #endif /* threads/thread.h */
