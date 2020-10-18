@@ -193,19 +193,20 @@ int process_add_file(struct file *f)
   struct thread *cur = thread_current();
   int next = cur->fd_next;
 
-  if (cur->files[next - 1] != NULL)
+  if (cur->files[next - 2] != NULL)
     return -1;
 
-  cur->files[next - 1] = f;
+  cur->files[next - 2] = f;
   cur->fd_next ++;
 
-  return next + 1;
+  return next;
 }
 
 /*Modified 2.4*/
 struct file *process_get_file(int fd)
 {
   struct thread *cur = thread_current();
+
   return cur->files[fd - 2];
 }
 
@@ -214,7 +215,7 @@ void process_close_file(int fd)
 {
   struct thread *cur = thread_current();
   struct file *close = process_get_file(fd);
-  printf("file obtained %d\n", fd);
+  printf("file obtained %d, %d\n", fd, close);
   if (close != NULL)
   {
     file_close(close);
@@ -241,15 +242,12 @@ process_wait (tid_t child_tid)
   struct thread *child = get_child(child_tid);
   if (child == NULL)
     return -1;
-  printf("child tid is %d\n", child->tid);
 
-
-  printf("now start to wait for child\n", child->tid);
   sema_down(&child->exit_sema);
-  printf("child exited\n");
+
   int exit_status = child->exit_status;
   remove_child(child);
-  printf("child removed, exit stat: %d\n", exit_status);
+
   if (exit_status < 0)
     return exit_status;
   return exit_status;
@@ -269,16 +267,11 @@ process_exit (void)
   cur->is_exited = 1;
   sema_up(&cur->exit_sema);
 
-  printf("closing file\n");
-
   // Modified 2.4
   for (int i = 0; i < cur->fd_next - 2; i++)
   {
-    printf("closing file %d\n", i);
     process_close_file(i);
-    printf("done closing file %d\n", i);
   }
-  printf("end closing file\n");
 
   pd = cur->pagedir;
   if (pd != NULL) 
