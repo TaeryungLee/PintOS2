@@ -243,7 +243,7 @@ process_wait (tid_t child_tid)
   sema_down(&child->exit_sema);
 
   remove_child(child);
-
+  printf("exit stat: %d\n", exit_status);
   if (exit_status < 0)
     return exit_status;
   return exit_status;
@@ -268,7 +268,7 @@ process_exit (void)
   {
     process_close_file(i);
   }
-  
+
   pd = cur->pagedir;
   if (pd != NULL) 
     {

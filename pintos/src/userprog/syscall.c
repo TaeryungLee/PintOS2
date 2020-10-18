@@ -331,17 +331,14 @@ void open(char *name, struct intr_frame *f)
   check(name, sizeof(name));
   lock_acquire(&memory);
   new = filesys_open(name);
-  printf("filename: %s\n", name);
   if(new != NULL)
   {
     int new_fd = process_add_file(new);
-    printf("fd added\n");
     f->eax = new_fd;
   }
   else
   {
     f->eax = -1;
-    printf("Fucked\n");
   }
   lock_release(&memory);
 }
