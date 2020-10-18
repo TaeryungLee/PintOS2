@@ -216,6 +216,7 @@ void process_close_file(int fd)
   if (close != NULL)
   {
     file_close(close);
+    palloc_free_page(close);
     cur->files[fd] = NULL;
   }
 }
