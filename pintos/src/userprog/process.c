@@ -218,6 +218,7 @@ void process_close_file(int fd)
   if (close != NULL)
   {
     file_close(close);
+    printf("fileclose called\n");
     cur->files[fd - 2] = NULL;
   }
   printf("file closed\n");
