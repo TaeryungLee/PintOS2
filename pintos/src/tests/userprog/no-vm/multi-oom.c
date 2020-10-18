@@ -132,6 +132,7 @@ main (int argc, char *argv[])
       if (n > EXPECTED_DEPTH_TO_PASS/2)
         {
           child_pid = spawn_child (n + 1, CRASH);
+          msg("%d", child_pid);
           if (child_pid != -1)
             {
               if (wait (child_pid) != -1)
