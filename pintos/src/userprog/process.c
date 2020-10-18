@@ -215,6 +215,7 @@ void process_close_file(int fd)
   struct file *close = process_get_file(fd);
   if (close != NULL)
   {
+    file_allow_write(close);
     file_close(close);
     cur->files[fd - 2] = NULL;
   }
