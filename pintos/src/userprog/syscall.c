@@ -401,6 +401,8 @@ int
 write(int fd, void* buffer, int size, struct intr_frame *f)
 {
 	check(buffer, sizeof(buffer));
+  if ((unsigned int) fd > 131)
+    exits(-1, NULL);
   lock_acquire(&memory);
   if(fd == 1)
   {
