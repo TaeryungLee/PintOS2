@@ -269,7 +269,7 @@ process_exit (void)
   sema_up(&cur->exit_sema);
 
   // Modified 2.4
-  for (int i = 0; i < cur->fd_next - 2; i++)
+  for (int i = 2; i < cur->fd_next; i++)
   {
     process_close_file(i);
   }
