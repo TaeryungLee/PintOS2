@@ -242,9 +242,6 @@ process_wait (tid_t child_tid)
 
   int exit_status = child->exit_status;
   remove_child(child);
-
-  if (exit_status < 0)
-    return exit_status;
   return exit_status;
 }
 
@@ -265,16 +262,19 @@ process_exit (void)
     struct thread *iter = list_entry(e, struct thread, child_elem);
     palloc_free_page(iter);
   }
-
-  // Modified 2.3
-  cur->is_exited = 1;
-  sema_up(&cur->exit_sema);
-
   // Modified 2.4
   for (int i = 2; i < cur->fd_next; i++)
   {
     process_close_file(i);
   }
+
+  // If orphan, remove itself
+  if (cur->parent->is_exited)
+    palloc_free_page(cur);
+
+  // Modified 2.3
+  cur->is_exited = 1;
+  sema_up(&cur->exit_sema);
 
   pd = cur->pagedir;
   if (pd != NULL) 
