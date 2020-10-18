@@ -199,7 +199,7 @@ int process_add_file(struct file *f)
   cur->files[next] = f;
   cur->fd_next ++;
 
-  printf("file put, %d, %d", fd, f);
+  printf("file put, %d, %d", next, f);
   return next;
 }
 
