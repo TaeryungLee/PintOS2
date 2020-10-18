@@ -111,7 +111,7 @@ main (int argc, char *argv[])
   bool is_at_root = (n == 0);
   if (is_at_root)
     msg ("begin");
-  msg("running\n");
+
   /* If -k is passed, crash this process. */
   if (argc > 2 && !strcmp(argv[2], "-k"))
     {
