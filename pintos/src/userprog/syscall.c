@@ -400,7 +400,7 @@ int read(int fd, void* buffer, int size, struct intr_frame *f)
 int
 write(int fd, void* buffer, int size, struct intr_frame *f)
 {
-	check(buffer, size);
+	check(buffer, sizeof(buffer));
   lock_acquire(&memory);
   if(fd == 1)
   {
