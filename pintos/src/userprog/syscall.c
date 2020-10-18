@@ -37,7 +37,7 @@ void create(char *name, size_t size, struct intr_frame *f);
 void remove(char *name, struct intr_frame *f);
 void open(char *name, struct intr_frame *f);
 void filesize(int fd, struct intr_frame *f);
-void read(int fd, void* buffer, int size, struct intr_frame *f);
+int read(int fd, void* buffer, int size, struct intr_frame *f);
 int write(int fd, void* buffer, int size, struct intr_frame *f);
 void seek(int fd, int count, struct intr_frame *f);
 void tell(int fd, struct intr_frame *f);
@@ -460,7 +460,7 @@ void close(int fd, struct intr_frame *f)
   if(cur != NULL)
   {
     file_close(cur);
-    cur_thread-> fd[fd_v] = NULL;
+    cur_thread->files[fd_v] = NULL;
   }
 }
 
