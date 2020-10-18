@@ -11,6 +11,7 @@
 #include "filesys/directory.h"
 #include "filesys/file.h"
 #include "filesys/filesys.h"
+#include "filesys/syscall.h"
 #include "threads/flags.h"
 #include "threads/init.h"
 #include "threads/interrupt.h"
@@ -177,11 +178,14 @@ start_process (void *file_name_)
   if_.cs = SEL_UCSEG;
   if_.eflags = FLAG_IF | FLAG_MBS;
   success = load (parse[0], &if_.eip, &if_.esp);
-
+  
+  /* If load failed, quit. */
   if (!success)
   {
+    palloc_free_page(file_name);
+    sema_up(&new->load_sema);
     new->is_loaded = -1;
-    thread_exit ();
+    exits(-1, NULL);
   }
   else
     new->is_loaded = 1;
@@ -190,7 +194,7 @@ start_process (void *file_name_)
   sema_up(&new->load_sema);
 
   //hex_dump(if_.esp, if_.esp, PHYS_BASE - if_.esp, true);
-  /* If load failed, quit. */
+
   palloc_free_page (file_name);
 
 
