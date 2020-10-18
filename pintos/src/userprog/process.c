@@ -271,7 +271,9 @@ process_exit (void)
   // Modified 2.4
   for (int i = 0; i < cur->fd_next - 2; i++)
   {
+    printf("closing file %d\n", i);
     process_close_file(i);
+    printf("done closing file %d\n", i);
   }
   printf("end closing file\n");
 
