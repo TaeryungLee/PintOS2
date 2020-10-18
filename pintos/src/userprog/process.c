@@ -58,13 +58,21 @@ process_execute (const char *file_name)
   /* Create a new thread to execute FILE_NAME. */
   tid = thread_create (token, PRI_DEFAULT, start_process, fn_copy);
   if (tid == TID_ERROR)
-    palloc_free_page (fn_copy); 
-  for (e = list_begin(&thread_current()->children); e != list_end(&thread_current()->children); e = list_next(e))
+    palloc_free_page (fn_copy);
+
+  struct thread *child = get_child(tid);
+
+  if (child->exit_status == -1)
   {
-    struct thread *iter = list_entry(e, struct thread, child_elem);
-    if (iter->exit_status == -1)
-      return process_wait(tid);
+    sema_up(&child->exit_sema);
+    process_wait(tid);
   }
+  //for (e = list_begin(&thread_current()->children); e != list_end(&thread_current()->children); e = list_next(e))
+  //{
+  //  struct thread *iter = list_entry(e, struct thread, child_elem);
+  //  if (iter->exit_status == -1)
+  //    return process_wait(tid);
+  //}
   return tid;
   //free(program);
 }
