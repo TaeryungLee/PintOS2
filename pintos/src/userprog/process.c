@@ -238,6 +238,7 @@ process_wait (tid_t child_tid)
   struct thread *child = get_child(child_tid);
   if (child == NULL)
     return -1;
+  printf("child tid is %d\n", child->tid);
 
   int exit_status = child->exit_status;
   sema_down(&child->exit_sema);
