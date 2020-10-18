@@ -2,6 +2,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include "userprog/gdt.h"
+#include "userprog/syscall.h"
 #include "threads/interrupt.h"
 #include "threads/thread.h"
 #include "threads/vaddr.h"
@@ -152,7 +153,7 @@ page_fault (struct intr_frame *f)
   if (user && !(is_user_vaddr (fault_addr)))
   {
     //printf ("fault_addr = %d\nPHYS_BASE = %d\n", (int)fault_addr, (int) PHYS_BASE);
-    exit (-1);
+    exits(-1, NULL);
   }
 
   /* To implement virtual memory, delete the rest of the function
