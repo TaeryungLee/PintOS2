@@ -152,7 +152,10 @@ page_fault (struct intr_frame *f)
 
   if (user && !(is_user_vaddr (fault_addr)))
   {
-    //printf ("fault_addr = %d\nPHYS_BASE = %d\n", (int)fault_addr, (int) PHYS_BASE);
+    exits(-1, NULL);
+  }
+  if(not_present==true || user != true || is_kernel_vaddr(fault_addr))
+  {
     exits(-1, NULL);
   }
 
