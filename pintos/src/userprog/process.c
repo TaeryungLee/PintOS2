@@ -48,7 +48,6 @@ process_execute (const char *file_name)
   fn_copy = palloc_get_page (0);
   if (fn_copy == NULL)
     return TID_ERROR;
-  printf("%s\n", file_name);
   strlcpy (fn_copy, file_name, PGSIZE);
   
   strlcpy(program, file_name, file_name_length); //modified
