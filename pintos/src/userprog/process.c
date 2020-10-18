@@ -67,14 +67,14 @@ process_execute (const char *file_name)
   //{
   //  process_wait(tid);
   //}
-  /*
+  
   for (e = list_begin(&thread_current()->children); e != list_end(&thread_current()->children); e = list_next(e))
   {
     struct thread *iter = list_entry(e, struct thread, child_elem);
     if (iter->exit_status == -1)
-      return process_wait(tid);
+      process_wait(tid);
   }
-  */
+
   return tid;
   //free(program);
 }
