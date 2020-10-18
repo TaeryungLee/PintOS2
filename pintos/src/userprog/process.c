@@ -64,7 +64,6 @@ process_execute (const char *file_name)
 
   if (child->exit_status == -1)
   {
-    sema_up(&child->exit_sema);
     process_wait(tid);
   }
   //for (e = list_begin(&thread_current()->children); e != list_end(&thread_current()->children); e = list_next(e))
