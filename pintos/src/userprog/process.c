@@ -199,7 +199,7 @@ int process_add_file(struct file *f)
   cur->files[next] = f;
   cur->fd_next ++;
 
-  printf("file put, %d, %d", next, f);
+  printf("file put, %d, %d, %d\n", next, f, cur->files[next]);
   return next;
 }
 
@@ -207,7 +207,7 @@ int process_add_file(struct file *f)
 struct file *process_get_file(int fd)
 {
   struct thread *cur = thread_current();
-  printf("getting file, %d, %d", fd, cur->files[fd]);
+  printf("getting file, %d, %d\n", fd, cur->files[fd]);
   return cur->files[fd];
 }
 
