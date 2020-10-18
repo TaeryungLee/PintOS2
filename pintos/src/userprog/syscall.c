@@ -380,6 +380,8 @@ int read(int fd, void* buffer, int size, struct intr_frame *f)
   }
   else
   {
+    if ((unsigned int) fd > 131)
+      exits(-1, NULL);
     struct file *cur = process_get_file(fd);
     int length = 0;
 
