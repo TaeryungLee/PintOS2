@@ -80,6 +80,7 @@ process_execute (const char *file_name)
 /* Modified 2.1 */
 void argument_stack(char **parse, int count, void **esp)
   {
+    printf("%d\n", *esp);
     int arg_addr[count-1]; // argv의 주소값을 저장할 변수
 
     if (parse == NULL)
