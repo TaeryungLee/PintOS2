@@ -333,10 +333,6 @@ void open(char *name, struct intr_frame *f)
   new = filesys_open(name);
   if(new != NULL)
   {
-    if (strcmp(thread_current()->name, new) == 0) 
-    {
-      file_deny_write(new);
-    }
     int new_fd = process_add_file(new);
     f->eax = new_fd;
   }
@@ -432,10 +428,6 @@ write(int fd, void* buffer, int size, struct intr_frame *f)
 
     else
     {
-      if (thread_current()->files[fd]->deny_write) 
-      {
-        file_deny_write(thread_current()->files[fd]);
-      }
       length = file_write(cur_file, buffer, size);
       lock_release(&memory);
       return length;
