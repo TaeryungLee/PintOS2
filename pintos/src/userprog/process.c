@@ -188,15 +188,15 @@ start_process (void *file_name_)
     exits(-1, NULL);
   }
   else
+  {
     new->is_loaded = 1;
+    argument_stack(parse, count, &if_.esp);
+    sema_up(&new->load_sema);
 
-  argument_stack(parse, count, &if_.esp);
-  sema_up(&new->load_sema);
+    //hex_dump(if_.esp, if_.esp, PHYS_BASE - if_.esp, true);
 
-  //hex_dump(if_.esp, if_.esp, PHYS_BASE - if_.esp, true);
-
-  palloc_free_page (file_name);
-
+    palloc_free_page (file_name);
+  }
 
 
   /* Start the user process by simulating a return from an

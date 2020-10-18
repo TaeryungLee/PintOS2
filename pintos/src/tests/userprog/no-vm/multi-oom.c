@@ -150,6 +150,7 @@ main (int argc, char *argv[])
 
       /* Else wait for child to report how deeply it was able to recurse. */
       int reached_depth = wait (child_pid);
+      msg("%d", reached_depth);
       if (reached_depth == -1)
         fail ("wait returned -1.");
 
