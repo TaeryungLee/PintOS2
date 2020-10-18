@@ -266,11 +266,14 @@ process_exit (void)
   cur->is_exited = 1;
   sema_up(&cur->exit_sema);
 
+  printf("closing file\n");
+
   // Modified 2.4
   for (int i = 0; i < cur->fd_next - 2; i++)
   {
     process_close_file(i);
   }
+  printf("end closing file\n");
 
   pd = cur->pagedir;
   if (pd != NULL) 
