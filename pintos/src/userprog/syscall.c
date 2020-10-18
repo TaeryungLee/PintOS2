@@ -333,7 +333,7 @@ void open(char *name, struct intr_frame *f)
   new = filesys_open(name);
   if(new != NULL)
   {
-    if (strcmp(thread_current()->name, new) == 0) 
+    if (strcmp(thread_current()->name, name) == 0) 
     {
       file_deny_write(new);
     }
