@@ -335,7 +335,6 @@ void open(char *name, struct intr_frame *f)
   {
     int new_fd = process_add_file(new);
     f->eax = new_fd;
-    printf("newfd: %d\n", new_fd);
   }
   else
   {

@@ -193,10 +193,10 @@ int process_add_file(struct file *f)
   struct thread *cur = thread_current();
   int next = cur->fd_next;
 
-  if (cur->files[next - 2] != NULL)
+  if (cur->files[next] != NULL)
     return -1;
 
-  cur->files[next - 2] = f;
+  cur->files[next] = f;
   cur->fd_next ++;
 
   return next;
@@ -207,7 +207,7 @@ struct file *process_get_file(int fd)
 {
   struct thread *cur = thread_current();
 
-  return cur->files[fd - 2];
+  return cur->files[fd];
 }
 
 /*Modified 2.4*/
