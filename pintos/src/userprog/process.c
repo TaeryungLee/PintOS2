@@ -216,7 +216,7 @@ void process_close_file(int fd)
   if (close != NULL)
   {
     file_close(close);
-    cur->files[fd - 2] = NULL;
+    cur->files[fd] = NULL;
   }
 }
 
@@ -409,7 +409,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
       printf ("load: %s: error loading executable\n", file_name);
       goto done; 
     }
-  
+
   /* Read program headers. */
   file_ofs = ehdr.e_phoff;
   for (i = 0; i < ehdr.e_phnum; i++) 
