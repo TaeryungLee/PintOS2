@@ -186,8 +186,6 @@ start_process (void *file_name_)
   {
     sema_up(&new->load_sema);
     palloc_free_page(file_name);
-    palloc_free_page(save_ptr);
-    palloc_free_page(token);
     palloc_free_page(parse);
     palloc_free_page(program);
     
