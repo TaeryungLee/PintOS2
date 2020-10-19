@@ -348,6 +348,7 @@ thread_exit (void)
     // Make able to remove every child process of current process
     sema_up(&iter->rm_sema);
   }
+  
   struct thread *cur = thread_current();
 
   // Parent awake
