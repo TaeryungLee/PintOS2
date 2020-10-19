@@ -335,7 +335,7 @@ thread_exit (void)
 #endif
 // Modified 2.3
 
-  struct thread *e;
+  struct list_elem *e;
   for (e = list_begin(&thread_current()->children);
        e != list_end(&thread_current()->children);
        e = list_next(e))
