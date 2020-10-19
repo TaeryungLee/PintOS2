@@ -207,6 +207,11 @@ thread_create (const char *name, int priority,
   // not loaded and exited
   t->is_loaded = 0;
   t->is_exited = 0;
+  // current thread is parent for new thread
+  // add parent
+  t->parent = running_thread();
+  // add to children list
+  list_push_back(&thread_current()->children, &t->child_elem);
 
   // Modified 2.4
   t->fd_next = 2;
@@ -532,11 +537,7 @@ init_thread (struct thread *t, const char *name, int priority)
 
   // Modified 2.3
   list_init(&t->children);
-  // current thread is parent for new thread
-  // add parent
-  //t->parent = running_thread();
-  // add to children list
-  list_push_back(&thread_current()->children, &t->child_elem);
+
 
   // semaphore initialized to 0
   sema_init(&t->exit_sema, 0);
