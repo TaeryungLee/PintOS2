@@ -24,8 +24,8 @@
 #include <random.h>
 #include "tests/lib.h"
 
-static const int EXPECTED_DEPTH_TO_PASS = 4;
-static const int EXPECTED_REPETITIONS = 3;
+static const int EXPECTED_DEPTH_TO_PASS = 30;
+static const int EXPECTED_REPETITIONS = 10;
 
 enum child_termination_mode { RECURSE, CRASH };
 
@@ -143,6 +143,7 @@ main (int argc, char *argv[])
 
       /* Now spawn the child that will recurse. */
       child_pid = spawn_child (n + 1, RECURSE);
+      msg("n is %d", n);
 
       /* If maximum depth is reached, return result. */
       if (child_pid == -1)
