@@ -186,7 +186,7 @@ start_process (void *file_name_)
     palloc_free_page(file_name);
     
     new->is_loaded = -1;
-    exits(-1, NULL);
+    thread_exit();
   }
   else
   {
