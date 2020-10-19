@@ -63,10 +63,9 @@ process_execute (const char *file_name)
 
   //struct thread *child = get_child(tid);
 
-  //if (child->exit_status == -1)
-  //{
-  //  process_wait(tid);
-  //}
+  if (child->exit_status == -1)
+    process_wait(tid);
+
   /*
   for (e = list_begin(&thread_current()->children); e != list_end(&thread_current()->children); e = list_next(e))
   {
