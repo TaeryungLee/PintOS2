@@ -183,19 +183,18 @@ start_process (void *file_name_)
   if (!success)
   {
     palloc_free_page(file_name);
-    sema_up(&new->load_sema);
+    sema_up(&new->parent->load_sema);
     new->is_loaded = -1;
-    //exits(-1, NULL);
+    exits(-1, NULL);
   }
   else
   {
+    palloc_free_page (file_name);
     new->is_loaded = 1;
     argument_stack(parse, count, &if_.esp);
-    sema_up(&new->load_sema);
+    sema_up(&new->parent->load_sema);
 
     //hex_dump(if_.esp, if_.esp, PHYS_BASE - if_.esp, true);
-
-    palloc_free_page (file_name);
   }
 
 
@@ -299,7 +298,7 @@ process_exit (void)
   if (cur->parent->is_exited)
     palloc_free_page(cur);
   */
-  
+
   // Modified 2.3
   cur->is_exited = 1;
   sema_up(&cur->exit_sema);
