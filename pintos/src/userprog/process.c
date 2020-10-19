@@ -192,6 +192,7 @@ start_process (void *file_name_)
   {
     sema_up(&new->load_sema);
     new->is_loaded = 1;
+    printf("reached\n");
     argument_stack(parse, count, &if_.esp);
     palloc_free_page (file_name);
     //hex_dump(if_.esp, if_.esp, PHYS_BASE - if_.esp, true);
