@@ -285,7 +285,6 @@ void
 exits(int exit_code, struct intr_frame *f)
 {
 	printf("%s: exit(%d)\n", thread_current()->name, exit_code);
-  hex_dump(PHYS_BASE - 0x10, PHYS_BASE - 0x10, 0x10, true);
 	thread_current()->exit_status = exit_code;
 	thread_exit();
 }
