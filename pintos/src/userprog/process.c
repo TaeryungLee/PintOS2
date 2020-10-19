@@ -178,7 +178,7 @@ start_process (void *file_name_)
   if_.cs = SEL_UCSEG;
   if_.eflags = FLAG_IF | FLAG_MBS;
   success = load (parse[0], &if_.eip, &if_.esp);
-
+  printf("reached2\n");
   /* If load failed, quit. */
   if (!success)
   {
