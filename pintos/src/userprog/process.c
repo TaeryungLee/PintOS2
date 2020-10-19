@@ -295,8 +295,11 @@ process_exit (void)
   }
 
   // If orphan, remove itself
+  
+  /*
   if (cur->parent->is_exited)
     palloc_free_page(cur);
+  */
 
   // Modified 2.3
   cur->is_exited = 1;
