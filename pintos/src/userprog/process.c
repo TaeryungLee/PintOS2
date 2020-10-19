@@ -291,7 +291,7 @@ process_exit (void)
     palloc_free_page(iter);
   }
   */
-  palloc_free_page(cur->files);
+  free(cur->files);
   // Modified 2.4
   for (int i = 2; i < cur->fd_next; i++)
   {
