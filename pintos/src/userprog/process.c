@@ -191,7 +191,7 @@ start_process (void *file_name_)
   else
   {
     palloc_free_page (file_name);
-    sema_up(&new->paretn->load_sema);
+    sema_up(&new->parent->load_sema);
     new->is_loaded = 1;
     argument_stack(parse, count, &if_.esp);
     //hex_dump(if_.esp, if_.esp, PHYS_BASE - if_.esp, true);
