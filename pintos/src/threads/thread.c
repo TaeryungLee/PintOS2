@@ -517,9 +517,9 @@ init_thread (struct thread *t, const char *name, int priority)
   list_init(&t->children);
   // current thread is parent for new thread
   // add parent
-  t->parent = thread_current();
+  t->parent = running_thread();
   // add to children list
-  list_push_back(&thread_current()->children, &t->child_elem);
+  list_push_back(&running_thread()->children, &t->child_elem);
 
   // semaphore initialized to 0
   sema_init(&t->exit_sema, 0);
