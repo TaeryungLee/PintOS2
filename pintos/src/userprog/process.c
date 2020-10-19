@@ -186,9 +186,6 @@ start_process (void *file_name_)
   {
     sema_up(&new->load_sema);
     palloc_free_page(file_name);
-    free(parse);
-    free(program);
-    
     new->is_loaded = -1;
     exits(-1, NULL);
   }
@@ -198,8 +195,6 @@ start_process (void *file_name_)
     new->is_loaded = 1;
     argument_stack(parse, count, &if_.esp);
     palloc_free_page(file_name);
-    free(parse);
-    free(program);
     //hex_dump(if_.esp, if_.esp, PHYS_BASE - if_.esp, true);
   }
 
@@ -295,7 +290,7 @@ process_exit (void)
     palloc_free_page(iter);
   }
   */
-  //free(cur->files);
+  palloc_free_page(&cur->files);
   // Modified 2.4
   for (int i = 2; i < cur->fd_next; i++)
   {
