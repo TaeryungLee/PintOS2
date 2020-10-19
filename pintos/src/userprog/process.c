@@ -279,7 +279,7 @@ process_exit (void)
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
 
-  struct list_elem *e;
+  //struct list_elem *e;
   // Modified debug: multi-oom
   /*
   for (e = list_begin (&cur->children); e != list_end (&cur->children); e = list_next (e))

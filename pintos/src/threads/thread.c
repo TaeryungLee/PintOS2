@@ -246,7 +246,6 @@ struct thread *get_child (int tid)
 void *remove_child (struct thread *child)
 {
   list_remove(&child->child_elem);
-  palloc_free_page(child);
 
   // this will be done in parent
   // palloc_free_page(child);
@@ -535,9 +534,9 @@ init_thread (struct thread *t, const char *name, int priority)
   list_init(&t->children);
   // current thread is parent for new thread
   // add parent
-  t->parent = running_thread();
+  //t->parent = running_thread();
   // add to children list
-  list_push_back(&running_thread()->children, &t->child_elem);
+  list_push_back(&thread_current()->children, &t->child_elem);
 
   // semaphore initialized to 0
   sema_init(&t->exit_sema, 0);
