@@ -209,7 +209,7 @@ thread_create (const char *name, int priority,
   t->is_exited = 0;
   // current thread is parent for new thread
   // add parent
-  t->parent = running_thread();
+  //t->parent = running_thread();
   // add to children list
   list_push_back(&thread_current()->children, &t->child_elem);
 

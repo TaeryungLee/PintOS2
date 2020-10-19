@@ -60,6 +60,7 @@ process_execute (const char *file_name)
   tid = thread_create (token, PRI_DEFAULT, start_process, fn_copy);
   struct thread *child = get_child(tid);
   sema_down(&child->load_sema);
+  
   if (tid == TID_ERROR)
     palloc_free_page (fn_copy);
 
