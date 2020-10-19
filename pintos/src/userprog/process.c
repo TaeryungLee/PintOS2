@@ -104,7 +104,7 @@ void argument_stack(char **parse, int count, void **esp)
     }
 
     // debug
-    //hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
+    hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
 
     /* word-align */
     int addr = (- (int) *esp)%4;
