@@ -203,6 +203,19 @@ thread_create (const char *name, int priority,
   sf->eip = switch_entry;
   sf->ebp = 0;
 
+  // Modified 2.3
+  // not loaded and exited
+  t->is_loaded = 0;
+  t->is_exited = 0;
+
+  // Modified 2.4
+  t->fd_next = 2;
+
+  for (int i = 0; i < 128; i++)
+  {
+    t->files[i] = NULL;
+  }
+
   // sema_init(&t->rw_sema, 1);
 
   /* Add to run queue. */
@@ -487,7 +500,7 @@ static void
 init_thread (struct thread *t, const char *name, int priority)
 {
   enum intr_level old_level;
-
+  old_level = intr_disable ();
   ASSERT (t != NULL);
   ASSERT (PRI_MIN <= priority && priority <= PRI_MAX);
   ASSERT (name != NULL);
@@ -498,33 +511,21 @@ init_thread (struct thread *t, const char *name, int priority)
   t->stack = (uint8_t *) t + PGSIZE;
   t->priority = priority;
   t->magic = THREAD_MAGIC;
-
-  old_level = intr_disable ();
   list_push_back (&all_list, &t->allelem);
+
   // Modified 2.3
   list_init(&t->children);
-  intr_set_level (old_level);
   // current thread is parent for new thread
-  struct thread *parent = thread_current();
   // add parent
-  t->parent = parent;
+  t->parent = thread_current();
   // add to children list
-  list_push_back(&parent->children, &t->child_elem);
-  // not loaded and exited
-  t->is_loaded = 0;
-  t->is_exited = 0;
+  list_push_back(&thread_current()->children, &t->child_elem);
+
   // semaphore initialized to 0
   sema_init(&t->exit_sema, 0);
   sema_init(&t->load_sema, 0);
 
-  // Modified 2.4
-  t->fd_next = 2;
-
-  for (int i = 0; i < 128; i++)
-  {
-    t->files[i] = NULL;
-  }
-
+  intr_set_level (old_level);
 }
 
 /* Allocates a SIZE-byte frame at the top of thread T's stack and
