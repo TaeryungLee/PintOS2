@@ -299,8 +299,8 @@ execs(char *file, struct intr_frame *f)
 	struct thread *new = get_child(tid);
 	sema_down(&new->load_sema);
 
-  if (new->is_loaded != 1)
-    return TID_ERROR;
+  //if (new->is_loaded != 1)
+  //  return TID_ERROR;
 	return tid;
 }
 
