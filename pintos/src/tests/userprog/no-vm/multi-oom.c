@@ -24,8 +24,8 @@
 #include <random.h>
 #include "tests/lib.h"
 
-static const int EXPECTED_DEPTH_TO_PASS = 30;
-static const int EXPECTED_REPETITIONS = 10;
+static const int EXPECTED_DEPTH_TO_PASS = 3;
+static const int EXPECTED_REPETITIONS = 2;
 
 enum child_termination_mode { RECURSE, CRASH };
 
