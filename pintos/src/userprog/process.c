@@ -58,7 +58,6 @@ process_execute (const char *file_name)
 
   /* Create a new thread to execute FILE_NAME. */
   tid = thread_create (token, PRI_DEFAULT, start_process, fn_copy);
-  sema_down(&thread_current()->load_sema);
   if (tid == TID_ERROR)
     palloc_free_page (fn_copy);
 
@@ -186,15 +185,17 @@ start_process (void *file_name_)
     palloc_free_page(file_name);
     sema_up(&new->parent->load_sema);
     new->is_loaded = -1;
-    exits(-1, NULL);
+    //exits(-1, NULL);
   }
   else
   {
-    palloc_free_page (file_name);
-    sema_up(&new->parent->load_sema);
     new->is_loaded = 1;
     argument_stack(parse, count, &if_.esp);
+    sema_up(&new->parent->load_sema);
+
     //hex_dump(if_.esp, if_.esp, PHYS_BASE - if_.esp, true);
+
+    palloc_free_page (file_name);
   }
 
 
@@ -294,7 +295,6 @@ process_exit (void)
   }
 
   // If orphan, remove itself
-
   /*
   if (cur->parent->is_exited)
     palloc_free_page(cur);
