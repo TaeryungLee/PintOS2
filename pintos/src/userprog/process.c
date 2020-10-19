@@ -68,14 +68,14 @@ process_execute (const char *file_name)
   //{
   //  process_wait(tid);
   //}
-  /*
+  
   for (e = list_begin(&thread_current()->children); e != list_end(&thread_current()->children); e = list_next(e))
   {
     struct thread *iter = list_entry(e, struct thread, child_elem);
     if (iter->exit_status == -1)
       process_wait(tid);
   }
-  */
+
   return tid;
   //free(program);
 }
@@ -184,19 +184,17 @@ start_process (void *file_name_)
   if (!success)
   {
     palloc_free_page(file_name);
-    sema_up(&new->load_sema);
+    sema_up(&new->parent->load_sema);
     new->is_loaded = -1;
     exits(-1, NULL);
   }
   else
   {
+    palloc_free_page (file_name);
+    sema_up(&new->paretn->load_sema);
     new->is_loaded = 1;
     argument_stack(parse, count, &if_.esp);
-    sema_up(&new->load_sema);
-
     //hex_dump(if_.esp, if_.esp, PHYS_BASE - if_.esp, true);
-
-    palloc_free_page (file_name);
   }
 
 
