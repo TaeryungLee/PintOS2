@@ -185,7 +185,7 @@ start_process (void *file_name_)
     palloc_free_page(file_name);
     sema_up(&new->load_sema);
     new->is_loaded = -1;
-    exits(-1, NULL);
+    //exits(-1, NULL);
   }
   else
   {
