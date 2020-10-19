@@ -61,7 +61,7 @@ process_execute (const char *file_name)
   if (tid == TID_ERROR)
     palloc_free_page (fn_copy);
 
-  //struct thread *child = get_child(tid);
+  struct thread *child = get_child(tid);
 
   if (child->exit_status == -1)
     process_wait(tid);
