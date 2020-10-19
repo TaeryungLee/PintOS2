@@ -113,9 +113,9 @@ struct thread
 
     // Modified 2.4
     struct file* files[131];             // list of files
-    int fd_next;                        // next file descriptor
+    int fd_next;                         // next file descriptor
 
-    // struct semaphore rw_sema;           // semaphore used in read/write
+    struct semaphore rm_sema;            // semaphore used to destroy
 
     // Modified 2.5
     //struct file *exec_file;

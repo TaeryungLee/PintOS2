@@ -61,20 +61,20 @@ process_execute (const char *file_name)
   if (tid == TID_ERROR)
     palloc_free_page (fn_copy);
 
-  struct thread *child = get_child(tid);
+  //struct thread *child = get_child(tid);
 
   //if (child->exit_status == -1)
   //{
   //  process_wait(tid);
   //}
-
+  /*
   for (e = list_begin(&thread_current()->children); e != list_end(&thread_current()->children); e = list_next(e))
   {
     struct thread *iter = list_entry(e, struct thread, child_elem);
     if (iter->exit_status == -1)
       process_wait(tid);
   }
-
+  */
   return tid;
   //free(program);
 }
@@ -182,18 +182,18 @@ start_process (void *file_name_)
   /* If load failed, quit. */
   if (!success)
   {
+    sema_up(&new->load_sema);
     palloc_free_page(file_name);
-    sema_up(&new->parent->load_sema);
+    
     new->is_loaded = -1;
     exits(-1, NULL);
   }
   else
   {
-    palloc_free_page (file_name);
+    sema_up(&new->load_sema);
     new->is_loaded = 1;
     argument_stack(parse, count, &if_.esp);
-    sema_up(&new->parent->load_sema);
-
+    palloc_free_page (file_name);
     //hex_dump(if_.esp, if_.esp, PHYS_BASE - if_.esp, true);
   }
 
@@ -264,7 +264,9 @@ process_wait (tid_t child_tid)
   sema_down(&child->exit_sema);
 
   int exit_status = child->exit_status;
+
   remove_child(child);
+  sema_up(&child->rm_sema);
   return exit_status;
 }
 
@@ -301,7 +303,7 @@ process_exit (void)
 
   // Modified 2.3
   cur->is_exited = 1;
-  sema_up(&cur->exit_sema);
+  // sema_up(&cur->exit_sema); -> Defined in thread_exit which calls this function
 
   pd = cur->pagedir;
   if (pd != NULL) 

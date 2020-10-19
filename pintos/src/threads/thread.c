@@ -333,6 +333,22 @@ thread_exit (void)
 #ifdef USERPROG
   process_exit ();
 #endif
+// Modified 2.3
+  for (e = list_begin(&thread_current()->children);
+       e != list_end(&thread_current()->children);
+       e = list_next(e))
+  {
+    struct thread *iter = list_entry(e, struct thread, child_elem);
+    // Make able to remove every child process of current process
+    sema_up(&iter->rm_sema);
+  }
+  struct thread *cur = thread_current();
+
+  // Parent awake
+  sema_up(&cur->exit_sema);
+
+  // If parent finishes to wait, or parent exits, then start to remove this process
+  sema_down(&cur->rm_sema);
 
   /* Remove thread from all threads list, set our status to dying,
      and schedule another process.  That process will destroy us
@@ -524,7 +540,7 @@ init_thread (struct thread *t, const char *name, int priority)
   // semaphore initialized to 0
   sema_init(&t->exit_sema, 0);
   sema_init(&t->load_sema, 0);
-
+  sema_init(&t->rm_sema, 0);
   intr_set_level (old_level);
 }
 
