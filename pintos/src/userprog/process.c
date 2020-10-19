@@ -178,7 +178,6 @@ start_process (void *file_name_)
   if_.cs = SEL_UCSEG;
   if_.eflags = FLAG_IF | FLAG_MBS;
   success = load (parse[0], &if_.eip, &if_.esp);
-  printf("reached2\n");
   /* If load failed, quit. */
   if (!success)
   {
@@ -192,7 +191,6 @@ start_process (void *file_name_)
   {
     sema_up(&new->load_sema);
     new->is_loaded = 1;
-    printf("reached\n");
     argument_stack(parse, count, &if_.esp);
     palloc_free_page (file_name);
     //hex_dump(if_.esp, if_.esp, PHYS_BASE - if_.esp, true);
