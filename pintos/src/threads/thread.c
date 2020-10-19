@@ -618,7 +618,7 @@ thread_schedule_tail (struct thread *prev)
     {
       ASSERT (prev != cur);
       // Modified 2.3: Do not free page here
-      //palloc_free_page (prev);
+      palloc_free_page (prev);
     }
 }
 
