@@ -346,9 +346,10 @@ thread_exit (void)
   {
     struct thread *iter = list_entry(e, struct thread, child_elem);
     // Make able to remove every child process of current process
+    process_wait(iter->tid);
     sema_up(&iter->rm_sema);
   }
-  
+
   struct thread *cur = thread_current();
 
   // Parent awake
