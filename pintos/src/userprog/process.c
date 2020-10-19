@@ -104,7 +104,7 @@ void argument_stack(char **parse, int count, void **esp)
     }
 
     // debug
-    //hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
+    hex_dump(*esp, *esp, PHYS_BASE - *esp, true);
 
     /* word-align */
     int addr = (- (int) *esp)%4;
@@ -281,11 +281,13 @@ process_exit (void)
 
   struct list_elem *e;
   // Modified debug: multi-oom
+  /*
   for (e = list_begin (&cur->children); e != list_end (&cur->children); e = list_next (e))
   {
     struct thread *iter = list_entry(e, struct thread, child_elem);
     palloc_free_page(iter);
   }
+  */
   // Modified 2.4
   for (int i = 2; i < cur->fd_next; i++)
   {
