@@ -1,3 +1,6 @@
+#ifndef VM_PAGE_H
+#define VM_PAGE_H
+
 #include <hash.h>
 #include <list.h>
 
@@ -42,3 +45,5 @@ void vm_destroy (struct hash *vm);
 
 void check_valid_buffer (void *buffer, unsigned size, bool to_write);
 void check_valid_string (const void *str);
+
+#endif
