@@ -413,6 +413,61 @@ static bool load_segment (struct file *file, off_t ofs, uint8_t *upage,
                           uint32_t read_bytes, uint32_t zero_bytes,
                           bool writable);
 
+// Modified 3-1.1
+bool handle_mm_fault(struct vm_entry *vme)
+{
+  // page fault handler
+  // get new physical memory page
+  void* kpage = palloc_get_page(PAL_USER);
+
+  // if page allocation fails, return false
+  if (kpage ==  NULL)
+    return false;
+
+  switch(vme->type)
+  {
+    // case 1: load from binary file
+    case VM_BIN:
+    {
+      // try to load
+      bool load_succ = load_file(kpage, vme);
+
+      if (!load_succ)
+      {
+        palloc_free_page(kpage);
+        return false;
+      }
+
+      // successfully loaded
+      // now, map virtual address to physical memory using install_page()
+
+      bool map_succ = install_page(vme->vaddr, kpage, vme->writable);
+
+      if (!map_succ)
+      {
+        palloc_free_page(kpage);
+        return false;
+      }
+      // successfully loaded and mapped
+      break;
+    }
+
+    case VM_FILE:
+    {
+      // to be implemented in memory mapped file chapter 3-2
+    }
+
+    case VM_ANON:
+    {
+      // to be implemented in swapping chapter 3-1.2
+    }
+  }
+
+  // mark vme as loaded
+  vme->is_loaded = true;
+  return true;
+}
+
 /* Loads an ELF executable from FILE_NAME into the current thread.
    Stores the executable's entry point into *EIP
    and its initial stack pointer into *ESP.
@@ -695,7 +750,7 @@ setup_stack (void **esp)
         vme = malloc(sizeof(struct vm_entry));
 
         // initialize
-        vme->type = VM_ANON;              // default
+        vme->type = VM_ANON;              // loaded from swap disk
         vme->vaddr = ((uint8_t *) PHYS_BASE) - PGSIZE;
         vme->writable = 1;
         vme->is_loaded = 1;

@@ -6,6 +6,7 @@
 #include "threads/interrupt.h"
 #include "threads/thread.h"
 #include "threads/vaddr.h"
+#include "userprog/process.h"
 #include "vm/page.h"
 
 /* Number of page faults processed. */
@@ -151,28 +152,25 @@ page_fault (struct intr_frame *f)
   write = (f->error_code & PF_W) != 0;
   user = (f->error_code & PF_U) != 0;
 
-  struct vm_entry *vme;
 
-  if (!not_present)
+  // Modified 3-1.1
+  if (!not_present && write)
     exits(-1, NULL);
+  struct vm_entry* vme = find_vme(fault_addr);
 
-  vme = find_vme (fault_addr);
-
-  if (!vme)
+  if (vme == NULL)
   {
-    printf("fuck1");
+    //printf("fuck");
     exits(-1, NULL);
   }
 
+  bool load_succ = handle_mm_fault(vme);
 
-  /* To implement virtual memory, delete the rest of the function
-     body, and replace it with code that brings in the page to
-     which fault_addr refers. */
-  printf ("Page fault at %p: %s error %s page in %s context.\n",
-          fault_addr,
-          not_present ? "not present" : "rights violation",
-          write ? "writing" : "reading",
-          user ? "user" : "kernel");
-  kill (f);
+  if (!load_succ)
+  {
+    printf("fuck");
+    exits(-1, NULL);
+  }
 }
+
 

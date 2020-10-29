@@ -150,6 +150,40 @@ void check_valid_string (const void *str)
 		exits(-1, NULL);
 }
 
+// load page in disk onto physical memory
+// off_t file_read_at (struct file *file, void *buffer, off_t size, off_t file_ofs)
+// file_read_at reads SIZE bytes from FILE into BUFFER, starting at offset FILE_OFS in the file
+// returns number of bytes read
+bool load_file (void* kaddr, struct vm_entry *vme)
+{
+	// try to read from file
+	int read_bytes = file_read_at(vme->file, kaddr, vme->read_bytes, vme->offset);
+
+	// if read fails, return false
+	if ((int)vme->read_bytes != read_bytes)
+		return false;
+
+	// add zero paddings into remaining area of page
+	memset(kaddr + vme->read_bytes, 0, vme->zero_bytes);
+	return true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
