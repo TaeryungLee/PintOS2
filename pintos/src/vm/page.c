@@ -56,8 +56,8 @@ static bool vm_less_func (const struct hash_elem *a, const struct hash_elem *b, 
 bool insert_vme (struct hash *vm, struct vm_entry *vme)
 {
 	struct hash_elem* result;
-	struct hash_elem elem = &vme->elem;
-	result = hash_insert(vm, elem);
+	struct hash_elem elem = vme->elem;
+	result = hash_insert(vm, &elem);
 
 	if (result == NULL)
 		return false;
@@ -70,8 +70,8 @@ bool insert_vme (struct hash *vm, struct vm_entry *vme)
 bool delete_vme (struct hash *vm, struct vm_entry *vme)
 {
 	struct hash_elem* result;
-	struct hash_elem elem = &vme->elem;
-	result = hash_delete(vm, elem);
+	struct hash_elem elem = vme->elem;
+	result = hash_delete(vm, &elem);
 
 	if (result == NULL)
 		return false;
@@ -89,16 +89,17 @@ struct vm_entry *find_vme(void *vaddr)
 	struct vm_entry *vme;
 	struct vm_entry *vme_found;
 	struct hash_elem *elem;
+	struct thread *cur = thread_current();
 
 	page = pg_round_down(vaddr);
 
 	vme->vaddr = page;
-	elem = hash_find(vm, &vme->elem);
+	elem = hash_find(cur->vm, &vme->elem);
 
 	if (elem == NULL)
 		return NULL;
 
-	vme_found = hash_entry(elem_find, struct vm_entry, elem);
+	vme_found = hash_entry(elem, struct vm_entry, elem);
 	return vme_found;
 }
 
@@ -132,7 +133,7 @@ void check_valid_buffer (void *buffer, unsigned size, bool to_write)
   for(int i=0; i < size; i++)
   {
   	// check address and get vm_entry
-    struct vm_entry* vme = check((void *) (buffer + i));
+    struct vm_entry* vme = check((void *) (buffer + i), 1);
 
     // is writable
     if ((!vme->writable) && to_write)
@@ -144,7 +145,7 @@ void check_valid_buffer (void *buffer, unsigned size, bool to_write)
 // check vm_entry exists
 void check_valid_string (const void *str)
 {
-	struct vm_entry * vme = check(str);
+	struct vm_entry * vme = check(str, 1);
 	if (vme == NULL)
 		exits(-1, NULL);
 }
