@@ -168,7 +168,7 @@ int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
 
 // Modified 2.3
-void *remove_child (struct thread *child);
+void remove_child (struct thread *child);
 struct thread *get_child (int tid);
 
 

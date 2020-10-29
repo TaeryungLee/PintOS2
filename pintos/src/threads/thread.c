@@ -74,7 +74,7 @@ static tid_t allocate_tid (void);
 
 // Modified 2.3
 struct thread *get_child (int tid);
-void *remove_child (struct thread *child);
+void remove_child (struct thread *child);
 
 
 /* Initializes the threading system by transforming the code
@@ -249,7 +249,7 @@ struct thread *get_child (int tid)
 
 // Modified 2.3
 // remove given child
-void *remove_child (struct thread *child)
+void remove_child (struct thread *child)
 {
   list_remove(&child->child_elem);
 
