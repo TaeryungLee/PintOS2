@@ -714,6 +714,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       vme->read_bytes = page_read_bytes;  // used in lazy loading
       vme->zero_bytes = page_zero_bytes;  // used in lazy loading
 
+      printf("setup %#x, %d, %d, %d \n", file, ofs, page_read_bytes, page_zero_bytes);
       vme->swap_slot = 0;                 // not implemented yet (memory mapped files)
 
       // add into hash table
