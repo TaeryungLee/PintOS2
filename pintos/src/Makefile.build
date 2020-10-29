@@ -83,23 +83,24 @@ kernel.o: threads/kernel.lds.s $(OBJECTS)
 	$(LD) -T $< -o $@ $(OBJECTS)
 
 kernel.bin: kernel.o
-	$(OBJCOPY) -R .note -R .comment -S $< $@
+	$(OBJCOPY) -O binary -R .note -R .comment -S $< $@.tmp
+	dd if=$@.tmp of=$@ bs=4096 conv=sync
+	rm $@.tmp
 
-threads/loader.o: threads/loader.S
-	$(CC) -c $< -o $@ $(ASFLAGS) $(CPPFLAGS) $(DEFINES)
+threads/loader.o: threads/loader.S kernel.bin
+	$(CC) -c $< -o $@ $(ASFLAGS) $(CPPFLAGS) $(DEFINES) -DKERNEL_LOAD_PAGES=`perl -e 'print +(-s "kernel.bin") / 4096;'`
 
 loader.bin: threads/loader.o
-	$(LD) -N -e 0 -Ttext 0x7c00 --oformat binary -o $@ $<
+	$(LD) -N -e start -Ttext 0x7c00 --oformat binary -o $@ $<
 
-os.dsk: kernel.bin
+os.dsk: loader.bin kernel.bin
 	cat $^ > $@
 
 clean::
 	rm -f $(OBJECTS) $(DEPENDS) 
 	rm -f threads/loader.o threads/kernel.lds.s threads/loader.d
-	rm -f kernel.bin.tmp
 	rm -f kernel.o kernel.lds.s
-	rm -f kernel.bin loader.bin
+	rm -f kernel.bin loader.bin os.dsk
 	rm -f bochsout.txt bochsrc.txt
 	rm -f results grade
 
@@ -107,3 +108,4 @@ Makefile: $(SRCDIR)/Makefile.build
 	cp $< $@
 
 -include $(DEPENDS)
+
