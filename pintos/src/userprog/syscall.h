@@ -1,7 +1,7 @@
 #ifndef USERPROG_SYSCALL_H
 #define USERPROG_SYSCALL_H
 
-//#include "vm/page.h"
+#include "vm/page.h"
 
 struct intr_frame;
 void syscall_init (void);
