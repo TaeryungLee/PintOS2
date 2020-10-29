@@ -176,9 +176,11 @@ start_process (void *file_name_)
     count ++;
   }
 
+  #ifdef VM
   // Modified 3-1.1
   // use vm_init() to initialize hash table
   vm_init(&new->vm);
+  #endif
 
   /* Initialize interrupt frame and load executable. */
   memset (&if_, 0, sizeof if_);
@@ -639,7 +641,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       // Modified 3-1.1
       // create and initialize vm_entry
       // use insert_vme() function to add vm_entry into hash table
-
+      #ifdef VM
       // create
       struct vm_entry *vme;
       vme = malloc(sizeof(struct vm_entry));
@@ -660,6 +662,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       // add into hash table
       struct thread *cur = thread_current();
       insert_vme(&cur->vm, vme);
+      #endif 
 
       /* Advance. */
       read_bytes -= page_read_bytes;
@@ -687,6 +690,7 @@ setup_stack (void **esp)
       success = install_page (((uint8_t *) PHYS_BASE) - PGSIZE, kpage, true);
       if (success)
       {
+        #ifdef VM
         // Modified 3-1.1
         // create
         struct vm_entry *vme;
@@ -708,6 +712,7 @@ setup_stack (void **esp)
         // add into hash table
         struct thread *cur = thread_current();
         insert_vme(&cur->vm, vme);
+        #endif
 
         *esp = PHYS_BASE;
       }
