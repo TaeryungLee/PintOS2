@@ -104,13 +104,8 @@ struct vm_entry *find_vme(void *vaddr)
 
 	vme = calloc(1, sizeof(struct vm_entry));
 	page = pg_round_down(vaddr);
-	
-	printf("%d\n", vme);
-	printf("%d\n", &vme->elem);
-	printf("%d, %d\n", vme, vme->elem);
 
 	vme->vaddr = page;
-	//printf("%d, %d, %d, %d\n", vme, &vme, vme->elem, &vme->elem);
 	elem = hash_find(&cur->vm, &vme->elem);
 
 	if (elem == NULL)
