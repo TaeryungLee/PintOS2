@@ -268,6 +268,7 @@ struct vm_entry* check(void *addr, int count)
   for(int i=0; i < count; i++)
   {
     if(!check_byte((void *)(c + i)))
+      printf("check1");
       exits(-1, NULL);
     if(((unsigned int) addr + count - 1) > up)
     	if (((unsigned int) addr == up) && ((unsigned int) addr == down))
@@ -275,8 +276,10 @@ struct vm_entry* check(void *addr, int count)
 
       }
     	else
+        printf("check2");
     		exits(-1, NULL);
     	if((pagedir_get_page(thread_current()->pagedir, addr)) == NULL)
+        printf("check3");
     		exits(-1, NULL);
   }
   // Modified 3-1.1
@@ -284,6 +287,7 @@ struct vm_entry* check(void *addr, int count)
 
   struct vm_entry* vme = find_vme(addr);
   if (vme == NULL)
+    printf("check4");
     exits(-1, NULL);
   return vme;
 }

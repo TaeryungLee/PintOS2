@@ -1,6 +1,5 @@
 #ifndef VM_PAGE_H
 #define VM_PAGE_H
-#define VM
 
 #include <hash.h>
 #include <list.h>

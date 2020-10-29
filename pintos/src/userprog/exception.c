@@ -150,6 +150,8 @@ page_fault (struct intr_frame *f)
   write = (f->error_code & PF_W) != 0;
   user = (f->error_code & PF_U) != 0;
 
+  printf("excep");
+
   if (user && !(is_user_vaddr (fault_addr)))
   {
     exits (-1, NULL);
