@@ -202,6 +202,7 @@ thread_create (const char *name, int priority,
   sf->eip = switch_entry;
   sf->ebp = 0;
 
+  #ifdef USERPROG
   // Modified 2.3
   // not loaded and exited
   t->is_loaded = 0;
@@ -219,7 +220,7 @@ thread_create (const char *name, int priority,
   {
     t->files[i] = NULL;
   }
-
+  #endif
   // sema_init(&t->rw_sema, 1);
 
   /* Add to run queue. */
@@ -230,6 +231,7 @@ thread_create (const char *name, int priority,
 
 // Modified 2.3
 // Get child with given tid
+#ifdef USERPROG
 struct thread *get_child (int tid)
 {
   struct list_elem *e;
@@ -254,6 +256,7 @@ void remove_child (struct thread *child)
   // this will be done in parent
   // palloc_free_page(child);
 }
+#endif
 
 /* Puts the current thread to sleep.  It will not be scheduled
    again until awoken by thread_unblock().
@@ -335,7 +338,7 @@ thread_exit (void)
 
 #ifdef USERPROG
   process_exit ();
-#endif
+
 // Modified 2.3
 
   struct list_elem *e;
@@ -356,7 +359,7 @@ thread_exit (void)
 
   // If parent finishes to wait, or parent exits, then start to remove this process
   sema_down(&cur->rm_sema);
-
+  #endif
   /* Remove thread from all threads list, set our status to dying,
      and schedule another process.  That process will destroy us
      when it calls thread_schedule_tail(). */
