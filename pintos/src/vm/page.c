@@ -174,12 +174,14 @@ bool load_file (void* kaddr, struct vm_entry *vme)
   ASSERT (vme != NULL);
   ASSERT (vme->type == VM_BIN);
 	// try to read from file
+
+	printf("%d\n", kaddr);
 	int read_bytes = file_read_at(vme->file, kaddr, vme->read_bytes, vme->offset);
 
+	printf("rb %d, %d\n", vme->read_bytes, read_bytes);
 	// if read fails, return false
 	if ((int)vme->read_bytes != read_bytes)
 		return false;
-
 	// add zero paddings into remaining area of page
 	memset(kaddr + vme->read_bytes, 0, vme->zero_bytes);
 	return true;
