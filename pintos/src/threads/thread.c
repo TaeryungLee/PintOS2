@@ -539,6 +539,7 @@ init_thread (struct thread *t, const char *name, int priority)
   t->magic = THREAD_MAGIC;
   list_push_back (&all_list, &t->allelem);
 
+  #ifdef USERPROG
   // Modified 2.3
   list_init(&t->children);
 
@@ -547,6 +548,7 @@ init_thread (struct thread *t, const char *name, int priority)
   sema_init(&t->exit_sema, 0);
   sema_init(&t->load_sema, 0);
   sema_init(&t->rm_sema, 0);
+  #endif
   intr_set_level (old_level);
 }
 
