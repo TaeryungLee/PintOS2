@@ -72,6 +72,7 @@ bool delete_vme (struct hash *vm, struct vm_entry *vme)
 	struct hash_elem* result;
 	struct hash_elem elem = vme->elem;
 	result = hash_delete(vm, &elem);
+	free(vme);
 
 	if (result == NULL)
 		return false;
