@@ -696,7 +696,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 
       // create
       struct vm_entry *vme;
-      vme = calloc(sizeof(struct vm_entry), 1);
+      vme = calloc(1, sizeof(struct vm_entry));
 
       // initialize
       vme->type = VM_BIN;
@@ -746,7 +746,7 @@ setup_stack (void **esp)
         // Modified 3-1.1
         // create
         struct vm_entry *vme;
-        vme = calloc(sizeof(struct vm_entry), 1);
+        vme = calloc(1, sizeof(struct vm_entry));
 
         if (vme == NULL)
         {
