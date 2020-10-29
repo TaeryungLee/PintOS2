@@ -1,4 +1,4 @@
-#ifndef USERPROG_PROCESS_H
+//#ifndef USERPROG_PROCESS_H
 #define USERPROG_PROCESS_H
 
 #include "threads/thread.h"
@@ -11,4 +11,4 @@ int process_add_file(struct file *f);
 struct file *process_get_file(int fd);
 void process_close_file(int fd);
 
-#endif /* userprog/process.h */
+//#endif /* userprog/process.h */
