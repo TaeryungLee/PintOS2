@@ -5,6 +5,7 @@
 #include "threads/interrupt.h"
 #include "threads/thread.h"
 #include "threads/vaddr.h"
+#include "filesys/file.h"
 #include "devices/shutdown.h"
 #include "userprog/process.h"
 #include "threads/synch.h"
