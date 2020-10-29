@@ -214,7 +214,7 @@ read_addr(void *dest, char *src, int count)
 
   check_valid_buffer(dest, count, true);
   check_valid_string(src);
-  #endif VM
+  #endif
 
 	for (int i=0; i<count; i++)
 		*(char *) (dest + i) = read_byte(src + i) & 0xff;
