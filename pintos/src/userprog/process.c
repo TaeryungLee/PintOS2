@@ -765,14 +765,14 @@ setup_stack (void **esp)
         vme->vaddr = ((uint8_t *) PHYS_BASE) - PGSIZE;
         vme->writable = 1;
         vme->is_loaded = 1;
-
+        /*
         vme->file = NULL;                 // used in lazy loading
         vme->offset = 0;                  // used in lazy loading
         vme->read_bytes = 0;              // used in lazy loading
         vme->zero_bytes = 0;              // used in lazy loading
 
         vme->swap_slot = 0;               // not implemented yet (memory mapped files)
-
+        */
         // add into hash table
         struct thread *cur = thread_current();
         insert_vme(&cur->vm, vme);
