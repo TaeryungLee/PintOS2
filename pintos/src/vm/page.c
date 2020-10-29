@@ -103,6 +103,8 @@ struct vm_entry *find_vme(void *vaddr)
 	struct thread *cur = thread_current();
 
 	page = pg_round_down(vaddr);
+	printf("%d\n", vme);
+	printf("%d\n", &vme->elem);
 	printf("%d, %d\n", vme, vme->elem);
 
 	vme->vaddr = page;
