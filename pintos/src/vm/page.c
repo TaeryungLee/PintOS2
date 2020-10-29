@@ -175,7 +175,7 @@ bool load_file (void* kaddr, struct vm_entry *vme)
   ASSERT (vme->type == VM_BIN);
 	// try to read from file
 
-	printf("%d\n", kaddr);
+	printf("%#x\n", kaddr);
 	int read_bytes = file_read_at(vme->file, kaddr, vme->read_bytes, vme->offset);
 
 	printf("rb %d, %d\n", vme->read_bytes, read_bytes);
