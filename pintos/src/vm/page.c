@@ -137,7 +137,6 @@ void check_valid_buffer (void *buffer, unsigned size, bool to_write)
 
     // is writable
     if ((!vme->writable) && to_write)
-    	printf("valbuf");
     	exits(-1, NULL);
   }
 }
@@ -148,7 +147,6 @@ void check_valid_string (const void *str)
 {
 	struct vm_entry * vme = check(str, 1);
 	if (vme == NULL)
-		printf("valstr");
 		exits(-1, NULL);
 }
 

@@ -6,6 +6,7 @@
 #include "threads/interrupt.h"
 #include "threads/thread.h"
 #include "threads/vaddr.h"
+#include "vm/page.c"
 
 /* Number of page faults processed. */
 static long long page_fault_cnt;
@@ -150,24 +151,19 @@ page_fault (struct intr_frame *f)
   write = (f->error_code & PF_W) != 0;
   user = (f->error_code & PF_U) != 0;
 
-  printf("%d, %d, %d\n", not_present, write, user);
+  struct vm_entry *vme;
 
-  if (user && !(is_user_vaddr (fault_addr)))
+  if (!not_present)
+    exits(-1, NULL);
+
+  vme = find_vme (fault_addr);
+
+  if (!vme)
   {
-    exits (-1, NULL);
-  }
-  if (!user && !(is_kernel_vaddr (fault_addr)))
-  {
+    printf("fuck1");
     exits(-1, NULL);
   }
-  if(!write)
-    exits (-1, NULL);
 
-  if(!not_present)
-    exits (-1, NULL);
-
-  if(fault_addr == NULL)
-    exits (-1, NULL);
 
   /* To implement virtual memory, delete the rest of the function
      body, and replace it with code that brings in the page to
