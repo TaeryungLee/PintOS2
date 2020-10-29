@@ -9,8 +9,8 @@
 #include <list.h>
 #include <hash.h>
 
-static unsigned vm_hash_func (const struct hash_elem *e, void *aux);
-static bool vm_less_func (const struct hash_elem *a, const struct hash_elem *b, void *aux);
+unsigned vm_hash_func (const struct hash_elem *e, void *aux);
+bool vm_less_func (const struct hash_elem *a, const struct hash_elem *b, void *aux);
 
 // use hash_init() to initialize hash table
 // bool hash_init (struct hash *h, hash_hash_func *, hash_less_func *, void *aux)
@@ -25,7 +25,7 @@ void vm_init (struct hash *vm)
 // use hash_entry() to use hash element to find corresponding stored vm_entry structure
 // hash_entry(HASH_ELEM, STRUCT, MEMBER)
 // use hash_int() to fetch hash value
-static unsigned vm_hash_func (const struct hash_elem *e, void *aux)
+unsigned vm_hash_func (const struct hash_elem *e, void *aux)
 {
 	struct vm_entry *vme;
 	int vaddr;
@@ -37,7 +37,7 @@ static unsigned vm_hash_func (const struct hash_elem *e, void *aux)
 
 // use hash_entry() to use hash element to find corresponding stored vm_entry structure
 // compare vaddr, return true if b has larger vaddr, false otherwise
-static bool vm_less_func (const struct hash_elem *a, const struct hash_elem *b, void *aux)
+bool vm_less_func (const struct hash_elem *a, const struct hash_elem *b, void *aux)
 {
 	struct vm_entry *vme_a;
 	struct vm_entry *vme_b;
@@ -103,7 +103,7 @@ struct vm_entry *find_vme(void *vaddr)
 	return vme_found;
 }
 
-static void vm_destructor_func (struct hash_elem *e, void* aux);
+void vm_destructor_func (struct hash_elem *e, void* aux);
 
 // use hash_destroy() to remove hash table and vm_entries
 // void hash_destroy (struct hash *h, hash_action_func *destructor)
@@ -117,7 +117,7 @@ void vm_destroy (struct hash *vm)
 // hash_destroy calls destructor: destructor (hash_elem, h->aux)
 // in hash.c, description is given as:
 // DESTRUCTOR may, if appropriate, deallocate the memory used by the hash element.
-static void vm_destructor_func (struct hash_elem *e, void* aux)
+void vm_destructor_func (struct hash_elem *e, void* aux)
 {
 	struct vm_entry *vme = hash_entry(e, struct vm_entry, elem);
   free(vme);
