@@ -45,5 +45,6 @@ void vm_destroy (struct hash *vm);
 
 void check_valid_buffer (void *buffer, unsigned size, bool to_write);
 void check_valid_string (const void *str);
+bool load_file (void* kaddr, struct vm_entry *vme);
 
 #endif
