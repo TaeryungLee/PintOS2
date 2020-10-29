@@ -124,6 +124,9 @@ struct thread
 
     /* Owned by thread.c. */
     unsigned magic;                     /* Detects stack overflow. */
+
+    // Modified 3-1.1
+    struct hash vm;                      // virtual memory space for this thread
   };
 
 /* If false (default), use round-robin scheduler.

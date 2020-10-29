@@ -18,6 +18,7 @@
 #include "threads/palloc.h"
 #include "threads/thread.h"
 #include "threads/vaddr.h"
+#include "vm/page.h"
 
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
@@ -174,6 +175,10 @@ start_process (void *file_name_)
     parse[count] = token;
     count ++;
   }
+
+  // Modified 3-1.1
+  // use vm_init() to initialize hash table
+  vm_init(new->vm);
 
   /* Initialize interrupt frame and load executable. */
   memset (&if_, 0, sizeof if_);
@@ -602,26 +607,59 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
          and zero the final PAGE_ZERO_BYTES bytes. */
       size_t page_read_bytes = read_bytes < PGSIZE ? read_bytes : PGSIZE;
       size_t page_zero_bytes = PGSIZE - page_read_bytes;
+      
+      // Modified 3-1.1
+      // remove code to allocate kernel page and map to user address
 
       /* Get a page of memory. */
+      /*
       uint8_t *kpage = palloc_get_page (PAL_USER);
       if (kpage == NULL)
         return false;
-
+      */
       /* Load this page. */
+      /*
       if (file_read (file, kpage, page_read_bytes) != (int) page_read_bytes)
         {
           palloc_free_page (kpage);
           return false; 
         }
       memset (kpage + page_read_bytes, 0, page_zero_bytes);
+      */
 
       /* Add the page to the process's address space. */
+      /*
       if (!install_page (upage, kpage, writable)) 
         {
           palloc_free_page (kpage);
           return false; 
         }
+      */
+
+      // Modified 3-1.1
+      // create and initialize vm_entry
+      // use insert_vme() function to add vm_entry into hash table
+
+      // create
+      struct vm_entry *vme;
+      vme = malloc(sizeof(struct vm_entry));
+
+      // initialize
+      vme->type = VM_BIN;
+      vme->vaddr = upage;
+      vme->writable = writable;
+      vme->is_loaded = 0;                 // not loaded yet
+
+      vme->file = file;                   // used in lazy loading
+      vme->offset = ofs;                  // used in lazy loading
+      vme->read_bytes = page_read_bytes;  // used in lazy loading
+      vme->zero_bytes = page_zero_bytes;  // used in lazy loading
+
+      vme->swap_slot = 0;                 // not implemented yet (memory mapped files)
+
+      // add into hash table
+      struct thread *cur = thread_current();
+      insert_vme(&cur->vm, vme);
 
       /* Advance. */
       read_bytes -= page_read_bytes;
@@ -633,6 +671,10 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 
 /* Create a minimal stack by mapping a zeroed page at the top of
    user virtual memory. */
+/* Modified 3-1.1
+   create vm_entry
+   initialize vm_entry
+   use insert_vme() to add vm_entry into hash table */
 static bool
 setup_stack (void **esp) 
 {
@@ -644,7 +686,31 @@ setup_stack (void **esp)
     {
       success = install_page (((uint8_t *) PHYS_BASE) - PGSIZE, kpage, true);
       if (success)
+      {
+        // Modified 3-1.1
+        // create
+        struct vm_entry *vme;
+        vme = malloc(sizeof(struct vm_entry));
+
+        // initialize
+        vme->type = VM_ANON;              // default
+        vme->vaddr = ((uint8_t *) PHYS_BASE) - PGSIZE;
+        vme->writable = 1;
+        vme->is_loaded = 1;
+
+        vme->file = NULL;                 // used in lazy loading
+        vme->offset = 0;                  // used in lazy loading
+        vme->read_bytes = 0;              // used in lazy loading
+        vme->zero_bytes = 0;              // used in lazy loading
+
+        vme->swap_slot = 0;               // not implemented yet (memory mapped files)
+
+        // add into hash table
+        struct thread *cur = thread_current();
+        insert_vme(&cur->vm, vme);
+        
         *esp = PHYS_BASE;
+      }
       else
         palloc_free_page (kpage);
     }

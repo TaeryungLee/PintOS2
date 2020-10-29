@@ -8,6 +8,7 @@
 #include "devices/shutdown.h"
 #include "userprog/process.h"
 #include "threads/synch.h"
+#include "vm/page.h"
 
 
 static void syscall_handler (struct intr_frame *);
@@ -19,7 +20,7 @@ void read_addr(void *dest, char *src, int count);
 int read_byte(char *addr);
 bool write_addr(char *dest, char byte);
 bool check_byte(void *addr);
-void check(void *addr, int count);
+struct vm_entry* check(void *addr, int count);
 
 /* 
 Memory access handler
@@ -205,7 +206,12 @@ Helper Functions
 void 
 read_addr(void *dest, char *src, int count)
 {
-	check(src, count);
+	// Modified 3-1.1 : use check_valid_buffer, check_valid_string instead of check
+  //check(src, count);
+
+  check_valid_buffer(dest, count, true);
+  check_valid_string(src);
+
 	for (int i=0; i<count; i++)
 		*(char *) (dest + i) = read_byte(src + i) & 0xff;
 }
@@ -248,8 +254,7 @@ check_byte(void *addr)
   else
   	return false;
 }
-void 
-check(void *addr, int count)
+struct vm_entry* check(void *addr, int count)
 {
 
 	unsigned int *down = (unsigned int) pg_round_down(addr);
@@ -267,12 +272,18 @@ check(void *addr, int count)
     	if (((unsigned int) addr == up) && ((unsigned int) addr == down))
     	{
 
-    	}
+      }
     	else
     		exits(-1, NULL);
     	if((pagedir_get_page(thread_current()->pagedir, addr)) == NULL)
     		exits(-1, NULL);
   }
+  // Modified 3-1.1
+  // check if addr is valid virtual address
+  struct vm_entry* vme = find_vme(addr);
+  if (vme == NULL)
+    exits(-1, NULL);
+  return vme;
 }
 
 
