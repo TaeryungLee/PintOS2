@@ -210,11 +210,8 @@ read_addr(void *dest, char *src, int count)
 	// Modified 3-1.1 : use check_valid_buffer, check_valid_string instead of check
   //check(src, count);
 
-  #ifdef VM
-
   check_valid_buffer(dest, count, true);
   check_valid_string(src);
-  #endif
 
 	for (int i=0; i<count; i++)
 		*(char *) (dest + i) = read_byte(src + i) & 0xff;
@@ -285,13 +282,10 @@ struct vm_entry* check(void *addr, int count)
   // Modified 3-1.1
   // check if addr is valid virtual address
 
-  #ifdef VM
   struct vm_entry* vme = find_vme(addr);
   if (vme == NULL)
     exits(-1, NULL);
   return vme;
-  #endif
-  return NULL;
 }
 
 
