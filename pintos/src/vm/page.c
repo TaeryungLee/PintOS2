@@ -107,7 +107,7 @@ struct vm_entry *find_vme(void *vaddr)
 
 	vme->vaddr = page;
 	//printf("%d, %d, %d, %d\n", vme, &vme, vme->elem, &vme->elem);
-	elem = hash_find(&cur->vm, &vme.elem);
+	elem = hash_find(&cur->vm, &vme->elem);
 
 	if (elem == NULL)
 		return NULL;
