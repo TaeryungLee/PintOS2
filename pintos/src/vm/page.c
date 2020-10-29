@@ -102,7 +102,9 @@ struct vm_entry *find_vme(void *vaddr)
 	struct hash_elem *elem;
 	struct thread *cur = thread_current();
 
+	vme = calloc(1, sizeof(struct vm_entry));
 	page = pg_round_down(vaddr);
+	
 	printf("%d\n", vme);
 	printf("%d\n", &vme->elem);
 	printf("%d, %d\n", vme, vme->elem);
