@@ -412,11 +412,19 @@ void filesize(int fd, struct intr_frame *f)
 
 int read(int fd, void* buffer, int size, struct intr_frame *f)
 {
+  //debug
   printf("%#x\n", buffer);
+
   check(buffer, sizeof(buffer));
+
+  // debug
+  printf("check passed\n");
 
   // Modified 3-1.1
   check_vm(buffer, sizeof(buffer), true);
+
+  //debug
+  printf("checkvm passed\n");
 
   lock_acquire(&memory);
   // printf("%d", fd);
