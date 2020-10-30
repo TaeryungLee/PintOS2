@@ -37,8 +37,9 @@ unsigned vm_hash_func (const struct hash_elem *e, void *aux)
 	void* vaddr;
 	vme = hash_entry(e, struct vm_entry, elem);
 	// debug
-	printf("vme addr %d\n", vme);
+	printf("vme addr %#x\n", vme);
 	vaddr = vme->vaddr;
+	printf("vaddr %#x\n", vaddr);
 
 	return hash_int(vaddr);
 }
