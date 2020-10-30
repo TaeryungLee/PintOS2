@@ -145,7 +145,7 @@ bool load_file (void* kaddr, struct vm_entry *vme)
 	int read_bytes = file_read_at(vme->file, kaddr, vme->read_bytes, vme->offset);
 	int read_bytes2 = file_read_at(reopen, kaddr, vme->read_bytes, vme->offset);
 	//debug
-	printf("file addr in load_file %#x\n", vme->file, reopen);
+	printf("file addr in load_file %#x, %#x\n", vme->file, reopen);
 	printf("read result %d, %d\n", read_bytes, read_bytes2);
 
 	// if read fails, return false
