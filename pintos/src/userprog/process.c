@@ -721,8 +721,8 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       vme->vaddr = upage;
       vme->writable = writable;
       vme->is_loaded = 0;                 // not loaded yet
-      
-      vme->file = file;                   // used in lazy loading
+
+      vme->file = reopen;                   // used in lazy loading
       vme->offset = ofs;                  // used in lazy loading
       vme->read_bytes = page_read_bytes;  // used in lazy loading
       vme->zero_bytes = page_zero_bytes;  // used in lazy loading
