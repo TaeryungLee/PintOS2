@@ -729,13 +729,6 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       struct thread *cur = thread_current();
       bool res = insert_vme(&cur->vm, vme);
 
-      //debug
-      if (!res)
-      {
-        printf("insert vme fucked\n");
-        exits(-1, NULL);
-      }
-
       /* Advance. */
       read_bytes -= page_read_bytes;
       zero_bytes -= page_zero_bytes;
