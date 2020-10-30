@@ -316,6 +316,8 @@ process_exit (void)
   cur->is_exited = 1;
   // sema_up(&cur->exit_sema); -> Defined in thread_exit which calls this function
 
+  vm_destroy(&cur->vm);
+
   pd = cur->pagedir;
   if (pd != NULL) 
     {
