@@ -289,12 +289,15 @@ void check(void *addr, int count)
         printf("fuck22");
     		exits(-1, NULL);
       }
+      // Modified 3-1.1 we do this at check_vm
+      /*
     	if((pagedir_get_page(thread_current()->pagedir, addr)) == NULL)
       {
         // debug
         printf("fuck33");
     		exits(-1, NULL);
       }
+      */
   }
 }
 
