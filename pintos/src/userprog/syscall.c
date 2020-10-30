@@ -287,7 +287,7 @@ void check(void *addr, int count)
     if(!check_byte((void *)(c + i)))
     {
       // debug
-      printf("fuck11");
+      //printf("fuck11");
       exits(-1, NULL);
     }
     if(((unsigned int) addr + count - 1) > up)
@@ -298,7 +298,7 @@ void check(void *addr, int count)
     	else
       {
         // debug
-        printf("fuck22");
+        //printf("fuck22");
     		exits(-1, NULL);
       }
       // Modified 3-1.1 we do this at check_vm

@@ -168,7 +168,7 @@ page_fault (struct intr_frame *f)
 
   if (!load_succ)
   {
-    printf("fuck");
+    //printf("fuck");
     exits(-1, NULL);
   }
 }
