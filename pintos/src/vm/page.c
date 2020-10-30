@@ -12,6 +12,8 @@
 unsigned vm_hash_func (const struct hash_elem *e, void *aux);
 bool vm_less_func (const struct hash_elem *a, const struct hash_elem *b, void *aux);
 
+
+//debug: innocent
 // use hash_init() to initialize hash table
 // bool hash_init (struct hash *h, hash_hash_func *, hash_less_func *, void *aux)
 // h: hash table to initialize
@@ -22,7 +24,9 @@ void vm_init (struct hash *vm)
   ASSERT (vm != NULL);
 	hash_init(vm, vm_hash_func, vm_less_func, NULL);
 }
-/*
+
+
+//debug: innocent
 // use hash_entry() to use hash element to find corresponding stored vm_entry structure
 // hash_entry(HASH_ELEM, STRUCT, MEMBER)
 // use hash_int() to fetch hash value
@@ -32,11 +36,14 @@ unsigned vm_hash_func (const struct hash_elem *e, void *aux)
 	struct vm_entry *vme;
 	void* vaddr;
 	vme = hash_entry(e, struct vm_entry, elem);
+	// debug
+	printf("vme addr %d\n", vme);
 	vaddr = vme->vaddr;
 
 	return hash_int(vaddr);
 }
 
+//debug: innocent
 // use hash_entry() to use hash element to find corresponding stored vm_entry structure
 // compare vaddr, return true if b has larger vaddr, false otherwise
 bool vm_less_func (const struct hash_elem *a, const struct hash_elem *b, void *aux)
@@ -53,25 +60,6 @@ bool vm_less_func (const struct hash_elem *a, const struct hash_elem *b, void *a
 	void* vaddr_b = vme_b->vaddr;
 	return vaddr_a < vaddr_b;
 }
-*/
-
-unsigned
-vm_hash_func (const struct hash_elem *e, void *aux UNUSED)
-{
-  ASSERT (e != NULL);
-  return hash_int (hash_entry (e, struct vm_entry, elem)->vaddr);
-}
-
-bool
-vm_less_func (const struct hash_elem *a,
-              const struct hash_elem *b, void *aux UNUSED)
-{
-  ASSERT (a != NULL);
-  ASSERT (b != NULL);
-  return hash_entry (a, struct vm_entry, elem)->vaddr
-    < hash_entry (b, struct vm_entry, elem)->vaddr;
-}
-
 
 // use hash_insert() to insert vm_entry into hash table
 // struct hash_elem *hash_insert (struct hash *, struct hash_elem *);
