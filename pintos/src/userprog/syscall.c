@@ -266,7 +266,7 @@ void check(void *addr, int count)
 	unsigned int *up = (unsigned int) pg_round_up(addr);
 	
   // debug
-	printf("%#x, %#x, %#x \n", down, addr, up);
+	// printf("%#x, %#x, %#x \n", down, addr, up);
 	
 
 	unsigned char *c = addr;
@@ -274,8 +274,6 @@ void check(void *addr, int count)
   {
     if(!check_byte((void *)(c + i)))
     {
-      // debug
-      printf("fuck11");
       exits(-1, NULL);
     }
     if(((unsigned int) addr + count - 1) > up)
@@ -285,8 +283,6 @@ void check(void *addr, int count)
       }
     	else
       {
-        // debug
-        printf("fuck22");
     		exits(-1, NULL);
       }
       // Modified 3-1.1 we do this at check_vm
@@ -429,18 +425,18 @@ void filesize(int fd, struct intr_frame *f)
 int read(int fd, void* buffer, int size, struct intr_frame *f)
 {
   //debug
-  printf("%#x\n", buffer);
+  //printf("%#x\n", buffer);
 
   check(buffer, sizeof(buffer));
 
   // debug
-  printf("check passed\n");
+  //printf("check passed\n");
 
   // Modified 3-1.1
   check_vm(buffer, sizeof(buffer), true);
 
   //debug
-  printf("checkvm passed\n");
+  //printf("checkvm passed\n");
 
   lock_acquire(&memory);
   // printf("%d", fd);
