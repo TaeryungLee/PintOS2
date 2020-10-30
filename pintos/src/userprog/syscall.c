@@ -305,13 +305,13 @@ void check_vm (void *addr, unsigned size, bool to_write)
     // does exist
     if (vme == NULL)
     {
-      printf("no vme\n");
+      //printf("no vme\n");
       vm_res = false;
     }
 
     if (to_write && !vme->writable)
     {
-      printf("not writable\n");
+      //printf("not writable\n");
       write_res = false;
     }
   }
@@ -412,6 +412,7 @@ void filesize(int fd, struct intr_frame *f)
 
 int read(int fd, void* buffer, int size, struct intr_frame *f)
 {
+  printf("%#x\n", buffer);
   check(buffer, sizeof(buffer));
 
   // Modified 3-1.1
