@@ -171,8 +171,6 @@ page_fault (struct intr_frame *f)
     printf("fuck");
     exits(-1, NULL);
   }
-  else
-    printf("successfully handled pagefault\n");
 }
 
 

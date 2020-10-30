@@ -210,8 +210,11 @@ read_addr(void *dest, char *src, int count)
 	// Modified 3-1.1 : use check_valid_buffer, check_valid_string instead of check
   //check(src, count);
 
+  //debug
+  printf("read_addr start\n");
   check_valid_buffer(dest, count, true);
   check_valid_string(src);
+  printf("passed vm tests\n");
 
 	for (int i=0; i<count; i++)
 		*(char *) (dest + i) = read_byte(src + i) & 0xff;
