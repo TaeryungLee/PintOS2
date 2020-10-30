@@ -430,7 +430,7 @@ bool handle_mm_fault(struct vm_entry *vme)
   // if page allocation fails, return false
   if (kpage ==  NULL)
   {
-    //printf("fuck1\n");
+    printf("fuck1\n");
     return false;
   }
 
@@ -445,7 +445,7 @@ bool handle_mm_fault(struct vm_entry *vme)
       if (!load_succ)
       {
         palloc_free_page(kpage);
-        //printf("fuck2\n");
+        printf("fuck2\n");
         return false;
       }
 
@@ -457,7 +457,7 @@ bool handle_mm_fault(struct vm_entry *vme)
       if (!map_succ)
       {
         palloc_free_page(kpage);
-        //printf("fuck3\n");
+        printf("fuck3\n");
         return false;
       }
       // successfully loaded and mapped

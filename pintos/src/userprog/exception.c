@@ -154,7 +154,7 @@ page_fault (struct intr_frame *f)
 
 
   // Modified 3-1.1
-  if (!not_present && write)
+  if (!not_present)
     exits(-1, NULL);
   struct vm_entry* vme = find_vme(fault_addr);
 
