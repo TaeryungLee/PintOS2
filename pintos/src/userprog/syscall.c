@@ -24,6 +24,7 @@ bool check_byte(void *addr);
 void check(void *addr, int count);
 void check_valid_string (const void *str);
 void check_valid_buffer (void *buffer, unsigned size, bool to_write);
+void check_vm (void *addr, unsigned size, bool to_write);
 
 /* 
 Memory access handler
@@ -70,6 +71,10 @@ syscall_handler (struct intr_frame *f)
   void *esp = f->esp;
   // Check if esp is valid
   check(esp, 4);
+
+  //modified 3-1.1
+  check_vm(esp, 4, false);
+
   bool res = check_byte(esp);
   // fetch syscall number
   int call_no;
@@ -100,6 +105,8 @@ syscall_handler (struct intr_frame *f)
   		char *file;
       read_addr(&file, esp+4, 4);
       check(file, 4);
+      // modified 3-1.1
+      check_vm(file, 4, false);
       tid_t tid = execs(file, f);
       f->eax = tid;
       break;
@@ -278,55 +285,39 @@ void check(void *addr, int count)
   }
 }
 
-
 // Modified 3-1.1
-// size can be bigger than PGSIZE
-// use check() if it is user address, and get vm_entry
-// check vm_entry exists, and it is writable
-// do above for buffer to buffer+size
-void check_valid_buffer (void *buffer, unsigned size, bool to_write)
+// check if addr has corresponding vm_entry
+void check_vm (void *addr, unsigned size, bool to_write)
 {
-  // check address
-  check(buffer, size);
+  // requires writability?
+  // this value should be true at the end of this function
+  bool write_res = true;
+
+  // does have vm?
+  // this value should be true at the end of this function
+  bool vm_res = true;
 
   for(int i=0; i < size; i++)
   {
     // get vme
-    struct vm_entry *vme = find_vme(buffer + i);
+    struct vm_entry *vme = find_vme(addr + i);
 
     // does exist
     if (vme == NULL)
     {
       printf("no vme\n");
-      exits(-1, NULL);
+      vm_res = false;
     }
-    // is writable
-    if ((!vme->writable))
+
+    if (to_write && !vme->writable)
     {
       printf("not writable\n");
-      exits(-1, NULL);
+      write_res = false;
     }
   }
-}
 
-// Modified 3-1.1
-// use check() if it is user address
-// check vm_entry exists
-void check_valid_string (const void *str)
-{ 
-  //check address
-  check(str, 1);
-
-  // get vme
-  struct vm_entry *vme = find_vme(str);
-
-  // no vme
-  if (vme == NULL)
-  {
-    printf("no vme\n");
-    printf("%d\n", str);
+  if (!write_res || !vm_res)
     exits(-1, NULL);
-  }
 }
 
 /* 
@@ -384,6 +375,8 @@ void open(char *name, struct intr_frame *f)
 {
   struct file *new;
   check(name, sizeof(name));
+  // Modified 3-1.1
+  check_vm(name, sizeof(name), false);
   lock_acquire(&memory);
   new = filesys_open(name);
   if(new != NULL)
@@ -420,6 +413,10 @@ void filesize(int fd, struct intr_frame *f)
 int read(int fd, void* buffer, int size, struct intr_frame *f)
 {
   check(buffer, sizeof(buffer));
+
+  // Modified 3-1.1
+  check_vm(buffer, sizeof(buffer), true);
+
   lock_acquire(&memory);
   // printf("%d", fd);
 
@@ -460,6 +457,9 @@ int
 write(int fd, void* buffer, int size, struct intr_frame *f)
 {
 	check(buffer, sizeof(buffer));
+
+  // Modified 3-1.1
+  check_vm(buffer, sizeof(buffer), false);
   if ((unsigned int) fd > 131)
     exits(-1, NULL);
   lock_acquire(&memory);
