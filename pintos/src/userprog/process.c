@@ -659,6 +659,13 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
   ASSERT (ofs % PGSIZE == 0);
 
   file_seek (file, ofs);
+
+  // Modified 3.1-1
+  struct file* reopen = file_reopen(file);
+
+  //debug
+  if (reopen == NULL)
+    printf("reopen fucked\n");
   while (read_bytes > 0 || zero_bytes > 0) 
     {
       /* Calculate how to fill this page.
@@ -709,18 +716,25 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       vme->writable = writable;
       vme->is_loaded = 0;                 // not loaded yet
 
-      vme->file = file;                   // used in lazy loading
+      vme->file = reopen;                   // used in lazy loading
       vme->offset = ofs;                  // used in lazy loading
       vme->read_bytes = page_read_bytes;  // used in lazy loading
       vme->zero_bytes = page_zero_bytes;  // used in lazy loading
 
+      //debug
       printf("setup %#x, %#x, %d, %d, %d \n", vme, file, ofs, page_read_bytes, page_zero_bytes);
       vme->swap_slot = 0;                 // not implemented yet (memory mapped files)
 
       // add into hash table
       struct thread *cur = thread_current();
-      insert_vme(&cur->vm, vme);
+      bool res = insert_vme(&cur->vm, vme);
 
+      //debug
+      if (!res)
+      {
+        printf("insert vme fucked\n");
+        exits(-1, NULL);
+      }
 
       /* Advance. */
       read_bytes -= page_read_bytes;
