@@ -301,7 +301,7 @@ void check_valid_buffer (void *buffer, unsigned size, bool to_write)
   for(int i=0; i < size; i++)
   {
     // get vme
-    struct vm_entry *vme = find_vme(vaddr);
+    struct vm_entry *vme = find_vme(buffer + i);
 
     // does exist
     if (vme == NULL)
@@ -324,8 +324,8 @@ void check_valid_buffer (void *buffer, unsigned size, bool to_write)
 void check_valid_string (const void *str)
 { 
   //check address
-  check(buffer, size)
-  
+  check(str, 1);
+
   // get vme
   struct vm_entry *vme = find_vme(str);
 
