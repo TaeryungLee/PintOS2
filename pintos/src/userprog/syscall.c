@@ -122,6 +122,8 @@ syscall_handler (struct intr_frame *f)
 
     case SYS_CREATE:
     {
+      //debug
+      printf("create called\n");
     	check(esp + 4, 4);
       char *name;
       size_t size;
@@ -141,6 +143,8 @@ syscall_handler (struct intr_frame *f)
 
     case SYS_OPEN:
     {
+      //debug
+      printf("open called\n");
       char *name;
       read_addr(&name, esp+4, 4);
       open(name, f);
@@ -157,6 +161,8 @@ syscall_handler (struct intr_frame *f)
 
     case SYS_READ:
     {
+      //debug
+      printf("read called\n");
       int fd;
       void *buffer;
       size_t size;
@@ -170,6 +176,8 @@ syscall_handler (struct intr_frame *f)
 
     case SYS_WRITE:
     {
+      //debug
+      printf("write called\n");
       int fd;
       unsigned size;
       void *buffer;
@@ -409,7 +417,7 @@ void open(char *name, struct intr_frame *f)
 
   // debug
   printf("name addr %#x, %d\n", name, new);
-  
+
   if(new != NULL)
   {
     if (strcmp(thread_current()->name, name) == 0) 
