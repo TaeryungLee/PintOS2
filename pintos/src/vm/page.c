@@ -20,7 +20,6 @@ bool vm_less_func (const struct hash_elem *a, const struct hash_elem *b, void *a
 void vm_init (struct hash *vm)
 {
   ASSERT (vm != NULL);
-
 	hash_init(vm, vm_hash_func, vm_less_func, NULL);
 }
 
@@ -174,7 +173,7 @@ bool load_file (void* kaddr, struct vm_entry *vme)
   ASSERT (vme != NULL);
   ASSERT (vme->type == VM_BIN);
 	// try to read from file
-  
+
 	printf("%#x\n", kaddr);
 	int read_bytes = file_read_at(vme->file, kaddr, vme->read_bytes, vme->offset);
 
