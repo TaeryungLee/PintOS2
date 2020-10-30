@@ -68,8 +68,12 @@ process_execute (const char *file_name)
   }
 
   struct thread *child = get_child(tid);
+  
+  sema_down(&new->load_sema);
+  
   if (child->exit_status == -1)
     return process_wait(tid);
+
 
   /*
   for (e = list_begin(&thread_current()->children); e != list_end(&thread_current()->children); e = list_next(e))
@@ -196,10 +200,10 @@ start_process (void *file_name_)
   }
   else
   {
-    sema_up(&new->load_sema);
     new->is_loaded = 1;
     argument_stack(parse, count, &if_.esp);
     palloc_free_page(file_name);
+    sema_up(&new->load_sema);
     //hex_dump(if_.esp, if_.esp, PHYS_BASE - if_.esp, true);
   }
 
@@ -266,9 +270,7 @@ process_wait (tid_t child_tid)
   struct thread *child = get_child(child_tid);
   if (child == NULL)
     return -1;
-  printf("now %s start to wait for child %s\n", thread_current()->name, child->name);
   sema_down(&child->exit_sema);
-  printf("child %s exited, return to %s\n", child->name, thread_current()->name);
 
   int exit_status = child->exit_status;
 
