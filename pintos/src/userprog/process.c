@@ -723,7 +723,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       vme->is_loaded = 0;                 // not loaded yet
 
       //debug
-      printf("file addr in load_seg %#x\n", file);
+      printf("file addr in load_seg %#x, %#x\n", file, reopen);
       vme->file = file;                   // used in lazy loading
       vme->offset = ofs;                  // used in lazy loading
       vme->read_bytes = page_read_bytes;  // used in lazy loading
