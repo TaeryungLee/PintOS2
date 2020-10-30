@@ -130,7 +130,7 @@ syscall_handler (struct intr_frame *f)
       read_addr(&size, esp+8, 4);
 
       //debug
-      printf("create called by %s\n", name);
+      //printf("create called by %s\n", name);
 
       create(name, size, f);
       break;
@@ -151,8 +151,8 @@ syscall_handler (struct intr_frame *f)
       read_addr(&name, esp+4, 4);
 
       //debug
-      printf("open called by %s\n", name);
-      
+      //printf("open called by %s\n", name);
+
       open(name, f);
       break;
     }
@@ -181,7 +181,7 @@ syscall_handler (struct intr_frame *f)
     case SYS_WRITE:
     {
       //debug
-      printf("write called\n");
+      //printf("write called\n");
       int fd;
       unsigned size;
       void *buffer;
@@ -384,6 +384,14 @@ int wait(int tid, struct intr_frame *f)
 void 
 create(char *name, size_t size, struct intr_frame *f)
 {
+  //debug
+  char t_name[16];
+  t_name = thread_current()->name;
+
+  printf("create called\n");
+  printf("thread name: %s\n", t_name);
+  printf("file name %s\n", name);
+
   check(name, sizeof(name));
   lock_acquire(&memory);
   f->eax = filesys_create(name, size);
@@ -405,6 +413,14 @@ void open(char *name, struct intr_frame *f)
   //debug
   //printf("%#x\n", name);
 
+  //debug
+  char t_name[16];
+  t_name = thread_current()->name;
+
+  printf("open called\n");
+  printf("thread name: %s\n", t_name);
+  printf("file name %s\n", name);
+
   check(name, sizeof(name));
 
   // debug
@@ -420,7 +436,7 @@ void open(char *name, struct intr_frame *f)
   new = filesys_open(name);
 
   // debug
-  printf("name addr %#x, %d\n", name, new);
+  //printf("name addr %#x, %d\n", name, new);
 
   if(new != NULL)
   {
@@ -509,9 +525,16 @@ int
 write(int fd, void* buffer, int size, struct intr_frame *f)
 {
 	check(buffer, sizeof(buffer));
-
   // Modified 3-1.1
   check_vm(buffer, sizeof(buffer), false);
+
+  //debug
+  char t_name[16];
+  t_name = thread_current()->name;
+
+  printf("write called\n");
+  printf("thread name: %s\n", t_name);
+
   if ((unsigned int) fd > 131)
     exits(-1, NULL);
   lock_acquire(&memory);
@@ -572,6 +595,14 @@ void tell(int fd, struct intr_frame *f)
 
 void close(int fd, struct intr_frame *f)
 {
+    //debug
+  char t_name[16];
+  t_name = thread_current()->name;
+
+  printf("close called\n");
+  printf("thread name: %s\n", t_name);
+  printf("file name %s\n", name);
+
   if ((unsigned int) fd > 131)
     exits(-1, NULL);
   struct file *cur = process_get_file(fd);
