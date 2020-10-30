@@ -534,6 +534,7 @@ write(int fd, void* buffer, int size, struct intr_frame *f)
 
   printf("write called\n");
   printf("thread name: %s\n", t_name);
+  printf("fd %d\n", fd);
 
   if ((unsigned int) fd > 131)
     exits(-1, NULL);
@@ -595,13 +596,13 @@ void tell(int fd, struct intr_frame *f)
 
 void close(int fd, struct intr_frame *f)
 {
-    //debug
+  //debug
   char t_name[16];
   t_name = thread_current()->name;
 
   printf("close called\n");
   printf("thread name: %s\n", t_name);
-  printf("file name %s\n", name);
+  printf("fd %d\n", fd);
 
   if ((unsigned int) fd > 131)
     exits(-1, NULL);
