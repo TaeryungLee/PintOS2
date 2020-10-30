@@ -31,7 +31,6 @@ void vm_init (struct hash *vm)
 // use hash_int() to fetch hash value
 static unsigned vm_hash_func (const struct hash_elem *e, void *aux)
 {
-	ASSERT (e != NULL);
 	struct vm_entry *vme;
 	void* vaddr;
 	vme = hash_entry(e, struct vm_entry, elem);
@@ -45,8 +44,6 @@ static unsigned vm_hash_func (const struct hash_elem *e, void *aux)
 // compare vaddr, return true if b has larger vaddr, false otherwise
 static bool vm_less_func (const struct hash_elem *a, const struct hash_elem *b, void *aux)
 {
-	ASSERT (a != NULL);
-  ASSERT (b != NULL);
 	struct vm_entry *vme_a;
 	struct vm_entry *vme_b;
 
@@ -63,8 +60,6 @@ static bool vm_less_func (const struct hash_elem *a, const struct hash_elem *b, 
 // return true if success, otherwise false
 bool insert_vme (struct hash *vm, struct vm_entry *vme)
 {
-	ASSERT (vm != NULL);
-  ASSERT (vme != NULL);
   ASSERT (pg_ofs (vme->vaddr) == 0);
 	struct hash_elem* result;
 	struct hash_elem* elem_addr = &vme->elem;
@@ -80,8 +75,6 @@ bool insert_vme (struct hash *vm, struct vm_entry *vme)
 // return true if element has found in hash table, otherwise false
 bool delete_vme (struct hash *vm, struct vm_entry *vme)
 {
-  ASSERT (vm != NULL);
-  ASSERT (vme != NULL);
 	struct hash_elem* result;
 	struct hash_elem* elem_addr = &vme->elem;
 	result = hash_delete(vm, elem_addr);
@@ -129,7 +122,6 @@ static void vm_destructor_func (struct hash_elem *e, void* aux);
 
 void vm_destroy (struct hash *vm)
 {
-	ASSERT (vm != NULL);
 	hash_destroy(vm, vm_destructor_func);
 }
 
@@ -138,7 +130,6 @@ void vm_destroy (struct hash *vm)
 // DESTRUCTOR may, if appropriate, deallocate the memory used by the hash element.
 static void vm_destructor_func (struct hash_elem *e, void* aux)
 {
-	ASSERT (e != NULL);
 	struct vm_entry *vme = hash_entry(e, struct vm_entry, elem);
   free(vme);
 }
@@ -149,10 +140,6 @@ static void vm_destructor_func (struct hash_elem *e, void* aux)
 // returns number of bytes read
 bool load_file (void* kaddr, struct vm_entry *vme)
 {
-  ASSERT (kaddr != NULL);
-  ASSERT (vme != NULL);
-  ASSERT (vme->type == VM_BIN);
-  
 	// try to read from file
 	int read_bytes = file_read_at(vme->file, kaddr, vme->read_bytes, vme->offset);
 
