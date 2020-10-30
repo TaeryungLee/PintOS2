@@ -333,13 +333,13 @@ void check_vm (void *addr, unsigned size, bool to_write)
     // does exist
     if (vme == NULL)
     {
-      printf("no vme\n");
+      //printf("no vme\n");
       vm_res = false;
     }
 
     if (to_write && !vme->writable)
     {
-      printf("not writable\n");
+      //printf("not writable\n");
       write_res = false;
     }
   }
@@ -385,9 +385,9 @@ void
 create(char *name, size_t size, struct intr_frame *f)
 {
   //debug
-  printf("create called\n");
-  printf("thread name: %s\n", thread_current()->name);
-  printf("file name %s\n", name);
+  //printf("create called\n");
+  //printf("thread name: %s\n", thread_current()->name);
+  //printf("file name %s\n", name);
 
   check(name, sizeof(name));
   lock_acquire(&memory);
@@ -412,9 +412,9 @@ void open(char *name, struct intr_frame *f)
 
   //debug
 
-  printf("open called\n");
-  printf("thread name: %s\n", thread_current()->name);
-  printf("file name %s\n", name);
+  //printf("open called\n");
+  //printf("thread name: %s\n", thread_current()->name);
+  //printf("file name %s\n", name);
 
   check(name, sizeof(name));
 
@@ -525,9 +525,9 @@ write(int fd, void* buffer, int size, struct intr_frame *f)
 
   //debug
 
-  printf("write called\n");
-  printf("thread name: %s\n", thread_current()->name);
-  printf("fd %d\n", fd);
+  //printf("write called\n");
+  //printf("thread name: %s\n", thread_current()->name);
+  //printf("fd %d\n", fd);
 
   if ((unsigned int) fd > 131)
     exits(-1, NULL);
@@ -590,9 +590,9 @@ void tell(int fd, struct intr_frame *f)
 void close(int fd, struct intr_frame *f)
 {
   //debug
-  printf("close called\n");
-  printf("thread name: %s\n", thread_current()->name);
-  printf("fd %d\n", fd);
+  //printf("close called\n");
+  //printf("thread name: %s\n", thread_current()->name);
+  //printf("fd %d\n", fd);
 
   if ((unsigned int) fd > 131)
     exits(-1, NULL);
