@@ -331,7 +331,11 @@ void check_valid_string (const void *str)
 
   // no vme
   if (vme == NULL)
+  {
+    printf("no vme\n");
+    printf("%d\n", str);
     exits(-1, NULL);
+  }
 }
 
 /* 
