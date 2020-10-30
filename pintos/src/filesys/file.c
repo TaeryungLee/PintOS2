@@ -11,6 +11,8 @@ struct file *
 file_open (struct inode *inode) 
 {
   struct file *file = calloc (1, sizeof *file);
+  //debug
+  printf(" inside file %#x  %#x\n", file, inode);
   if (inode != NULL && file != NULL)
     {
       file->inode = inode;

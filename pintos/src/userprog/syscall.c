@@ -406,8 +406,10 @@ void open(char *name, struct intr_frame *f)
 
   lock_acquire(&memory);
   new = filesys_open(name);
+
   // debug
   printf("name addr %#x, %d\n", name, new);
+  
   if(new != NULL)
   {
     if (strcmp(thread_current()->name, name) == 0) 
