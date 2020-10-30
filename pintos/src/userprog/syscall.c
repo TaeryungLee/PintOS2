@@ -273,16 +273,28 @@ void check(void *addr, int count)
   for(int i=0; i < count; i++)
   {
     if(!check_byte((void *)(c + i)))
+    {
+      // debug
+      printf("fuck11");
       exits(-1, NULL);
+    }
     if(((unsigned int) addr + count - 1) > up)
     	if (((unsigned int) addr == up) && ((unsigned int) addr == down))
     	{
 
       }
     	else
+      {
+        // debug
+        printf("fuck22");
     		exits(-1, NULL);
+      }
     	if((pagedir_get_page(thread_current()->pagedir, addr)) == NULL)
+      {
+        // debug
+        printf("fuck33");
     		exits(-1, NULL);
+      }
   }
 }
 
