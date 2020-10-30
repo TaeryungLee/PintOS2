@@ -30,7 +30,7 @@ unsigned vm_hash_func (const struct hash_elem *e, void *aux)
 {
 	ASSERT (e != NULL);
 	struct vm_entry *vme;
-	int vaddr;
+	void* vaddr;
 	vme = hash_entry(e, struct vm_entry, elem);
 	vaddr = vme->vaddr;
 
@@ -49,8 +49,8 @@ bool vm_less_func (const struct hash_elem *a, const struct hash_elem *b, void *a
 	vme_a = hash_entry(a, struct vm_entry, elem);
 	vme_b = hash_entry(b, struct vm_entry, elem);
 
-	int vaddr_a = vme_a->vaddr;
-	int vaddr_b = vme_b->vaddr;
+	void* vaddr_a = vme_a->vaddr;
+	void* vaddr_b = vme_b->vaddr;
 	return vaddr_a < vaddr_b;
 }
 
@@ -64,7 +64,7 @@ bool insert_vme (struct hash *vm, struct vm_entry *vme)
   ASSERT (pg_ofs (vme->vaddr) == 0);
 	struct hash_elem* result;
 	struct hash_elem* elem_addr = &vme->elem;
-	result = hash_insert(vm, &vme->elem);
+	result = hash_insert(vm, elem_addr);
 
 	if (result == NULL)
 		return false;
@@ -79,8 +79,8 @@ bool delete_vme (struct hash *vm, struct vm_entry *vme)
   ASSERT (vm != NULL);
   ASSERT (vme != NULL);
 	struct hash_elem* result;
-	struct hash_elem elem = vme->elem;
-	result = hash_delete(vm, &elem);
+	struct hash_elem* elem_addr = &vme->elem;
+	result = hash_delete(vm, elem_addr);
 	free(vme);
 
 	if (result == NULL)
