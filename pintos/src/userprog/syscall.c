@@ -21,7 +21,9 @@ void read_addr(void *dest, char *src, int count);
 int read_byte(char *addr);
 bool write_addr(char *dest, char byte);
 bool check_byte(void *addr);
-struct vm_entry* check(void *addr, int count);
+void check(void *addr, int count);
+void check_valid_string (const void *str);
+void check_valid_buffer (void *buffer, unsigned size, bool to_write);
 
 /* 
 Memory access handler
@@ -259,7 +261,7 @@ check_byte(void *addr)
   else
   	return false;
 }
-struct vm_entry* check(void *addr, int count)
+void check(void *addr, int count)
 {
 
 	unsigned int *down = (unsigned int) pg_round_down(addr);
@@ -283,16 +285,54 @@ struct vm_entry* check(void *addr, int count)
     	if((pagedir_get_page(thread_current()->pagedir, addr)) == NULL)
     		exits(-1, NULL);
   }
-  // Modified 3-1.1
-  // check if addr is valid virtual address
-
-  struct vm_entry* vme = find_vme(addr);
-  if (vme == NULL)
-    exits(-1, NULL);
-  return vme;
 }
 
 
+// Modified 3-1.1
+// size can be bigger than PGSIZE
+// use check() if it is user address, and get vm_entry
+// check vm_entry exists, and it is writable
+// do above for buffer to buffer+size
+void check_valid_buffer (void *buffer, unsigned size, bool to_write)
+{
+  // check address
+  check(buffer, size);
+
+  for(int i=0; i < size; i++)
+  {
+    // get vme
+    struct vm_entry *vme = find_vme(vaddr);
+
+    // does exist
+    if (vme == NULL)
+    {
+      printf("no vme\n");
+      exits(-1, NULL);
+    }
+    // is writable
+    if ((!vme->writable))
+    {
+      printf("not writable\n");
+      exits(-1, NULL);
+    }
+  }
+}
+
+// Modified 3-1.1
+// use check() if it is user address
+// check vm_entry exists
+void check_valid_string (const void *str)
+{ 
+  //check address
+  check(buffer, size)
+  
+  // get vme
+  struct vm_entry *vme = find_vme(str);
+
+  // no vme
+  if (vme == NULL)
+    exits(-1, NULL);
+}
 
 /* 
 Handler Functions

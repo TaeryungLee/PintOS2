@@ -143,33 +143,6 @@ static void vm_destructor_func (struct hash_elem *e, void* aux)
   free(vme);
 }
 
-// size can be bigger than PGSIZE
-// use check() if it is user address, and get vm_entry
-// check vm_entry exists, and it is writable
-// do above for buffer to buffer+size
-void check_valid_buffer (void *buffer, unsigned size, bool to_write)
-{
-
-  for(int i=0; i < size; i++)
-  {
-  	// check address and get vm_entry
-    struct vm_entry* vme = check((void *) (buffer + i), 1);
-
-    // is writable
-    if ((!vme->writable) && to_write)
-    	exits(-1, NULL);
-  }
-}
-
-// use check() if it is user address
-// check vm_entry exists
-void check_valid_string (const void *str)
-{
-	struct vm_entry * vme = check(str, 1);
-	if (vme == NULL)
-		exits(-1, NULL);
-}
-
 // load page in disk onto physical memory
 // off_t file_read_at (struct file *file, void *buffer, off_t size, off_t file_ofs)
 // file_read_at reads SIZE bytes from FILE into BUFFER, starting at offset FILE_OFS in the file
