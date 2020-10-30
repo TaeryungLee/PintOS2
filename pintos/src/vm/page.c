@@ -55,14 +55,14 @@ bool vm_less_func (const struct hash_elem *a, const struct hash_elem *b, void *a
 }
 */
 
-static unsigned
+unsigned
 vm_hash_func (const struct hash_elem *e, void *aux UNUSED)
 {
   ASSERT (e != NULL);
   return hash_int (hash_entry (e, struct vm_entry, elem)->vaddr);
 }
 
-static bool
+bool
 vm_less_func (const struct hash_elem *a,
               const struct hash_elem *b, void *aux UNUSED)
 {
