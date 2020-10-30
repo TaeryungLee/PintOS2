@@ -9,8 +9,8 @@
 #include <list.h>
 #include <hash.h>
 
-unsigned vm_hash_func (const struct hash_elem *e, void *aux);
-bool vm_less_func (const struct hash_elem *a, const struct hash_elem *b, void *aux);
+static unsigned vm_hash_func (const struct hash_elem *e, void *aux);
+static bool vm_less_func (const struct hash_elem *a, const struct hash_elem *b, void *aux);
 
 
 //debug: innocent
@@ -21,7 +21,6 @@ bool vm_less_func (const struct hash_elem *a, const struct hash_elem *b, void *a
 // hash_less_func: function pointer to compare hash value
 void vm_init (struct hash *vm)
 {
-  ASSERT (vm != NULL);
 	hash_init(vm, vm_hash_func, vm_less_func, NULL);
 }
 
@@ -30,24 +29,21 @@ void vm_init (struct hash *vm)
 // use hash_entry() to use hash element to find corresponding stored vm_entry structure
 // hash_entry(HASH_ELEM, STRUCT, MEMBER)
 // use hash_int() to fetch hash value
-unsigned vm_hash_func (const struct hash_elem *e, void *aux)
+static unsigned vm_hash_func (const struct hash_elem *e, void *aux)
 {
 	ASSERT (e != NULL);
 	struct vm_entry *vme;
 	void* vaddr;
 	vme = hash_entry(e, struct vm_entry, elem);
-	// debug
-	printf("vme addr %#x\n", vme);
 	vaddr = vme->vaddr;
-	printf("vaddr %#x\n", vaddr);
 
-	return hash_int(vaddr);
+	return hash_int((int) vaddr);
 }
 
 //debug: innocent
 // use hash_entry() to use hash element to find corresponding stored vm_entry structure
 // compare vaddr, return true if b has larger vaddr, false otherwise
-bool vm_less_func (const struct hash_elem *a, const struct hash_elem *b, void *aux)
+static bool vm_less_func (const struct hash_elem *a, const struct hash_elem *b, void *aux)
 {
 	ASSERT (a != NULL);
   ASSERT (b != NULL);
@@ -59,7 +55,7 @@ bool vm_less_func (const struct hash_elem *a, const struct hash_elem *b, void *a
 
 	void* vaddr_a = vme_a->vaddr;
 	void* vaddr_b = vme_b->vaddr;
-	return vaddr_a < vaddr_b;
+	return (unsigned) vaddr_a < (unsigned) vaddr_b;
 }
 
 // use hash_insert() to insert vm_entry into hash table
@@ -75,8 +71,8 @@ bool insert_vme (struct hash *vm, struct vm_entry *vme)
 	result = hash_insert(vm, elem_addr);
 
 	if (result == NULL)
-		return false;
-	return true;
+		return true;
+	return false;
 }
 
 // use hash_delete() to remove vm_entry from hash table
@@ -89,10 +85,13 @@ bool delete_vme (struct hash *vm, struct vm_entry *vme)
 	struct hash_elem* result;
 	struct hash_elem* elem_addr = &vme->elem;
 	result = hash_delete(vm, elem_addr);
-	free(vme);
 
 	if (result == NULL)
+	{
+		free(vme);
 		return false;
+	}
+	free(vme);
 	return true;
 }
 
@@ -122,7 +121,7 @@ struct vm_entry *find_vme(void *vaddr)
 	return vme_found;
 }
 
-void vm_destructor_func (struct hash_elem *e, void* aux);
+static void vm_destructor_func (struct hash_elem *e, void* aux);
 
 // use hash_destroy() to remove hash table and vm_entries
 // void hash_destroy (struct hash *h, hash_action_func *destructor)
@@ -137,7 +136,7 @@ void vm_destroy (struct hash *vm)
 // hash_destroy calls destructor: destructor (hash_elem, h->aux)
 // in hash.c, description is given as:
 // DESTRUCTOR may, if appropriate, deallocate the memory used by the hash element.
-void vm_destructor_func (struct hash_elem *e, void* aux)
+static void vm_destructor_func (struct hash_elem *e, void* aux)
 {
 	ASSERT (e != NULL);
 	struct vm_entry *vme = hash_entry(e, struct vm_entry, elem);
