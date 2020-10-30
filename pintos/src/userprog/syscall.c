@@ -391,21 +391,23 @@ void open(char *name, struct intr_frame *f)
 {
   struct file *new;
   //debug
-  printf("%#x\n", name);
+  //printf("%#x\n", name);
 
   check(name, sizeof(name));
 
   // debug
-  printf("check passed\n");
+  //printf("check passed\n");
 
   // Modified 3-1.1
   check_vm(name, sizeof(name), false);
 
   //debug
-  printf("checkvm passed\n");
+  //printf("checkvm passed\n");
 
   lock_acquire(&memory);
   new = filesys_open(name);
+  // debug
+  printf("name addr %#x, %d\n", name, new);
   if(new != NULL)
   {
     if (strcmp(thread_current()->name, name) == 0) 
