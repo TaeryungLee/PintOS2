@@ -213,6 +213,7 @@ read_addr(void *dest, char *src, int count)
   //debug
   printf("read_addr start\n");
   check_valid_buffer(dest, count, true);
+  printf("buffer test passed\n");
   check_valid_string(src);
   printf("passed vm tests\n");
 
