@@ -94,6 +94,9 @@ lookup (const struct dir *dir, const char *name,
 {
   struct dir_entry e;
   size_t ofs;
+
+  //debug
+  printf(" inside lookup %#x, %s, %#x, %#x, %#x", dir, name, name, ep, ofsp);
   
   ASSERT (dir != NULL);
   ASSERT (name != NULL);
