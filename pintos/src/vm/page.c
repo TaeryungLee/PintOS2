@@ -22,7 +22,7 @@ void vm_init (struct hash *vm)
   ASSERT (vm != NULL);
 	hash_init(vm, vm_hash_func, vm_less_func, NULL);
 }
-
+/*
 // use hash_entry() to use hash element to find corresponding stored vm_entry structure
 // hash_entry(HASH_ELEM, STRUCT, MEMBER)
 // use hash_int() to fetch hash value
@@ -53,6 +53,25 @@ bool vm_less_func (const struct hash_elem *a, const struct hash_elem *b, void *a
 	void* vaddr_b = vme_b->vaddr;
 	return vaddr_a < vaddr_b;
 }
+*/
+
+static unsigned
+vm_hash_func (const struct hash_elem *e, void *aux UNUSED)
+{
+  ASSERT (e != NULL);
+  return hash_int (hash_entry (e, struct vm_entry, elem)->vaddr);
+}
+
+static bool
+vm_less_func (const struct hash_elem *a,
+              const struct hash_elem *b, void *aux UNUSED)
+{
+  ASSERT (a != NULL);
+  ASSERT (b != NULL);
+  return hash_entry (a, struct vm_entry, elem)->vaddr
+    < hash_entry (b, struct vm_entry, elem)->vaddr;
+}
+
 
 // use hash_insert() to insert vm_entry into hash table
 // struct hash_elem *hash_insert (struct hash *, struct hash_elem *);
