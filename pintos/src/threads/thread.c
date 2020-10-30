@@ -223,6 +223,9 @@ thread_create (const char *name, int priority,
   #endif
   // sema_init(&t->rw_sema, 1);
 
+  // Modified 3-1.1
+  vm_init(&t->vm);
+
   /* Add to run queue. */
   thread_unblock (t);
 

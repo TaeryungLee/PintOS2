@@ -183,7 +183,7 @@ start_process (void *file_name_)
 
   // Modified 3-1.1
   // use vm_init() to initialize hash table
-  vm_init(&new->vm);
+  //vm_init(&new->vm);
 
   /* Initialize interrupt frame and load executable. */
   memset (&if_, 0, sizeof if_);
