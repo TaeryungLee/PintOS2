@@ -69,11 +69,12 @@ process_execute (const char *file_name)
 
   struct thread *child = get_child(tid);
   
-  sema_down(&child->load_sema);
+  
 
   if (child->exit_status == -1)
     return process_wait(tid);
-
+  
+  sema_down(&child->load_sema);
 
   /*
   for (e = list_begin(&thread_current()->children); e != list_end(&thread_current()->children); e = list_next(e))
