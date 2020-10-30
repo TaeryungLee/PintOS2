@@ -152,12 +152,10 @@ bool load_file (void* kaddr, struct vm_entry *vme)
   ASSERT (kaddr != NULL);
   ASSERT (vme != NULL);
   ASSERT (vme->type == VM_BIN);
+  
 	// try to read from file
-
-	printf("%#x\n", kaddr);
 	int read_bytes = file_read_at(vme->file, kaddr, vme->read_bytes, vme->offset);
 
-	printf("rb %#x, %#x, %d, %d, %d\n", vme, vme->file, vme->read_bytes, read_bytes, vme->offset);
 	// if read fails, return false
 	if ((int)vme->read_bytes != read_bytes)
 		return false;
