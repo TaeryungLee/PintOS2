@@ -266,8 +266,9 @@ process_wait (tid_t child_tid)
   struct thread *child = get_child(child_tid);
   if (child == NULL)
     return -1;
-
+  printf("now %s start to wait for child %s\n", thread_current()->name, child->name);
   sema_down(&child->exit_sema);
+  printf("child %s exited, return to %s\n", child->name, thread_current()->name);
 
   int exit_status = child->exit_status;
 
