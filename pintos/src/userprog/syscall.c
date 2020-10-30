@@ -122,13 +122,16 @@ syscall_handler (struct intr_frame *f)
 
     case SYS_CREATE:
     {
-      //debug
-      printf("create called\n");
+      
     	check(esp + 4, 4);
       char *name;
       size_t size;
       read_addr(&name, esp+4, 4);
       read_addr(&size, esp+8, 4);
+
+      //debug
+      printf("create called by %s\n", name);
+
       create(name, size, f);
       break;
     }
@@ -143,10 +146,13 @@ syscall_handler (struct intr_frame *f)
 
     case SYS_OPEN:
     {
-      //debug
-      printf("open called\n");
+
       char *name;
       read_addr(&name, esp+4, 4);
+
+      //debug
+      printf("open called by %s\n", name);
+      
       open(name, f);
       break;
     }
@@ -161,8 +167,6 @@ syscall_handler (struct intr_frame *f)
 
     case SYS_READ:
     {
-      //debug
-      printf("read called\n");
       int fd;
       void *buffer;
       size_t size;
