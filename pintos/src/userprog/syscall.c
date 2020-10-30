@@ -266,7 +266,7 @@ void check(void *addr, int count)
 	unsigned int *up = (unsigned int) pg_round_up(addr);
 	
   // debug
-	printf("%#x, %#x, %#x \n", down, addr, up);
+	//printf("%#x, %#x, %#x \n", down, addr, up);
 	
 
 	unsigned char *c = addr;
