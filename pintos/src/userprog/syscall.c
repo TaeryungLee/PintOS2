@@ -385,11 +385,8 @@ void
 create(char *name, size_t size, struct intr_frame *f)
 {
   //debug
-  char t_name[16];
-  t_name = thread_current()->name;
-
   printf("create called\n");
-  printf("thread name: %s\n", &t_name);
+  printf("thread name: %s\n", thread_current()->name);
   printf("file name %s\n", name);
 
   check(name, sizeof(name));
@@ -414,11 +411,9 @@ void open(char *name, struct intr_frame *f)
   //printf("%#x\n", name);
 
   //debug
-  char t_name[16];
-  t_name = thread_current()->name;
 
   printf("open called\n");
-  printf("thread name: %s\n", &t_name);
+  printf("thread name: %s\n", thread_current()->name);
   printf("file name %s\n", name);
 
   check(name, sizeof(name));
@@ -529,11 +524,9 @@ write(int fd, void* buffer, int size, struct intr_frame *f)
   check_vm(buffer, sizeof(buffer), false);
 
   //debug
-  char t_name[16];
-  t_name = thread_current()->name;
 
   printf("write called\n");
-  printf("thread name: %s\n", &t_name);
+  printf("thread name: %s\n", thread_current()->name);
   printf("fd %d\n", fd);
 
   if ((unsigned int) fd > 131)
@@ -597,11 +590,8 @@ void tell(int fd, struct intr_frame *f)
 void close(int fd, struct intr_frame *f)
 {
   //debug
-  char t_name[16];
-  t_name = thread_current()->name;
-
   printf("close called\n");
-  printf("thread name: %s\n", &t_name);
+  printf("thread name: %s\n", thread_current()->name);
   printf("fd %d\n", fd);
 
   if ((unsigned int) fd > 131)
