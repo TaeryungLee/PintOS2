@@ -64,7 +64,7 @@ bool insert_vme (struct hash *vm, struct vm_entry *vme)
   ASSERT (pg_ofs (vme->vaddr) == 0);
 	struct hash_elem* result;
 	struct hash_elem* elem_addr = &vme->elem;
-	result = hash_insert(vm, elem_addr);
+	result = hash_insert(vm, &vme->elem);
 
 	if (result == NULL)
 		return false;
