@@ -392,6 +392,9 @@ create(char *name, size_t size, struct intr_frame *f)
   check(name, sizeof(name));
   lock_acquire(&memory);
   f->eax = filesys_create(name, size);
+
+  //debug
+  printf("file create %d\n", f->eax);
   lock_release(&memory);
 }
 
