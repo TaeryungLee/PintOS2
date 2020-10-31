@@ -484,9 +484,9 @@ int read(int fd, void* buffer, int size, struct intr_frame *f)
 
   //debug
   //printf("checkvm passed\n");
-
-  lock_acquire(&memory);
   printf("mem lock acquired\n");
+  lock_acquire(&memory);
+  
   // printf("%d", fd);
 
   if(fd == 0)
@@ -495,14 +495,17 @@ int read(int fd, void* buffer, int size, struct intr_frame *f)
     {
       write_addr((char *) (buffer + i), input_getc());
     }
-    lock_release(&memory);
     printf("mem lock released\n");
+    lock_release(&memory);
+    
     return size;
   }
   else if(fd == 1)
   {
-    lock_release(&memory);
     printf("mem lock released\n");
+    lock_release(&memory);
+
+    
     return -1;
   }
   else
@@ -519,6 +522,8 @@ int read(int fd, void* buffer, int size, struct intr_frame *f)
     // printf("fd!=0");
 
     length = file_read(cur, buffer, size);
+    printf("mem lock released\n");
+
     lock_release(&memory);
     return length;
   }
@@ -539,19 +544,21 @@ write(int fd, void* buffer, int size, struct intr_frame *f)
 
   if ((unsigned int) fd > 131)
     exits(-1, NULL);
-  lock_acquire(&memory);
   printf("mem lock acquired\n");
+  lock_acquire(&memory);
   if(fd == 1)
   {
     putbuf(buffer, size);
-    lock_release(&memory);
     printf("mem lock released\n");
+    lock_release(&memory);
+    
     return size;
   }
   else if(fd == 0)
   {
-    lock_release(&memory);
     printf("mem lock released\n");
+    lock_release(&memory);
+    
     return -1;
   }
   else
@@ -561,8 +568,9 @@ write(int fd, void* buffer, int size, struct intr_frame *f)
 
     if(cur_file == NULL)
     {
-      lock_release(&memory);
       printf("mem lock released\n");
+      lock_release(&memory);
+      
       return -1;
     }
 
@@ -573,8 +581,9 @@ write(int fd, void* buffer, int size, struct intr_frame *f)
         file_deny_write(thread_current()->files[fd]);
       }
       length = file_write(cur_file, buffer, size);
-      lock_release(&memory);
       printf("mem lock released\n");
+      lock_release(&memory);
+      
       return length;
     }   
   }
