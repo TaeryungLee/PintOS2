@@ -472,6 +472,7 @@ bool handle_mm_fault(struct vm_entry *vme)
 
     case VM_ANON:
     {
+      printf("not implemented\n");
       // to be implemented in swapping chapter 3-1.2
     }
   }
