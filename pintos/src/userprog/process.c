@@ -667,7 +667,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
   // Modified 3.1-1
   struct file* reopen = file_reopen(file);
 
-  //file_seek (reopen, ofs);
+  file_seek (file, ofs);
 
   //debug
   if (reopen == NULL)
