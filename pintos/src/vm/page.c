@@ -95,14 +95,14 @@ bool delete_vme (struct hash *vm, struct vm_entry *vme)
 // use hash_entry() to return stored vm_entry structure
 struct vm_entry *find_vme(void *vaddr)
 {
-	/*
+
 	void* page;
 	struct vm_entry *vme;
 	struct vm_entry *vme_found;
 	struct hash_elem *elem;
 	struct thread *cur = thread_current();
 
-	//vme = calloc(1, sizeof(struct vm_entry));
+	vme = calloc(1, sizeof(struct vm_entry));
 	page = pg_round_down(vaddr);
 
 	vme->vaddr = page;
@@ -113,18 +113,9 @@ struct vm_entry *find_vme(void *vaddr)
 
 	vme_found = hash_entry(elem, struct vm_entry, elem);
 
-
+	free(vme);
 	return vme_found;
-	*/
-  struct hash *vm;
-  struct vm_entry vme;
-  struct hash_elem *elem;
 
-  vm = &thread_current ()->vm;
-  vme.vaddr = pg_round_down (vaddr);
-  ASSERT (pg_ofs (vme.vaddr) == 0);
-  elem = hash_find (vm, &vme.elem);
-  return elem ? hash_entry (elem, struct vm_entry, elem) : NULL;
 }
 
 static void vm_destructor_func (struct hash_elem *e, void* aux);
