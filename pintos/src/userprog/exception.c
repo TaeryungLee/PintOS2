@@ -160,7 +160,7 @@ page_fault (struct intr_frame *f)
 
   if (vme == NULL)
   {
-    //printf("fuck");
+    printf("fuck");
     exits(-1, NULL);
   }
 
@@ -168,7 +168,7 @@ page_fault (struct intr_frame *f)
 
   if (!load_succ)
   {
-    //printf("fuck");
+    printf("fuck2");
     exits(-1, NULL);
   }
   //printf("successfully loaded\n");
