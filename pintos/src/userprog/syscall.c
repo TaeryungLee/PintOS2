@@ -474,6 +474,8 @@ int read(int fd, void* buffer, int size, struct intr_frame *f)
   //debug
   //printf("%#x\n", buffer);
 
+  printf("read called, fd = %d\n", fd);
+
   check(buffer, sizeof(buffer));
 
   // debug
@@ -504,8 +506,6 @@ int read(int fd, void* buffer, int size, struct intr_frame *f)
   {
     printf("mem lock released\n");
     lock_release(&memory);
-
-    
     return -1;
   }
   else
@@ -525,6 +525,8 @@ int read(int fd, void* buffer, int size, struct intr_frame *f)
     printf("mem lock released\n");
 
     lock_release(&memory);
+
+    printf("exiting read\n");
     return length;
   }
 }
