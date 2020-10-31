@@ -448,6 +448,7 @@ bool handle_mm_fault(struct vm_entry *vme)
         printf("fuck2\n");
         return false;
       }
+      
       printf("successfully loaded in thread %s, %d\n", thread_current()->name, thread_current()->tid);
       // successfully loaded
       // now, map virtual address to physical memory using install_page()
