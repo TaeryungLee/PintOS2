@@ -432,7 +432,7 @@ bool handle_mm_fault(struct vm_entry *vme)
   // Modified 3-1.2: struct page
   struct page *kpage = alloc_page(PAL_USER);
 
-  kpage->vme = vme
+  kpage->vme = vme;
 
   // if page allocation fails, return false
   if (kpage ==  NULL)
@@ -829,10 +829,8 @@ setup_stack (void **esp)
         *esp = PHYS_BASE;
       }
       else
-      {
         free_page(kpage->kaddr);
-        free(vme);
-      }
+
     }
   return success;
 }
