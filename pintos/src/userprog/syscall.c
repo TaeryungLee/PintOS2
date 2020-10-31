@@ -390,21 +390,23 @@ create(char *name, size_t size, struct intr_frame *f)
   //printf("file name %s\n", name);
 
   check(name, sizeof(name));
-  lock_acquire(&memory);
+  //lock_acquire(&memory);
+
   f->eax = filesys_create(name, size);
 
   //debug
   //printf("file create %d\n", f->eax);
-  lock_release(&memory);
+  //lock_release(&memory);
+
 }
 
 void 
 remove(char *name, struct intr_frame *f)
 {
   check(name, sizeof(name));
-  lock_acquire(&memory);
+  //lock_acquire(&memory);
   f->eax = filesys_remove(name);
-  lock_release(&memory);
+  //lock_release(&memory);
 }
 
 void open(char *name, struct intr_frame *f)
@@ -430,7 +432,7 @@ void open(char *name, struct intr_frame *f)
   //debug
   //printf("checkvm passed\n");
 
-  lock_acquire(&memory);
+  //lock_acquire(&memory);
   new = filesys_open(name);
 
   // debug
@@ -449,7 +451,7 @@ void open(char *name, struct intr_frame *f)
   {
     f->eax = -1;
   }
-  lock_release(&memory);
+  //lock_release(&memory);
 }
 
 void filesize(int fd, struct intr_frame *f)
@@ -484,6 +486,7 @@ int read(int fd, void* buffer, int size, struct intr_frame *f)
   //printf("checkvm passed\n");
 
   lock_acquire(&memory);
+  printf("mem lock acquired\n");
   // printf("%d", fd);
 
   if(fd == 0)
@@ -493,11 +496,13 @@ int read(int fd, void* buffer, int size, struct intr_frame *f)
       write_addr((char *) (buffer + i), input_getc());
     }
     lock_release(&memory);
+    printf("mem lock released\n");
     return size;
   }
   else if(fd == 1)
   {
     lock_release(&memory);
+    printf("mem lock released\n");
     return -1;
   }
   else
@@ -535,15 +540,18 @@ write(int fd, void* buffer, int size, struct intr_frame *f)
   if ((unsigned int) fd > 131)
     exits(-1, NULL);
   lock_acquire(&memory);
+  printf("mem lock acquired\n");
   if(fd == 1)
   {
     putbuf(buffer, size);
     lock_release(&memory);
+    printf("mem lock released\n");
     return size;
   }
   else if(fd == 0)
   {
     lock_release(&memory);
+    printf("mem lock released\n");
     return -1;
   }
   else
@@ -554,6 +562,7 @@ write(int fd, void* buffer, int size, struct intr_frame *f)
     if(cur_file == NULL)
     {
       lock_release(&memory);
+      printf("mem lock released\n");
       return -1;
     }
 
@@ -565,6 +574,7 @@ write(int fd, void* buffer, int size, struct intr_frame *f)
       }
       length = file_write(cur_file, buffer, size);
       lock_release(&memory);
+      printf("mem lock released\n");
       return length;
     }   
   }

@@ -175,7 +175,7 @@ page_fault (struct intr_frame *f)
   struct thread *cur = thread_current();
 
   cur->loaded ++;
-  //printf("to load %d, loaded %d\n", cur->to_load, cur->loaded);
+  printf("to load %d, loaded %d\n", cur->to_load, cur->loaded);
   if (cur->to_load == cur->loaded)
     sema_up(&cur->load_sema);
 
