@@ -684,30 +684,30 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       // remove code to allocate kernel page and map to user address
 
       /* Get a page of memory. */
-      /*
+      
       uint8_t *kpage = palloc_get_page (PAL_USER);
       if (kpage == NULL)
         return false;
-      */
+      
       /* Load this page. */
-      /*
+      
       if (file_read (file, kpage, page_read_bytes) != (int) page_read_bytes)
         {
           palloc_free_page (kpage);
           return false; 
         }
       memset (kpage + page_read_bytes, 0, page_zero_bytes);
-      */
+      
 
       /* Add the page to the process's address space. */
-      /*
+      
       if (!install_page (upage, kpage, writable)) 
         {
           palloc_free_page (kpage);
           return false; 
         }
-      */
-
+      
+      /*
       // Modified 3-1.1
       // create and initialize vm_entry
       // use insert_vme() function to add vm_entry into hash table
@@ -722,7 +722,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       vme->writable = writable;
       vme->is_loaded = 0;                 // not loaded yet
 
-      vme->file = file;                   // used in lazy loading
+      vme->file = reopen;                   // used in lazy loading
       vme->offset = ofs;                  // used in lazy loading
       vme->read_bytes = page_read_bytes;  // used in lazy loading
       vme->zero_bytes = page_zero_bytes;  // used in lazy loading
@@ -732,14 +732,14 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       // add into hash table
       struct thread *cur = thread_current();
       bool res = insert_vme(&cur->vm, vme);
-
+      */
       /* Advance. */
       read_bytes -= page_read_bytes;
       zero_bytes -= page_zero_bytes;
       upage += PGSIZE;
 
       // Modified 3-1.1
-      ofs += page_read_bytes;
+      //ofs += page_read_bytes;
     }
   return true;
 }
