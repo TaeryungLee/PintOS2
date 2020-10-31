@@ -668,12 +668,13 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
   struct file* reopen = file_reopen(file);
 
   //file_seek (reopen, ofs);
-
+  int count = 1;
   //debug
   if (reopen == NULL)
     printf("reopen fucked\n");
   while (read_bytes > 0 || zero_bytes > 0) 
     {
+      printf("count: %d\n", count);
       /* Calculate how to fill this page.
          We will read PAGE_READ_BYTES bytes from FILE
          and zero the final PAGE_ZERO_BYTES bytes. */
@@ -748,6 +749,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 
       // Modified 3-1.1
       ofs += page_read_bytes;
+      count ++;
     }
   return true;
 }
