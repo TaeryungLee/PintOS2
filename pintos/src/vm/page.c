@@ -31,12 +31,17 @@ void vm_init (struct hash *vm)
 // use hash_int() to fetch hash value
 static unsigned vm_hash_func (const struct hash_elem *e, void *aux)
 {
+	/* check
 	struct vm_entry *vme;
 	void* vaddr;
 	vme = hash_entry(e, struct vm_entry, elem);
 	vaddr = vme->vaddr;
 
 	return hash_int((int) vaddr);
+	*/
+
+	struct vm_entry *vme = hash_entry(e, struct vm_entry, elem);
+	return hash_int((int)vme->vaddr);
 }
 
 //debug: innocent
@@ -44,6 +49,7 @@ static unsigned vm_hash_func (const struct hash_elem *e, void *aux)
 // compare vaddr, return true if b has larger vaddr, false otherwise
 static bool vm_less_func (const struct hash_elem *a, const struct hash_elem *b, void *aux)
 {
+	/*
 	struct vm_entry *vme_a;
 	struct vm_entry *vme_b;
 
@@ -53,6 +59,13 @@ static bool vm_less_func (const struct hash_elem *a, const struct hash_elem *b, 
 	void* vaddr_a = vme_a->vaddr;
 	void* vaddr_b = vme_b->vaddr;
 	return (unsigned) vaddr_a < (unsigned) vaddr_b;
+	*/
+	struct vm_entry *vme_a = hash_entry(a, struct vm_entry, elem);
+	struct vm_entry *vme_b = hash_entry(b, struct vm_entry, elem);
+	if(vme_a->vaddr < vme_b->vaddr)
+		return true;
+	else 
+		return false;
 }
 
 // use hash_insert() to insert vm_entry into hash table
@@ -60,6 +73,7 @@ static bool vm_less_func (const struct hash_elem *a, const struct hash_elem *b, 
 // return true if success, otherwise false
 bool insert_vme (struct hash *vm, struct vm_entry *vme)
 {
+	/*
   ASSERT (pg_ofs (vme->vaddr) == 0);
 	struct hash_elem* result;
 	struct hash_elem* elem_addr = &vme->elem;
@@ -68,6 +82,13 @@ bool insert_vme (struct hash *vm, struct vm_entry *vme)
 	if (result == NULL)
 		return true;
 	return false;
+	*/
+
+	bool result = false;
+	/* if hash_insert is success, return true */
+	if(hash_insert(vm, &vme->elem) == NULL)
+		result = true;
+	return result;
 }
 
 // use hash_delete() to remove vm_entry from hash table
@@ -75,6 +96,7 @@ bool insert_vme (struct hash *vm, struct vm_entry *vme)
 // return true if element has found in hash table, otherwise false
 bool delete_vme (struct hash *vm, struct vm_entry *vme)
 {
+	/*
 	struct hash_elem* result;
 	struct hash_elem* elem_addr = &vme->elem;
 	result = hash_delete(vm, elem_addr);
@@ -86,6 +108,13 @@ bool delete_vme (struct hash *vm, struct vm_entry *vme)
 	}
 	free(vme);
 	return true;
+	*/
+	bool result = false;
+	/* if hash_delete is success, return true */
+	if(hash_delete(vm, &vme->elem) != NULL)
+		result = true;
+	free(vme);
+	return result; 
 }
 
 // use pg_round_down() to find page address
@@ -95,6 +124,7 @@ bool delete_vme (struct hash *vm, struct vm_entry *vme)
 // use hash_entry() to return stored vm_entry structure
 struct vm_entry *find_vme(void *vaddr)
 {
+	/*
 	void* page;
 	struct vm_entry *vme;
 	struct vm_entry *vme_found;
@@ -112,6 +142,19 @@ struct vm_entry *find_vme(void *vaddr)
 
 	vme_found = hash_entry(elem, struct vm_entry, elem);
 	return vme_found;
+	*/
+
+	struct vm_entry vme;
+	struct hash_elem *element;
+	/* try to find vm_entry by hash_find*/
+	vme.vaddr = pg_round_down(vaddr);
+	element = hash_find(&thread_current()->vm, &vme.elem);
+	/* if get a element return vm_entry */
+	if(element != NULL)
+	{
+		return hash_entry(element, struct vm_entry, elem);
+	}
+	return NULL;
 }
 
 static void vm_destructor_func (struct hash_elem *e, void* aux);
@@ -140,6 +183,7 @@ static void vm_destructor_func (struct hash_elem *e, void* aux)
 // returns number of bytes read
 bool load_file (void* kaddr, struct vm_entry *vme)
 {
+	/*
 	// try to read from file
 	int read_bytes = file_read_at(vme->file, kaddr, vme->read_bytes, vme->offset);
 
@@ -149,6 +193,15 @@ bool load_file (void* kaddr, struct vm_entry *vme)
 	// add zero paddings into remaining area of page
 	memset(kaddr + vme->read_bytes, 0, vme->zero_bytes);
 	return true;
+	*/
+	bool result = false;   
+
+	if((int)vme->read_bytes == file_read_at(vme->file, kaddr, vme->read_bytes, vme->offset))
+	{
+		result = true;
+		memset(kaddr + vme->read_bytes, 0, vme->zero_bytes);
+	} 
+	return result;
 }
 
 
