@@ -155,12 +155,14 @@ file_read (struct file *file, void *buffer, off_t size)  */
 bool load_file (void* kaddr, struct vm_entry *vme)
 {
 	// try to read from file
-	int read_bytes = file_read_at(vme->file, kaddr, vme->read_bytes, vme->offset);
+	//int read_bytes = file_read_at(vme->file, kaddr, vme->read_bytes, vme->offset);
 
-	//printf("%d %d %d\n", vme->read_bytes, read_bytes, vme->offset);
-
+	file_seek(vme->file, vme->offset);
+	int read_bytes2 = file_read(vme->file, kaddr, vme->read_bytes);
+	//printf("%d %d %d %d\n", vme->read_bytes, read_bytes, read_bytes2, vme->offset);
+	//printf("%d %d %d\n", vme->read_bytes, read_bytes2, vme->offset);
 	// if read fails, return false
-	if ((int)vme->read_bytes != read_bytes)
+	if ((int)vme->read_bytes != read_bytes2)
 		return false;
 	// add zero paddings into remaining area of page
 	memset(kaddr + vme->read_bytes, 0, vme->zero_bytes);
