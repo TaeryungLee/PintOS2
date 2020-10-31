@@ -115,7 +115,6 @@ void free_page(void *kaddr)
 // if lru list is not empty, this function infinitely gives next element
 struct list_elem* get_next_lru_clock(void)
 {
-	lock_acquire(&lru_list_lock);
 	struct list_elem* next;
 
 	// if lru_list is empty, return NULL
@@ -130,7 +129,6 @@ struct list_elem* get_next_lru_clock(void)
 	else
 		next = list_next(lru_clock);
 
-	lock_release(&lru_list_lock);
 	return next;
 }
 
