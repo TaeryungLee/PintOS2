@@ -354,6 +354,7 @@ thread_exit (void)
 
   // Parent awake
   sema_up(&cur->exit_sema);
+  sema_up(&cur->load_sema);
 
   // If parent finishes to wait, or parent exits, then start to remove this process
   sema_down(&cur->rm_sema);
