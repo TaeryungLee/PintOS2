@@ -534,20 +534,23 @@ write(int fd, void* buffer, int size, struct intr_frame *f)
 
   if ((unsigned int) fd > 131)
     exits(-1, NULL);
-  lock_acquire(&memory);
+
+  
+
   if(fd == 1)
   {
     putbuf(buffer, size);
-    lock_release(&memory);
+    //lock_release(&memory);
     return size;
   }
   else if(fd == 0)
   {
-    lock_release(&memory);
+    //lock_release(&memory);
     return -1;
   }
   else
   {
+    lock_acquire(&memory);
     struct file *cur_file = process_get_file(fd);
     int length = 0;
 
