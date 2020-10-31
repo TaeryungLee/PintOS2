@@ -91,7 +91,10 @@ void try_to_free_pages(void)
 	struct list_elem* e = start;
 
 	if (start == NULL)
+	{
+		lock_release(&lru_list_lock);
 		return;
+	}
 
 	while (1)
 	{
