@@ -31,11 +31,19 @@ struct vm_entry
 
 	// Used for swapping
 	size_t swap_slot;
+	bool pinned;
 
 	// Used for hashing
 	struct hash_elem elem;		// Hash table element
 };
 
+struct page
+{
+	void *kaddr;
+	struct vm_entry *vme;
+	struct thread *thread;
+	struct list_elem lru;
+};
 
 void vm_init (struct hash *vm);
 bool insert_vme (struct hash *vm, struct vm_entry *vme);

@@ -19,6 +19,8 @@
 #include "threads/thread.h"
 #include "threads/vaddr.h"
 #include "vm/page.h"
+#include "vm/frame.h"
+#include "vm/swap.h"
 
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
@@ -425,7 +427,12 @@ bool handle_mm_fault(struct vm_entry *vme)
 {
   // page fault handler
   // get new physical memory page
-  void* kpage = palloc_get_page(PAL_USER);
+  // void* kpage = palloc_get_page(PAL_USER);
+
+  // Modified 3-1.2: struct page
+  struct page *kpage = alloc_page(PAL_USER);
+
+  kpage->vme = vme
 
   // if page allocation fails, return false
   if (kpage ==  NULL)
@@ -436,47 +443,43 @@ bool handle_mm_fault(struct vm_entry *vme)
 
   switch(vme->type)
   {
+
     // case 1: load from binary file
     case VM_BIN:
     {
       // try to load
-      bool load_succ = load_file(kpage, vme);
+      bool load_succ = load_file(kpage->kaddr, vme);
 
       if (!load_succ)
       {
-        palloc_free_page(kpage);
+        free_page(kpage->kaddr);
         //printf("fuck2\n");
         return false;
       }
-
-      //printf("successfully loaded in thread %s, %d\n", thread_current()->name, thread_current()->tid);
-      // successfully loaded
-      // now, map virtual address to physical memory using install_page()
-
-      bool map_succ = install_page(vme->vaddr, kpage, vme->writable);
-
-      if (!map_succ)
-      {
-        palloc_free_page(kpage);
-        //printf("fuck3\n");
-        return false;
-      }
-      // successfully loaded and mapped
       break;
     }
 
+    // will be modified 3-2
     case VM_FILE:
     {
-      // to be implemented in memory mapped file chapter 3-2
+      
     }
 
+    // case 3: loaded from swap disk
     case VM_ANON:
     {
-      //printf("not implemented\n");
-      // to be implemented in swapping chapter 3-1.2
+      swap_in(vme->swap_slot, kpage->kaddr);
     }
   }
 
+  // successfully loaded
+  bool map_succ = install_page(vme->vaddr, kpage, vme->writable);
+
+  if (!map_succ)
+  {
+    free_page(kpage->kaddr);
+    return false;
+  }
   // mark vme as loaded
   vme->is_loaded = true;
   return true;
@@ -765,16 +768,16 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 static bool
 setup_stack (void **esp) 
 {
-  uint8_t *kpage;
+  struct page *kpage;
   bool success = false;
 
-  kpage = palloc_get_page (PAL_USER | PAL_ZERO);
+  kpage = alloc_page (PAL_USER | PAL_ZERO);
   if (kpage != NULL) 
     {
-      success = install_page (((uint8_t *) PHYS_BASE) - PGSIZE, kpage, true);
+      success = install_page (((uint8_t *) PHYS_BASE) - PGSIZE, kpage->kaddr, true);
       if (success)
       {
-
+        /*
         // Modified 3-1.1
         // create
         struct vm_entry *vme;
@@ -791,22 +794,45 @@ setup_stack (void **esp)
         vme->vaddr = ((uint8_t *) PHYS_BASE) - PGSIZE;
         vme->writable = 1;
         vme->is_loaded = 1;
-        /*
+        
         vme->file = NULL;                 // used in lazy loading
         vme->offset = 0;                  // used in lazy loading
         vme->read_bytes = 0;              // used in lazy loading
         vme->zero_bytes = 0;              // used in lazy loading
 
         vme->swap_slot = 0;               // not implemented yet (memory mapped files)
-        */
+        
         // add into hash table
+        struct thread *cur = thread_current();
+        insert_vme(&cur->vm, vme);
+        */
+
+        // Modified 3-1.2 use struct page
+
+        struct vm_entry *vme;
+        vme = calloc(1, sizeof(struct vm_entry));
+
+        // initialize
+        vme->type = VM_ANON;              // loaded from swap disk
+        vme->vaddr = ((uint8_t *) PHYS_BASE) - PGSIZE;
+        vme->writable = 1;
+        vme->is_loaded = 1;
+
+        // add vme to struct page
+        kpage->vme = vme;
+
+        // add page and vme
+        add_page_to_lru_list(kpage);
         struct thread *cur = thread_current();
         insert_vme(&cur->vm, vme);
 
         *esp = PHYS_BASE;
       }
       else
-        palloc_free_page (kpage);
+      {
+        free_page(kpage->kaddr);
+        free(vme);
+      }
     }
   return success;
 }
