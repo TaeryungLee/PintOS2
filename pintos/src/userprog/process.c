@@ -473,7 +473,7 @@ bool handle_mm_fault(struct vm_entry *vme)
   }
 
   // successfully loaded
-  bool map_succ = install_page(vme->vaddr, kpage, vme->writable);
+  bool map_succ = install_page(vme->vaddr, kpage->kaddr, vme->writable);
 
   if (!map_succ)
   {
