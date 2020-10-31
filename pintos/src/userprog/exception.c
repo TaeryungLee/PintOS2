@@ -171,7 +171,7 @@ page_fault (struct intr_frame *f)
     //printf("fuck");
     exits(-1, NULL);
   }
-
+  printf("successfully loaded\n");
   struct thread *cur = thread_current();
 
   cur->loaded ++;
