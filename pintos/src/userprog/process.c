@@ -74,7 +74,7 @@ process_execute (const char *file_name)
   if (child->exit_status == -1)
     return process_wait(tid);
 
-  sema_down(&child->load_sema);
+  //sema_down(&child->load_sema);
 
   /*
   for (e = list_begin(&thread_current()->children); e != list_end(&thread_current()->children); e = list_next(e))
