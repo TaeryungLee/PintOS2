@@ -4,6 +4,7 @@
 #include "threads/interrupt.h"
 #include "threads/vaddr.h"
 #include "userprog/pagedir.h"
+#include "threads/palloc.h"
 #include "vm/page.h"
 #include "vm/swap.h"
 

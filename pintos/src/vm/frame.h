@@ -1,6 +1,8 @@
 #ifndef VM_FRAME_H
 #define VM_FRAME_H
 
+#include "threads/palloc.h"
+
 struct page;
 
 void lru_list_init(void);
