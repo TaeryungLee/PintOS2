@@ -131,10 +131,9 @@ thread_tick (void)
   /* Update statistics. */
   if (t == idle_thread)
     idle_ticks++;
-#ifdef USERPROG
+
   else if (t->pagedir != NULL)
     user_ticks++;
-#endif
   else
     kernel_ticks++;
 
@@ -202,7 +201,6 @@ thread_create (const char *name, int priority,
   sf->eip = switch_entry;
   sf->ebp = 0;
 
-  #ifdef USERPROG
   // Modified 2.3
   // not loaded and exited
   t->is_loaded = 0;
@@ -220,7 +218,6 @@ thread_create (const char *name, int priority,
   {
     t->files[i] = NULL;
   }
-  #endif
   // sema_init(&t->rw_sema, 1);
 
   // Modified 3-1.1
@@ -234,7 +231,6 @@ thread_create (const char *name, int priority,
 
 // Modified 2.3
 // Get child with given tid
-#ifdef USERPROG
 struct thread *get_child (int tid)
 {
   struct list_elem *e;
@@ -259,7 +255,6 @@ void remove_child (struct thread *child)
   // this will be done in parent
   // palloc_free_page(child);
 }
-#endif
 
 /* Puts the current thread to sleep.  It will not be scheduled
    again until awoken by thread_unblock().
@@ -339,7 +334,6 @@ thread_exit (void)
 {
   ASSERT (!intr_context ());
 
-#ifdef USERPROG
   process_exit ();
 
 // Modified 2.3
@@ -363,7 +357,6 @@ thread_exit (void)
 
   // If parent finishes to wait, or parent exits, then start to remove this process
   sema_down(&cur->rm_sema);
-  #endif
   /* Remove thread from all threads list, set our status to dying,
      and schedule another process.  That process will destroy us
      when it calls thread_schedule_tail(). */
@@ -543,7 +536,6 @@ init_thread (struct thread *t, const char *name, int priority)
   t->magic = THREAD_MAGIC;
   list_push_back (&all_list, &t->allelem);
 
-  #ifdef USERPROG
   // Modified 2.3
   list_init(&t->children);
 
@@ -552,7 +544,6 @@ init_thread (struct thread *t, const char *name, int priority)
   sema_init(&t->exit_sema, 0);
   sema_init(&t->load_sema, 0);
   sema_init(&t->rm_sema, 0);
-  #endif
   intr_set_level (old_level);
 }
 
@@ -612,10 +603,8 @@ thread_schedule_tail (struct thread *prev)
   /* Start new time slice. */
   thread_ticks = 0;
 
-#ifdef USERPROG
   /* Activate the new address space. */
   process_activate ();
-#endif
 
   /* If the thread we switched from is dying, destroy its struct
      thread.  This must happen late so that thread_exit() doesn't
