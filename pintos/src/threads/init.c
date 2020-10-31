@@ -114,6 +114,10 @@ main (void)
   exception_init ();
   syscall_init ();
 #endif
+
+  swap_init(8192);
+  lru_list_init();
+
   /* Start thread scheduler and enable interrupts. */
   thread_start ();
   serial_init_queue ();
