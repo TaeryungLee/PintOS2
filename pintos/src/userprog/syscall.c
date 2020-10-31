@@ -394,7 +394,7 @@ create(char *name, size_t size, struct intr_frame *f)
   f->eax = filesys_create(name, size);
 
   //debug
-  printf("file create %d\n", f->eax);
+  //printf("file create %d\n", f->eax);
   lock_release(&memory);
 }
 
@@ -415,9 +415,9 @@ void open(char *name, struct intr_frame *f)
 
   //debug
 
-  printf("open called\n");
-  printf("thread name: %s, %d\n", thread_current()->name, thread_current()->tid);
-  printf("file name %s\n", name);
+  //printf("open called\n");
+  //printf("thread name: %s, %d\n", thread_current()->name, thread_current()->tid);
+  //printf("file name %s\n", name);
 
   check(name, sizeof(name));
 
@@ -528,9 +528,9 @@ write(int fd, void* buffer, int size, struct intr_frame *f)
 
   //debug
 
-  printf("write called\n");
-  printf("thread name: %s, %d\n", thread_current()->name, thread_current()->tid);
-  printf("fd %d\n", fd);
+  //printf("write called\n");
+  //printf("thread name: %s, %d\n", thread_current()->name, thread_current()->tid);
+  //printf("fd %d\n", fd);
 
   if ((unsigned int) fd > 131)
     exits(-1, NULL);
@@ -593,9 +593,9 @@ void tell(int fd, struct intr_frame *f)
 void close(int fd, struct intr_frame *f)
 {
   //debug
-  printf("close called\n");
-  printf("thread name: %s, %d\n", thread_current()->name, thread_current()->tid);
-  printf("fd %d\n", fd);
+  //printf("close called\n");
+  //printf("thread name: %s, %d\n", thread_current()->name, thread_current()->tid);
+  //printf("fd %d\n", fd);
 
   if ((unsigned int) fd > 131)
     exits(-1, NULL);
