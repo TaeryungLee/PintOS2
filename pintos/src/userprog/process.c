@@ -716,6 +716,12 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       struct vm_entry *vme;
       vme = calloc(1, sizeof(struct vm_entry));
 
+      if(vme==NULL)
+      {
+        printf("vme alloc fail\n");
+        return false;
+      }
+
       // initialize
       vme->type = VM_BIN;
       vme->vaddr = upage;
