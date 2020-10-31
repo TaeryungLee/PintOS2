@@ -129,6 +129,9 @@ struct thread
 
     // Modified 3-1.1
     struct hash vm;                      // virtual memory space for this thread
+
+    int to_load;
+    int loaded;
   };
 
 /* If false (default), use round-robin scheduler.

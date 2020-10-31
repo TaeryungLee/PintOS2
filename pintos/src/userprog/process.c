@@ -204,7 +204,7 @@ start_process (void *file_name_)
     new->is_loaded = 1;
     argument_stack(parse, count, &if_.esp);
     palloc_free_page(file_name);
-    sema_up(&new->load_sema);
+    //sema_up(&new->load_sema);
     //hex_dump(if_.esp, if_.esp, PHYS_BASE - if_.esp, true);
   }
 
@@ -668,13 +668,13 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
   struct file* reopen = file_reopen(file);
 
   //file_seek (reopen, ofs);
-  int count = 1;
+  //int count = 1;
   //debug
   if (reopen == NULL)
     printf("reopen fucked\n");
   while (read_bytes > 0 || zero_bytes > 0) 
     {
-      printf("thr name %s tid %d count: %d\n", thread_current()->name, thread_current()->tid, count);
+      //printf("thr name %s tid %d count: %d\n", thread_current()->name, thread_current()->tid, count);
       /* Calculate how to fill this page.
          We will read PAGE_READ_BYTES bytes from FILE
          and zero the final PAGE_ZERO_BYTES bytes. */
@@ -740,7 +740,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       struct thread *cur = thread_current();
       bool res = insert_vme(&cur->vm, vme);
 
-
+      cur->to_load += 1;
 
       /* Advance. */
       read_bytes -= page_read_bytes;
@@ -749,7 +749,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 
       // Modified 3-1.1
       ofs += page_read_bytes;
-      count ++;
+      //count ++;
     }
   return true;
 }

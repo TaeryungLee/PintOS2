@@ -171,6 +171,14 @@ page_fault (struct intr_frame *f)
     //printf("fuck");
     exits(-1, NULL);
   }
+
+  struct thread *cur = thread_current();
+
+  cur->loaded ++;
+
+  if (cur->to_load == cur->loaded)
+    sema_up(&cur->load_sema);
+
 }
 
 
