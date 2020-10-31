@@ -19,7 +19,7 @@ void swap_init(size_t size)
 	swap_bitmap = bitmap_create(size);
 
 	// initialize bitmap to 0 (vacant)
-	bitmap_set_all(swap_map, 0);
+	bitmap_set_all(swap_bitmap, 0);
 }
 
 
@@ -36,7 +36,7 @@ void swap_in(size_t used_index, void* kaddr)
 		block_read(swap_block, used_index * NUM_SEC + i, kaddr + i * BLOCK_SECTOR_SIZE);
 
 	// change bitmap into 1 (using)
-	bitmap_flip(swap_map, used_index);
+	bitmap_flip(swap_bitmap, used_index);
 	lock_release(&swap_lock);
 }
 
