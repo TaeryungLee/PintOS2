@@ -96,7 +96,7 @@ void try_to_free_pages(void)
 	while (1)
 	{
 		// target page
-		page = list_entry(e, struct_page, lru);
+		page = list_entry(e, struct page, lru);
 
 		// thread and vme
 		t = page->thread;
