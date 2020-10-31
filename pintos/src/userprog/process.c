@@ -423,7 +423,6 @@ static bool install_page (void *upage, void *kpage, bool writable);
 // Modified 3-1.1
 bool handle_mm_fault(struct vm_entry *vme)
 {
-  /*
   // page fault handler
   // get new physical memory page
   void* kpage = palloc_get_page(PAL_USER);
@@ -478,20 +477,6 @@ bool handle_mm_fault(struct vm_entry *vme)
 
   // mark vme as loaded
   vme->is_loaded = true;
-  return true;
-  */
-  uint8_t *kpage;
-  if (vme->type != VM_BIN)
-    return false;
-  kpage = palloc_get_page (PAL_USER);
-  if (kpage == NULL)
-    return false;
-  if (!load_file (kpage, vme) ||
-      !install_page (vme->vaddr, kpage, vme->writable))
-  {
-    palloc_free_page (kpage);
-    return false;
-  }
   return true;
 }
 
@@ -723,7 +708,6 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
         }
       */
 
-      /*
       // Modified 3-1.1
       // create and initialize vm_entry
       // use insert_vme() function to add vm_entry into hash table
@@ -748,22 +732,6 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       // add into hash table
       struct thread *cur = thread_current();
       bool res = insert_vme(&cur->vm, vme);
-      */
-
-      struct vm_entry *vme = (struct vm_entry *)malloc(sizeof (struct vm_entry));
-      if (vme == NULL)
-        return false;
-
-      memset (vme, 0, sizeof (struct vm_entry));
-      vme->type = VM_BIN;
-      vme->file = reopen;
-      vme->offset = ofs;
-      vme->read_bytes = page_read_bytes;
-      vme->zero_bytes = page_zero_bytes;
-      vme->writable = writable;
-      vme->vaddr = upage;
-
-      insert_vme (&thread_current ()->vm, vme);
 
       /* Advance. */
       read_bytes -= page_read_bytes;
@@ -786,78 +754,48 @@ static bool
 setup_stack (void **esp) 
 {
   uint8_t *kpage;
-  //check
-  void *upage = ((uint8_t *) PHYS_BASE) - PGSIZE;
   bool success = false;
 
   kpage = palloc_get_page (PAL_USER | PAL_ZERO);
   if (kpage != NULL) 
-  {
-    /*
-    success = install_page (((uint8_t *) PHYS_BASE) - PGSIZE, kpage, true);
-    if (success)
     {
-      // Modified 3-1.1
-      // create
-      struct vm_entry *vme;
-      vme = calloc(1, sizeof(struct vm_entry));
-
-      if (vme == NULL)
+      success = install_page (((uint8_t *) PHYS_BASE) - PGSIZE, kpage, true);
+      if (success)
       {
-        palloc_free_page(kpage);
-        return false;
-      }
 
-      // initialize
-      vme->type = VM_ANON;              // loaded from swap disk
-      vme->vaddr = ((uint8_t *) PHYS_BASE) - PGSIZE;
-      vme->writable = 1;
-      vme->is_loaded = 1;
-        
-      vme->file = NULL;                 // used in lazy loading
-      vme->offset = 0;                  // used in lazy loading
-      vme->read_bytes = 0;              // used in lazy loading
-      vme->zero_bytes = 0;              // used in lazy loading
+        // Modified 3-1.1
+        // create
+        struct vm_entry *vme;
+        vme = calloc(1, sizeof(struct vm_entry));
 
-      vme->swap_slot = 0;               // not implemented yet (memory mapped files)
-        
-      // add into hash table
-      struct thread *cur = thread_current();
-      insert_vme(&cur->vm, vme);
+        if (vme == NULL)
+        {
+          palloc_free_page(kpage);
+          return false;
+        }
 
-      *esp = PHYS_BASE;
-    }
-    else
-      palloc_free_page (kpage);
-    */
-    success = install_page (upage, kpage, true);
-    if (success)
-    {
-      struct vm_entry *vme;
-      vme = (struct vm_entry *)malloc(sizeof(struct vm_entry));
-      if (vme == NULL)
-      {
-        success = false;
-        palloc_free_page (kpage);
+        // initialize
+        vme->type = VM_ANON;              // loaded from swap disk
+        vme->vaddr = ((uint8_t *) PHYS_BASE) - PGSIZE;
+        vme->writable = 1;
+        vme->is_loaded = 1;
+        /*
+        vme->file = NULL;                 // used in lazy loading
+        vme->offset = 0;                  // used in lazy loading
+        vme->read_bytes = 0;              // used in lazy loading
+        vme->zero_bytes = 0;              // used in lazy loading
+
+        vme->swap_slot = 0;               // not implemented yet (memory mapped files)
+        */
+        // add into hash table
+        struct thread *cur = thread_current();
+        insert_vme(&cur->vm, vme);
+
+        *esp = PHYS_BASE;
       }
       else
-      {
-        *esp = PHYS_BASE;
-
-        memset (vme, 0, sizeof (struct vm_entry));
-        vme->type = VM_ANON;
-        vme->vaddr = upage;
-        vme->writable = true;
-        vme->is_loaded = true;
-
-        insert_vme (&thread_current ()->vm, vme);
-      }          
+        palloc_free_page (kpage);
     }
-    else
-    {
-      palloc_free_page (kpage);
-    }
-  }
   return success;
 }
 
