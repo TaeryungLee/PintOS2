@@ -162,7 +162,7 @@ bool load_file (void* kaddr, struct vm_entry *vme)
 	//printf("%d %d %d %d\n", vme->read_bytes, read_bytes, read_bytes2, vme->offset);
 	printf("%d %d %d\n", vme->read_bytes, read_bytes, vme->offset);
 	// if read fails, return false
-	if ((int)vme->read_bytes != read_bytes2)
+	if ((int)vme->read_bytes != read_bytes)
 		return false;
 	// add zero paddings into remaining area of page
 	memset(kaddr + vme->read_bytes, 0, vme->zero_bytes);
