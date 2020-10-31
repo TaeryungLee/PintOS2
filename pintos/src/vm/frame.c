@@ -31,9 +31,11 @@ void add_page_to_lru_list(struct page *page)
 //delete user page from lru list
 void del_page_from_lru_list(struct page *page)
 {
-	lock_acquire(&lru_list_lock);
+	//lock_acquire(&lru_list_lock);
+	if (lru_clock == &page->lru)
+		list_remove(lru_clock);
 	list_remove(&page->lru);
-	lock_release(&lru_list_lock);
+	//lock_release(&lru_list_lock);
 }
 
 
@@ -55,9 +57,62 @@ struct page* find_page_from_lru_list(void* kaddr)
   return NULL;
 }
 
+
+// allocate memory for page
+struct page* alloc_page(enum palloc_flags flags)
+{
+	// allocate page structure
+	struct page *page;
+	page = calloc(1, sizeof(struct page));
+
+	// allocate page memory
+	page->kaddr = palloc_get_page(flags);
+
+	// if memory full, try to free pages
+	if (page->kaddr == NULL)
+	{
+		try_to_free_pages();
+		page->kaddr = palloc_get_page(flags);
+	}
+
+	// if still full, return NULL
+	if (page->kaddr == NULL)
+		return NULL;
+
+	page->thread = thread_current();
+
+	// add page into lru list
+	add_page_to_lru_list(page);
+	return page;
+}
+
+
+void _free_page(struct page *page)
+{
+	palloc_free_page(page->kaddr);
+	del_page_from_lru_list(page);
+	free(page);
+}
+
+
+void free_page(void *kaddr)
+{
+	struct page *page = find_page_from_lru_list(kaddr);
+
+	if (page == NULL)
+	{
+		printf("finding fucked\n");
+		exits(-1, NULL);
+	}
+
+	_free_page(page);
+}
+
+
+
 // get next lru_clock
 // if lru list is not empty, this function infinitely gives next element
-struct list_elem* get_next_lru_clock()
+struct list_elem* get_next_lru_clock(void)
 {
 	lock_acquire(&lru_list_lock);
 	struct list_elem* next;
