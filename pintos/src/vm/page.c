@@ -138,12 +138,28 @@ static void vm_destructor_func (struct hash_elem *e, void* aux)
 // off_t file_read_at (struct file *file, void *buffer, off_t size, off_t file_ofs)
 // file_read_at reads SIZE bytes from FILE into BUFFER, starting at offset FILE_OFS in the file
 // returns number of bytes read
+
+/* Sets the current position in FILE to NEW_POS bytes from the
+   start of the file. 
+void
+file_seek (struct file *file, off_t new_pos)*/
+
+/* Reads SIZE bytes from FILE into BUFFER,
+   starting at the file's current position.
+   Returns the number of bytes actually read,
+   which may be less than SIZE if end of file is reached.
+   Advances FILE's position by the number of bytes read.
+off_t
+file_read (struct file *file, void *buffer, off_t size)  */
+
 bool load_file (void* kaddr, struct vm_entry *vme)
 {
 	// try to read from file
 	int read_bytes = file_read_at(vme->file, kaddr, vme->read_bytes, vme->offset);
 
-	printf("%d %d %d %d\n", vme->read_bytes, read_bytes, vme->offset, vme->read_bytes);
+	file_seek(vme->file, off_t vme->offset);
+	int read_bytes2 = file_read(vme->file, kaddr, vme->read_bytes);
+	printf("%d %d %d %d\n", vme->read_bytes, read_bytes, vme->offset, read_bytes2);
 
 	// if read fails, return false
 	if ((int)vme->read_bytes != read_bytes)
