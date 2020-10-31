@@ -159,7 +159,7 @@ bool load_file (void* kaddr, struct vm_entry *vme)
 
 	file_seek(vme->file, vme->offset);
 	int read_bytes2 = file_read(vme->file, kaddr, vme->read_bytes);
-	printf("%d %d %d %d\n", vme->read_bytes, read_bytes, vme->offset, read_bytes2);
+	printf("%d %d %d %d\n", vme->read_bytes, read_bytes, read_bytes2, vme->offset);
 
 	// if read fails, return false
 	if ((int)vme->read_bytes != read_bytes)
