@@ -157,6 +157,7 @@ page_fault (struct intr_frame *f)
   if (!not_present)
     exits(-1, NULL);
   struct vm_entry* vme = find_vme(fault_addr);
+  printf("%#x\n", vme);
 
   if (vme == NULL)
   {
