@@ -158,7 +158,8 @@ void try_to_free_pages(void)
 		// thread and vme
 		t = page->thread;
 		vme = page->vme;
-
+		printf("list elem start %#x\n", e);
+		printf("list size %d\n", list_size(&lru_list));
 
 		// if pinned, pass
 		if (page->vme->pinned)
