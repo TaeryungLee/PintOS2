@@ -186,6 +186,9 @@ page_fault (struct intr_frame *f)
   }
   printf("%d %d %d\n", not_present, write, user);
   printf("%#x %#x %#x %#x\n", vme, vme->vaddr, vme->file, fault_addr);
+
+  if (fault_addr == 0x81b5000)
+    printf("start here");
   bool load_succ = handle_mm_fault(vme);
   //printf("load succ\n");
   if (!load_succ)
@@ -201,9 +204,9 @@ page_fault (struct intr_frame *f)
 
   cur->loaded ++;
   //printf("to load %d, loaded %d\n", cur->to_load, cur->loaded);
-  if (cur->to_load == cur->loaded || cur->loaded > 100)
+  if (cur->to_load == cur->loaded)
   {
-    printf("parent released\n");
+    //printf("parent released\n");
     sema_up(&cur->load_sema);
   }
 
