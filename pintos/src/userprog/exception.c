@@ -160,8 +160,8 @@ page_fault (struct intr_frame *f)
   struct vm_entry* vme = find_vme(fault_addr);
   //printf("%d %d %d\n", not_present, write, user);
 
-  printf("%#x %#x %#x   %d\n", fault_addr, vme, f->esp, verify_stack((int32_t) fault_addr, f->esp));
-  printf("%d %d %d\n", not_present, write, user);
+  //printf("%#x %#x %#x   %d\n", fault_addr, vme, f->esp, verify_stack((int32_t) fault_addr, f->esp));
+  //printf("%d %d %d\n", not_present, write, user);
   if (vme == NULL)
   {
     //printf("no vme fuck\n");
@@ -185,14 +185,7 @@ page_fault (struct intr_frame *f)
     return;
   }
 
-    //debug
-  if (fault_addr == 0x81b5000)
-  {
-      int ss;
-      printf("debug here\n");
-  }
-
-  printf("%#x %#x %#x %#x\n", vme, vme->vaddr, vme->file, fault_addr);
+  //printf("%#x %#x %#x %#x\n", vme, vme->vaddr, vme->file, fault_addr);
 
   bool load_succ = handle_mm_fault(vme);
   //printf("load succ\n");

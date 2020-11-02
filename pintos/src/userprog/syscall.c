@@ -70,7 +70,7 @@ syscall_handler (struct intr_frame *f)
   */
   void *esp = f->esp;
 
-  printf("-----------------------------\n in syscall handler, esp is %#x\n", esp);
+  //printf("-----------------------------\n in syscall handler, esp is %#x\n", esp);
   // Check if esp is valid
   check(esp, 4);
 

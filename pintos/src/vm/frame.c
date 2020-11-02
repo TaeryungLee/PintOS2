@@ -198,8 +198,6 @@ void try_to_free_pages(void)
 			continue;
 		}
 
-
-
 		//printf("%#x is not pinned\n", e);
 		// if accessed, pass
 		if(pagedir_is_accessed(t->pagedir, vme->vaddr))
