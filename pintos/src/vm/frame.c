@@ -162,13 +162,13 @@ void try_to_free_pages(void)
 
 		// if pinned, pass
 		if (page->vme->pinned)
-			continue;
+			goto PROCEED;
 		
 		// if accessed, pass
 		if(pagedir_is_accessed(t->pagedir, vme->vaddr))
 		{
 			pagedir_set_accessed(t->pagedir, vme->vaddr, false);
-			continue;
+			goto PROCEED;
 		}
 
 
@@ -207,6 +207,7 @@ void try_to_free_pages(void)
 
 		// if returns to the start or list is empty, exit
 		// otherwise, proceed
+PROCEED:
 		e = get_next_lru_clock();
 		if (e == start || e == NULL)
 			break;
