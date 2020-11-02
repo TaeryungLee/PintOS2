@@ -146,6 +146,8 @@ void try_to_free_pages(void)
 	struct list_elem* start = get_next_lru_clock();
 	struct list_elem* e = start;
 
+	int count = 0;
+
 	if (start == NULL)
 	{
 		lock_release(&lru_list_lock);
@@ -168,7 +170,17 @@ void try_to_free_pages(void)
 			printf("pinned\n");
 			e = get_next_lru_clock();
 			printf("list elem got %#x\n", e);
-			if (e == start || e == NULL)
+			if (e == start)
+			{
+				if (count == 0)
+				{
+					count ++;
+					continue;
+				}
+				else
+					break;
+			} 
+			if (e == NULL)
 				break;
 			continue;
 		}
@@ -181,7 +193,17 @@ void try_to_free_pages(void)
 				printf("accessed\n");
 				e = get_next_lru_clock();
 
-				if (e == start || e == NULL)
+				if (e == start)
+				{
+					if (count == 0)
+					{
+						count ++;
+						continue;
+					}
+					else
+						break;
+				} 
+				if (e == NULL)
 					break;
 				continue;
 			}
@@ -225,8 +247,19 @@ void try_to_free_pages(void)
 		// otherwise, proceed
 
 		e = get_next_lru_clock();
-		if (e == start || e == NULL)
+		if (e == start)
+		{
+			if (count == 0)
+			{
+				count ++;
+				continue;
+			}
+			else
+				break;
+		} 
+		if (e == NULL)
 			break;
+		continue;
 	}
 	lock_release(&lru_list_lock);
 }
