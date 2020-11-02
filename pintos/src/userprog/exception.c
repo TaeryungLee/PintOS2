@@ -212,16 +212,15 @@ page_fault (struct intr_frame *f)
     //printf("parent released\n");
     sema_up(&cur->load_sema);
   }
-
 }
 
 
 bool
 verify_stack (int32_t addr, int32_t esp)
 {
-  bool user = is_user_vaddr (addr);
+  bool user = is_user_vaddr(addr);
   bool heuristic = esp - addr <= 32;
-  bool stack = 0xC0000000UL - addr <= 8 * 1024 * 1024;
+  bool stack = 0xC0000000 - addr <= 8 * 1024 * 1024;
 
   return user && heuristic && stack;
 }
