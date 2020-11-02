@@ -69,6 +69,8 @@ syscall_handler (struct intr_frame *f)
   thread_exit ();
   */
   void *esp = f->esp;
+
+  printf("-----------------------------\n in syscall handler, esp is %#x", esp);
   // Check if esp is valid
   check(esp, 4);
 
