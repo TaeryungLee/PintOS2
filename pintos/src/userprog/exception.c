@@ -161,6 +161,7 @@ page_fault (struct intr_frame *f)
   //printf("%d %d %d\n", not_present, write, user);
 
   printf("%#x %#x %#x   %d\n", fault_addr, vme, f->esp, verify_stack((int32_t) fault_addr, f->esp));
+  
   printf("%d %d %d\n", not_present, write, user);
 
   if (vme == NULL)
