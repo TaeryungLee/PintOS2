@@ -160,12 +160,12 @@ void try_to_free_pages(void)
 		// thread and vme
 		t = page->thread;
 		vme = page->vme;
-		printf("list elem start %#x\n", e);
-		printf("list size %d\n", list_size(&lru_list));
+
 
 		// if pinned, pass
 		if (page->vme->pinned)
 		{
+			printf("pinned\n");
 			e = get_next_lru_clock();
 			printf("list elem got %#x\n", e);
 			if (e == start || e == NULL)
@@ -178,7 +178,9 @@ void try_to_free_pages(void)
 		{
 			pagedir_set_accessed(t->pagedir, vme->vaddr, false);
 			{
+				printf("accessed\n");
 				e = get_next_lru_clock();
+
 				if (e == start || e == NULL)
 					break;
 				continue;
