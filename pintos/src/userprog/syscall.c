@@ -18,7 +18,7 @@ static void syscall_handler (struct intr_frame *);
 /* 
 Helper Functions
 */
-void read_addr(void *dest, char *src, int count);
+void read_addr(void *dest, char *src, int count, void *esp);
 int read_byte(char *addr);
 bool write_addr(char *dest, char byte);
 bool check_byte(void *addr);
@@ -96,7 +96,7 @@ syscall_handler (struct intr_frame *f)
   	case SYS_EXIT:
   	{
   		int exit_code;
-  		read_addr(&exit_code, esp+4, 4);
+  		read_addr(&exit_code, esp+4, 4, esp);
   		exits(exit_code, f);
   		break;
   	}
@@ -104,7 +104,7 @@ syscall_handler (struct intr_frame *f)
   	case SYS_EXEC:
   	{
   		char *file;
-      read_addr(&file, esp+4, 4);
+      read_addr(&file, esp+4, 4, esp);
       check(file, 4);
       // modified 3-1.1
       check_vm(file, 4, false);
@@ -116,7 +116,7 @@ syscall_handler (struct intr_frame *f)
     case SYS_WAIT:
     {
     	int tid;
-      read_addr(&tid, esp+4, sizeof(tid));
+      read_addr(&tid, esp+4, sizeof(tid), esp);
       f->eax = wait(tid, f);
       break;
     }
@@ -127,8 +127,8 @@ syscall_handler (struct intr_frame *f)
     	check(esp + 4, 4);
       char *name;
       size_t size;
-      read_addr(&name, esp+4, 4);
-      read_addr(&size, esp+8, 4);
+      read_addr(&name, esp+4, 4, esp);
+      read_addr(&size, esp+8, 4, esp);
 
       //debug
       //printf("create called by %s\n", name);
@@ -140,7 +140,7 @@ syscall_handler (struct intr_frame *f)
     case SYS_REMOVE:
     {
       char *name;
-      read_addr(&name, esp+4, 4);
+      read_addr(&name, esp+4, 4, esp);
       remove(name, f);
       break;
     }
@@ -149,7 +149,7 @@ syscall_handler (struct intr_frame *f)
     {
 
       char *name;
-      read_addr(&name, esp+4, 4);
+      read_addr(&name, esp+4, 4, esp);
       check(name, sizeof(name));
       check_vm(name, sizeof(name), false);
       //debug
@@ -162,7 +162,7 @@ syscall_handler (struct intr_frame *f)
     case SYS_FILESIZE:
     {
       int fd;
-      read_addr(&fd, esp+4, sizeof(fd));
+      read_addr(&fd, esp+4, sizeof(fd), esp);
       filesize(fd, f);
       break;
     }
@@ -172,9 +172,9 @@ syscall_handler (struct intr_frame *f)
       int fd;
       void *buffer;
       size_t size;
-      read_addr(&fd, esp+4, 4);
-      read_addr(&buffer, esp+8, 4);
-      read_addr(&size, esp+12, 4);
+      read_addr(&fd, esp+4, 4, esp);
+      read_addr(&buffer, esp+8, 4, esp);
+      read_addr(&size, esp+12, 4, esp);
 
       check(buffer, sizeof(buffer));
       check_vm(buffer, sizeof(buffer), true);
@@ -191,9 +191,9 @@ syscall_handler (struct intr_frame *f)
       int fd;
       unsigned size;
       void *buffer;
-      read_addr(&fd, esp+4, 4);
-      read_addr(&buffer, esp+8, 4);
-      read_addr(&size, esp+12, 4);
+      read_addr(&fd, esp+4, 4, esp);
+      read_addr(&buffer, esp+8, 4, esp);
+      read_addr(&size, esp+12, 4, esp);
 
       check(buffer, sizeof(buffer));
       check_vm(buffer, sizeof(buffer), false);
@@ -207,8 +207,8 @@ syscall_handler (struct intr_frame *f)
     {
       int fd;
       int count;
-      read_addr(&fd, esp+4, 4);
-      read_addr(&count, esp+8, 4);
+      read_addr(&fd, esp+4, 4, esp);
+      read_addr(&count, esp+8, 4, esp);
       seek(fd, count, f);
       break;
     }
@@ -216,7 +216,7 @@ syscall_handler (struct intr_frame *f)
     case SYS_TELL:
     {
       int fd;
-      read_addr(&fd, esp+4, 4);
+      read_addr(&fd, esp+4, 4, esp);
       tell(fd, f);
       break;
     }
@@ -224,7 +224,7 @@ syscall_handler (struct intr_frame *f)
     case SYS_CLOSE:
     {
       int fd;
-      read_addr(&fd, esp+4, 4);
+      read_addr(&fd, esp+4, 4, esp);
       close(fd, f);
       break;
     }
