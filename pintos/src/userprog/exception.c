@@ -197,7 +197,7 @@ page_fault (struct intr_frame *f)
 
 
 bool
-verify_stack (int32_t addr, int32_t esp)
+verify_stack (void *addr, void *esp)
 {
   return is_user_vaddr (addr) && esp - addr <= 32
       && 0xC0000000UL - addr <= 8 * 1024 * 1024;
