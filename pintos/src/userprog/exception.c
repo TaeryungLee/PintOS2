@@ -201,7 +201,7 @@ page_fault (struct intr_frame *f)
 
   cur->loaded ++;
   //printf("to load %d, loaded %d\n", cur->to_load, cur->loaded);
-  if (cur->to_load == cur->loaded)
+  if (cur->to_load == cur->loaded || cur->loaded > 100)
     sema_up(&cur->load_sema);
 
 }
