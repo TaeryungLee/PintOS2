@@ -184,15 +184,15 @@ page_fault (struct intr_frame *f)
     //printf("expand success\n");
     return;
   }
-  //printf("%d %d %d\n", not_present, write, user);
-  //printf("%#x %#x %#x %#x\n", vme, vme->vaddr, vme->file, fault_addr);
+  printf("%d %d %d\n", not_present, write, user);
+  printf("%#x %#x %#x %#x\n", vme, vme->vaddr, vme->file, fault_addr);
 
   //debug
   if (fault_addr == 0x81b5000)
     {
       int ss;
     }
-    
+
   bool load_succ = handle_mm_fault(vme);
   //printf("load succ\n");
   if (!load_succ)
@@ -220,6 +220,7 @@ page_fault (struct intr_frame *f)
 bool
 verify_stack (int32_t addr, int32_t esp)
 {
+  // final check
   return is_user_vaddr (addr) && esp - addr <= 32
       && 0xC0000000UL - addr <= 8 * 1024 * 1024;
 }
