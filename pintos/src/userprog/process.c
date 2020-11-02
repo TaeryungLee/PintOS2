@@ -433,7 +433,7 @@ bool handle_mm_fault(struct vm_entry *vme)
   struct page *kpage = alloc_page(PAL_USER);
 
   kpage->vme = vme;
-  vme->pinned = true;
+  //vme->pinned = true;
 
   // if page allocation fails, return false
   if (kpage ==  NULL)
@@ -885,7 +885,6 @@ bool expand_stack(void *addr)
   vme->type = VM_ANON;
   vme->is_loaded = 1;
   vme->writable = 1;
-  vme->pinned = 1;
 
   stack->vme = vme;
 
