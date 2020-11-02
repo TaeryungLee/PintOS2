@@ -165,7 +165,6 @@ page_fault (struct intr_frame *f)
   if (vme == NULL)
   {
     //printf("no vme fuck\n");
-    /*
     if (!verify_stack((int32_t) fault_addr, f->esp))
     {
       //printf("verify fucked\n");
@@ -173,7 +172,6 @@ page_fault (struct intr_frame *f)
       if (!(f->esp > 0xc0000000))
         exits(-1, NULL);
     }
-    */
     if (!expand_stack(fault_addr))
     {
       //printf("expand fucked\n");
@@ -186,6 +184,12 @@ page_fault (struct intr_frame *f)
     //printf("expand success\n");
     return;
   }
+
+    //debug
+  if (fault_addr == 0x81b5000)
+    {
+      int ss;
+    }
 
   printf("%#x %#x %#x %#x\n", vme, vme->vaddr, vme->file, fault_addr);
 
