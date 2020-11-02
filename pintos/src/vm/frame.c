@@ -35,11 +35,10 @@ void del_page_from_lru_list(struct page *page)
 	//lock_acquire(&lru_list_lock);
 	if (lru_clock == &page->lru)
 	{
-		if (lru_clock == page)
-			lru_clock = list_entry(list_remove(&page->lru), struct page, lru);
-		list_remove(lru_clock);
+		lru_clock = list_entry(list_remove(&page->lru), struct page, lru);
 	}
-	list_remove(&page->lru);
+	else
+		list_remove(&page->lru);
 	//lock_release(&lru_list_lock);
 }
 
