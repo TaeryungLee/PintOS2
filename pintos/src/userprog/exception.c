@@ -187,9 +187,10 @@ page_fault (struct intr_frame *f)
 
     //debug
   if (fault_addr == 0x81b5000)
-    {
+  {
       int ss;
-    }
+      printf("debug here\n");
+  }
 
   printf("%#x %#x %#x %#x\n", vme, vme->vaddr, vme->file, fault_addr);
 
