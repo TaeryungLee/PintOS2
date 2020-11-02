@@ -33,12 +33,14 @@ void add_page_to_lru_list(struct page *page)
 void del_page_from_lru_list(struct page *page)
 {
 	//lock_acquire(&lru_list_lock);
+	printf("rm start with %d", list_size(&lru_list));
 	if (lru_clock == &page->lru)
 	{
 		lru_clock = list_entry(list_remove(&page->lru), struct page, lru);
 	}
 	else
 		list_remove(&page->lru);
+	printf("rm end with %d", list_size(&lru_list));
 	//lock_release(&lru_list_lock);
 }
 
