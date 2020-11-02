@@ -164,6 +164,7 @@ void try_to_free_pages(void)
 		if (page->vme->pinned)
 		{
 			e = get_next_lru_clock();
+			printf("list elem got %#x\n", e);
 			if (e == start || e == NULL)
 				break;
 			continue;
