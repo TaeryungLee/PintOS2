@@ -186,7 +186,7 @@ page_fault (struct intr_frame *f)
   printf("%d %d %d\n", not_present, write, user);
   printf("%#x %#x %#x %#x\n", vme, vme->vaddr, vme->file, fault_addr);
   bool load_succ = handle_mm_fault(vme);
-
+  printf("load succ\n");
   if (!load_succ)
   {
     //printf("handle failed fuck\n");
@@ -199,7 +199,7 @@ page_fault (struct intr_frame *f)
   struct thread *cur = thread_current();
 
   cur->loaded ++;
-  //printf("to load %d, loaded %d\n", cur->to_load, cur->loaded);
+  printf("to load %d, loaded %d\n", cur->to_load, cur->loaded);
   if (cur->to_load == cur->loaded)
     sema_up(&cur->load_sema);
 
