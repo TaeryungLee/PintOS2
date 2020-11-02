@@ -161,7 +161,7 @@ page_fault (struct intr_frame *f)
 
   printf("%#x %#x %#x   %d\n", fault_addr, vme, f->esp, verify_stack((int32_t) fault_addr, f->esp));
   printf("%d %d %d\n", not_present, write, user);
-  
+
   if (vme == NULL)
   {
     //printf("no vme fuck\n");
@@ -169,7 +169,7 @@ page_fault (struct intr_frame *f)
     {
       //printf("verify fucked\n");
       //printf("addr %#x %#x\n", fault_addr, f->esp);
-      if (!(f->esp > 0xc0000000))
+      if (!(f->esp > 0xc0000000) && !is_user_vaddr(addr))
         exits(-1, NULL);
     }
     if (!expand_stack(fault_addr))
