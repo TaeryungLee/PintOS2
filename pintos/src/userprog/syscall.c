@@ -245,9 +245,15 @@ check_expand(void *esp, void *addr)
   if (vme == NULL)
   {
     if (!verify_stack((int32_t) esp, (int32_t) addr))
+    {
+      printf("1");
       return false;
+    }
     if (!expand_stack(addr))
+    {
+      printf("2");
       return false;
+    }
   }
   return true;
 }
