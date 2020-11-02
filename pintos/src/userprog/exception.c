@@ -14,7 +14,7 @@ static long long page_fault_cnt;
 
 static void kill (struct intr_frame *);
 static void page_fault (struct intr_frame *);
-bool verify_stack (void *addr, void *esp);
+bool verify_stack (int32_t addr, int32_t esp);
 
 /* Registers handlers for interrupts that can be caused by user
    programs.
@@ -165,7 +165,7 @@ page_fault (struct intr_frame *f)
   {
     printf("no vme fuck\n");
     /*
-    if (!verify_stack(fault_addr, f->esp))
+    if (!verify_stack((int32_t) fault_addr, f->esp))
     {
       //printf("verify fucked\n");
       exits(-1, NULL)
@@ -197,7 +197,7 @@ page_fault (struct intr_frame *f)
 
 
 bool
-verify_stack (void *addr, void *esp)
+verify_stack (int32_t addr, int32_t esp)
 {
   return is_user_vaddr (addr) && esp - addr <= 32
       && 0xC0000000UL - addr <= 8 * 1024 * 1024;
