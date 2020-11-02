@@ -484,7 +484,7 @@ bool handle_mm_fault(struct vm_entry *vme)
   }
   // mark vme as loaded
   vme->is_loaded = true;
-  add_page_to_lru_list(kpage);
+  //add_page_to_lru_list(kpage);
   return true;
 }
 
