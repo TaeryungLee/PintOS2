@@ -896,9 +896,7 @@ bool expand_stack(void *addr)
     free(vme);
     return false;
   }
-  
-  if (intr_context())
-    vme->pinned = false;
+
   add_page_to_lru_list(stack);
   insert_vme(&thread_current()->vm, vme);
   return true;
