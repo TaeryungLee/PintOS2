@@ -25,7 +25,7 @@ bool check_byte(void *addr);
 void check(void *addr, int count);
 void check_valid_string (const void *str);
 void check_valid_buffer (void *buffer, unsigned size, bool to_write);
-void check_vm (void *addr, unsigned size, bool to_write);
+void check_vm (void *addr, unsigned size, bool to_write, void *esp);
 
 /* 
 Memory access handler
@@ -76,7 +76,7 @@ syscall_handler (struct intr_frame *f)
   check(esp, 4);
 
   //modified 3-1.1
-  check_vm(esp, 4, false);
+  check_vm(esp, 4, false, esp);
 
   bool res = check_byte(esp);
   // fetch syscall number
@@ -109,7 +109,7 @@ syscall_handler (struct intr_frame *f)
       read_addr(&file, esp+4, 4);
       check(file, 4);
       // modified 3-1.1
-      check_vm(file, 4, false);
+      check_vm(file, 4, false, esp);
       tid_t tid = execs(file, f);
       f->eax = tid;
       break;
@@ -153,7 +153,7 @@ syscall_handler (struct intr_frame *f)
       char *name;
       read_addr(&name, esp+4, 4);
       check(name, sizeof(name));
-      check_vm(name, sizeof(name), false);
+      check_vm(name, sizeof(name), false, esp);
       //debug
       //printf("open called by %s\n", name);
 
@@ -179,7 +179,7 @@ syscall_handler (struct intr_frame *f)
       read_addr(&size, esp+12, 4);
 
       check(buffer, sizeof(buffer));
-      check_vm(buffer, sizeof(buffer), true);
+      check_vm(buffer, sizeof(buffer), true, esp);
 
       int ret = read(fd, buffer, size, f);
       f->eax = ret;
@@ -198,7 +198,7 @@ syscall_handler (struct intr_frame *f)
       read_addr(&size, esp+12, 4);
 
       check(buffer, sizeof(buffer));
-      check_vm(buffer, sizeof(buffer), false);
+      check_vm(buffer, sizeof(buffer), false, esp);
 
       int ret = write(fd, buffer, size, f);
       f->eax = ret;
