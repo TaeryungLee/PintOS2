@@ -156,6 +156,7 @@ void try_to_free_pages(void)
 	printf("list starts with %d elem\n", list_size(&lru_list));
 	while (1)
 	{
+		printf("loop starts with element %#x\n", e);
 		// target page
 		page = list_entry(e, struct page, lru);
 
@@ -183,6 +184,7 @@ void try_to_free_pages(void)
 			continue;
 		}
 		
+		printf("%#x is not pinned\n", e);
 		// if accessed, pass
 		if(pagedir_is_accessed(t->pagedir, vme->vaddr))
 		{
@@ -205,6 +207,7 @@ void try_to_free_pages(void)
 				continue;
 			}
 		}
+		printf("%#x is not accessed\n", e);
 
 
 		// Will be modified 3-2: implement case VM_BIN
@@ -231,6 +234,7 @@ void try_to_free_pages(void)
 			}
 		}
 
+		printf("swapped %#x\n", e);
 		// modify data
 		vme->is_loaded = false;
 
