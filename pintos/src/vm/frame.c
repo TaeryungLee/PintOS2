@@ -150,7 +150,7 @@ void try_to_free_pages(void)
 	struct page *page;
 	struct thread *t;
 	struct vm_entry *vme;
-	printf("list starts with %d elem\n", list_size(&lru_list));
+	//printf("list starts with %d elem\n", list_size(&lru_list));
 	struct list_elem* start = get_next_lru_clock();
 	struct list_elem* e = start;
 
