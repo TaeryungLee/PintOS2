@@ -169,7 +169,7 @@ page_fault (struct intr_frame *f)
     {
       //printf("verify fucked\n");
       //printf("addr %#x %#x\n", fault_addr, f->esp);
-      if (!(f->esp > 0xc0000000) && !is_user_vaddr(addr))
+      if (!(f->esp > 0xc0000000) && !is_user_vaddr(fault_addr))
         exits(-1, NULL);
     }
     if (!expand_stack(fault_addr))
