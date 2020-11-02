@@ -346,7 +346,12 @@ void check_vm (void *addr, unsigned size, bool to_write, void *esp)
     if (vme == NULL)
     {
       //printf("no vme in check_vm\n");
-      printf("verify %d \n", verify_stack(addr, esp));
+      //printf("verify %d \n", verify_stack(addr, esp));
+      if (verify_stack(addr, esp))
+      {
+        if (!expand_stack(addr))
+          vm_res = false;
+      }
       vm_res = false;
     }
 
