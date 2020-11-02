@@ -258,9 +258,7 @@ read_addr(void *dest, char *src, int count, void *esp)
 {
   check(src, count);
   if (!check_expand(esp, dest) ||
-    !check_expand(esp, src) ||
-    !check_expand(esp, dest + count) ||
-    !check_expand(esp, src + count))
+    !check_expand(esp, src))
     exits(-1, NULL);
 	for (int i=0; i<count; i++)
 		*(char *) (dest + i) = read_byte(src + i) & 0xff;
