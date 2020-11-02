@@ -352,7 +352,8 @@ void check_vm (void *addr, unsigned size, bool to_write, void *esp)
         if (!expand_stack(addr))
           vm_res = false;
       }
-      vm_res = false;
+      else
+        vm_res = false;
     }
 
     else if (to_write && !vme->writable)
