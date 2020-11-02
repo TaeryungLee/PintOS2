@@ -866,8 +866,9 @@ install_page (void *upage, void *kpage, bool writable)
 bool expand_stack(void *addr)
 {
   struct page *stack = alloc_page(PAL_USER | PAL_ZERO);
-  if((size_t)(PHYS_BASE - pg_round_down(addr)) > (1 << 23))
-    printf("stack is not full but called expand\n");
+
+  //if((size_t)(PHYS_BASE - pg_round_down(addr)) > (1 << 23))
+    //printf("stack is not full but called expand\n");
 
   if (stack == NULL)
     return false;
