@@ -169,7 +169,7 @@ page_fault (struct intr_frame *f)
     if (!verify_stack((int32_t) fault_addr, f->esp))
     {
       //printf("verify fucked\n");
-      exits(-1, NULL)
+      exits(-1, NULL);
     }
     if (!expand_stack(fault_addr))
     {
