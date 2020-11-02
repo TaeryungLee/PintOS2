@@ -170,7 +170,8 @@ page_fault (struct intr_frame *f)
     {
       //printf("verify fucked\n");
       //printf("addr %#x %#x\n", fault_addr, f->esp);
-      exits(-1, NULL);
+      if (!(f->esp > 0xc0000000))
+        exits(-1, NULL);
     }
     if (!expand_stack(fault_addr))
     {
@@ -186,12 +187,6 @@ page_fault (struct intr_frame *f)
   }
 
   printf("%#x %#x %#x %#x\n", vme, vme->vaddr, vme->file, fault_addr);
-
-  //debug
-  if (fault_addr == 0x81b5000)
-    {
-      int ss;
-    }
 
   bool load_succ = handle_mm_fault(vme);
   //printf("load succ\n");
