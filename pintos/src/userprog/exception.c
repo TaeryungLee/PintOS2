@@ -219,9 +219,11 @@ page_fault (struct intr_frame *f)
 bool
 verify_stack (int32_t addr, int32_t esp)
 {
-  // final check
-  return is_user_vaddr (addr) && esp - addr <= 32
-      && 0xC0000000UL - addr <= 8 * 1024 * 1024;
+  bool user = is_user_vaddr (addr);
+  bool heuristic = esp - addr <= 32;
+  bool stack = 0xC0000000UL - addr <= 8 * 1024 * 1024;
+
+  return user && heuristic && stack;
 }
 
 
