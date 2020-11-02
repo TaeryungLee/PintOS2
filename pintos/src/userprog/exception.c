@@ -159,8 +159,10 @@ page_fault (struct intr_frame *f)
     exits(-1, NULL);
   struct vm_entry* vme = find_vme(fault_addr);
 
-  printf("%#x %#x %#x   %d\n", fault_addr, vme, f->esp, verify_stack((int32_t) fault_addr, f->esp));
-  printf("%d %d %d\n", not_present, write, user);
+  //printf("%#x %#x %#x   %d\n", fault_addr, vme, f->esp, verify_stack((int32_t) fault_addr, f->esp));
+  //printf("%d %d %d\n", not_present, write, user);
+
+  printf("%d\n", verify_stack((int32_t) fault_addr, f->esp));
 
   if (vme == NULL)
   {
@@ -169,7 +171,6 @@ page_fault (struct intr_frame *f)
     {
       //printf("verify fucked\n");
       //printf("addr %#x %#x\n", fault_addr, f->esp);
-      printf("%#x, %d\n", PHYS_BASE - 8 * 1024 * 1024, !(fault_addr > PHYS_BASE - 8 * 1024 * 1024));
       if (!(f->esp > 0xc0000000) && !(fault_addr < PHYS_BASE) && !(fault_addr > PHYS_BASE - 8 * 1024 * 1024))
         exits(-1, NULL);
     }
