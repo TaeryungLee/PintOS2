@@ -123,7 +123,12 @@ struct list_elem* get_next_lru_clock(void)
 
 	// if lru_clock is NULL or last element of lru_list, return first element in lru_list
 	else if (lru_clock == NULL || list_next(lru_clock) == list_end(&lru_list))
+	{
+		// if only one element, return NULL
+		if (list_size(&lru_list) == 1)
+			return NULL;
 		next = list_begin(&lru_list);
+	}
 
 	// otherwise, return next list element
 	else
@@ -246,7 +251,7 @@ void try_to_free_pages(void)
 
 		// if returns to the start or list is empty, exit
 		// otherwise, proceed
-
+		/*
 		e = get_next_lru_clock();
 		if (e == start)
 		{
@@ -261,6 +266,8 @@ void try_to_free_pages(void)
 		if (e == NULL)
 			break;
 		continue;
+		*/
+		break;
 	}
 	printf("list ends with %d elem\n", list_size(&lru_list));
 	lock_release(&lru_list_lock);
