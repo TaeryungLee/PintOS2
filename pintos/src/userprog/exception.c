@@ -171,7 +171,7 @@ page_fault (struct intr_frame *f)
     {
       printf("verify fucked\n");
       //printf("addr %#x %#x\n", fault_addr, f->esp);
-      if (!(f->esp > 0xc0000000) && (addr < (f->esp - 8 * 1024 * 1024)))
+      if (!(f->esp > 0xc0000000) && (PHYS_BASE < (f->esp - 8 * 1024 * 1024)))
       {
         exits(-1, NULL);
       }
