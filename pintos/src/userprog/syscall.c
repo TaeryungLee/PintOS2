@@ -246,7 +246,7 @@ check_expand(void *esp, void *addr)
   {
     if (!verify_stack((int32_t) esp, (int32_t) addr))
     {
-      printf("1");
+      printf("1 %#x %#x\n", esp, addr);
       return false;
     }
     if (!expand_stack(addr))
