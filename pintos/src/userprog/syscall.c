@@ -10,6 +10,7 @@
 #include "userprog/process.h"
 #include "threads/synch.h"
 #include "vm/page.h"
+#include "userprog/exception.h"
 
 
 static void syscall_handler (struct intr_frame *);
@@ -326,7 +327,7 @@ void check(void *addr, int count)
 
 // Modified 3-1.1
 // check if addr has corresponding vm_entry
-void check_vm (void *addr, unsigned size, bool to_write)
+void check_vm (void *addr, unsigned size, bool to_write, void *esp)
 {
   // requires writability?
   // this value should be true at the end of this function
@@ -345,6 +346,7 @@ void check_vm (void *addr, unsigned size, bool to_write)
     if (vme == NULL)
     {
       //printf("no vme in check_vm\n");
+      printf("verify %d \n", verify_stack(addr, esp));
       vm_res = false;
     }
 
