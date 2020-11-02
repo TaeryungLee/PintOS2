@@ -180,6 +180,7 @@ page_fault (struct intr_frame *f)
     vme = find_vme(fault_addr);
     if (vme == NULL)
       printf("still no vme\n");
+    printf("expand success\n");
 
   }
   printf("%d %d %d\n", not_present, write, user);
