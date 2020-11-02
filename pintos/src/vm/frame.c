@@ -192,6 +192,14 @@ void try_to_free_pages(void)
 			continue;
 		}
 		
+		if (t->pagedir == 0xcccccccc)
+		{
+			e = get_next_lru_clock();
+			continue;
+		}
+
+
+
 		//printf("%#x is not pinned\n", e);
 		// if accessed, pass
 		if(pagedir_is_accessed(t->pagedir, vme->vaddr))
