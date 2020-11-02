@@ -348,7 +348,7 @@ void check_vm (void *addr, unsigned size, bool to_write)
       vm_res = false;
     }
 
-    if (to_write && !vme->writable)
+    else if (to_write && !vme->writable)
     {
       //printf("not writable\n");
       write_res = false;
