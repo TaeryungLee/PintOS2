@@ -167,12 +167,10 @@ void try_to_free_pages(void)
 		// if pinned, pass
 		if (page->vme->pinned)
 		{
-			printf("pinned\n");
 			e = get_next_lru_clock();
-			printf("list elem got %#x\n", e);
 			if (e == start)
 			{
-				if (count == 0)
+				if (count < 1)
 				{
 					count ++;
 					continue;
@@ -190,7 +188,6 @@ void try_to_free_pages(void)
 		{
 			pagedir_set_accessed(t->pagedir, vme->vaddr, false);
 			{
-				printf("accessed\n");
 				e = get_next_lru_clock();
 
 				if (e == start)
