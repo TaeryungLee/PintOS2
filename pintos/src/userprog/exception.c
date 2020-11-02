@@ -158,10 +158,10 @@ page_fault (struct intr_frame *f)
   if (!not_present)
     exits(-1, NULL);
   struct vm_entry* vme = find_vme(fault_addr);
-  //printf("%d %d %d\n", not_present, write, user);
 
-  //printf("%#x %#x %#x   %d\n", fault_addr, vme, f->esp, verify_stack((int32_t) fault_addr, f->esp));
-  //printf("%d %d %d\n", not_present, write, user);
+  printf("%#x %#x %#x   %d\n", fault_addr, vme, f->esp, verify_stack((int32_t) fault_addr, f->esp));
+  printf("%d %d %d\n", not_present, write, user);
+  
   if (vme == NULL)
   {
     //printf("no vme fuck\n");
