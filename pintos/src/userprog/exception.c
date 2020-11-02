@@ -158,7 +158,7 @@ page_fault (struct intr_frame *f)
   if (!not_present)
     exits(-1, NULL);
   struct vm_entry* vme = find_vme(fault_addr);
-  //printf("%#x %#x %#x %#x\n", vme, vme->vaddr, vme->file, fault_addr);
+  printf("%#x %#x %#x %#x\n", vme, vme->vaddr, vme->file, fault_addr);
   //printf("size %d\n", sizeof(struct vm_entry));
 
   if (vme == NULL)
