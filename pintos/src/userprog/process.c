@@ -812,6 +812,9 @@ setup_stack (void **esp)
         struct vm_entry *vme;
         vme = calloc(1, sizeof(struct vm_entry));
 
+        if (vme == NULL)
+          printf("setup stack vme alloc fail\n");
+
         // initialize
         vme->type = VM_ANON;              // loaded from swap disk
         vme->vaddr = ((uint8_t *) PHYS_BASE) - PGSIZE;

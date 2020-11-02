@@ -342,7 +342,7 @@ void check_vm (void *addr, unsigned size, bool to_write)
     // does exist
     if (vme == NULL)
     {
-      //printf("no vme\n");
+      printf("no vme in check_vm\n");
       vm_res = false;
     }
 
