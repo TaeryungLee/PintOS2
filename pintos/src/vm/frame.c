@@ -129,6 +129,8 @@ struct list_elem* get_next_lru_clock(void)
 	else
 		next = list_next(lru_clock);
 
+	lru_clock = next;
+
 	return next;
 }
 
