@@ -153,7 +153,7 @@ void try_to_free_pages(void)
 		lock_release(&lru_list_lock);
 		return;
 	}
-
+	printf("list starts with %d elem\n", list_size(&lru_list));
 	while (1)
 	{
 		// target page
@@ -258,6 +258,7 @@ void try_to_free_pages(void)
 			break;
 		continue;
 	}
+	printf("list ends with %d elem\n", list_size(&lru_list));
 	lock_release(&lru_list_lock);
 }
 
