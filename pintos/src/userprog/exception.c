@@ -193,7 +193,6 @@ page_fault (struct intr_frame *f)
   if (cur->to_load == cur->loaded)
     sema_up(&cur->load_sema);
 
-  free(vme);
 }
 
 
