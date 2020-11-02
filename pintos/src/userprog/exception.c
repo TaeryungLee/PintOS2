@@ -171,8 +171,9 @@ page_fault (struct intr_frame *f)
     {
       printf("verify fucked\n");
       //printf("addr %#x %#x\n", fault_addr, f->esp);
-      printf("%d %d \n", !(f->esp > 0xc0000000), 8 * 1024 * 1024 < PHYS_BASE - fault_addr);
-      if (!(f->esp > 0xc0000000) && (8 * 1024 * 1024 < PHYS_BASE - fault_addr))
+      printf("%d %d %d\n", (int32_t)PHYS_BASE, (int32_t)fault_addr, (int32_t)PHYS_BASE - (int32_t)fault_addr);
+      printf("%d %d \n", !(f->esp > 0xc0000000), 8 * 1024 * 1024 < (int32_t)PHYS_BASE - (int32_t)fault_addr);
+      if (!(f->esp > 0xc0000000) && (8 * 1024 * 1024 < (int32_t)PHYS_BASE - (int32_t)fault_addr))
       {
         exits(-1, NULL);
       }
