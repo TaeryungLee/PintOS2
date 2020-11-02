@@ -149,7 +149,8 @@ syscall_handler (struct intr_frame *f)
 
       char *name;
       read_addr(&name, esp+4, 4);
-
+      check(name, sizeof(name));
+      check_vm(name, sizeof(name), false);
       //debug
       //printf("open called by %s\n", name);
 
@@ -173,6 +174,10 @@ syscall_handler (struct intr_frame *f)
       read_addr(&fd, esp+4, 4);
       read_addr(&buffer, esp+8, 4);
       read_addr(&size, esp+12, 4);
+
+      check(buffer, sizeof(buffer));
+      check_vm(buffer, sizeof(buffer), true);
+
       int ret = read(fd, buffer, size, f);
       f->eax = ret;
       break;
@@ -188,6 +193,10 @@ syscall_handler (struct intr_frame *f)
       read_addr(&fd, esp+4, 4);
       read_addr(&buffer, esp+8, 4);
       read_addr(&size, esp+12, 4);
+
+      check(buffer, sizeof(buffer));
+      check_vm(buffer, sizeof(buffer), false);
+
       int ret = write(fd, buffer, size, f);
       f->eax = ret;
       break;
@@ -419,13 +428,13 @@ void open(char *name, struct intr_frame *f)
   //printf("thread name: %s, %d\n", thread_current()->name, thread_current()->tid);
   //printf("file name %s\n", name);
 
-  check(name, sizeof(name));
+  //check(name, sizeof(name));
 
   // debug
   //printf("check passed\n");
 
   // Modified 3-1.1
-  check_vm(name, sizeof(name), false);
+  //check_vm(name, sizeof(name), false);
 
   //debug
   //printf("checkvm passed\n");
@@ -472,13 +481,13 @@ int read(int fd, void* buffer, int size, struct intr_frame *f)
   //debug
   //printf("%#x\n", buffer);
 
-  check(buffer, sizeof(buffer));
+  //check(buffer, sizeof(buffer));
 
   // debug
   //printf("check passed\n");
 
   // Modified 3-1.1
-  check_vm(buffer, sizeof(buffer), true);
+  //check_vm(buffer, sizeof(buffer), true);
 
   //debug
   //printf("checkvm passed\n");
@@ -522,9 +531,9 @@ int read(int fd, void* buffer, int size, struct intr_frame *f)
 int
 write(int fd, void* buffer, int size, struct intr_frame *f)
 {
-	check(buffer, sizeof(buffer));
+	//check(buffer, sizeof(buffer));
   // Modified 3-1.1
-  check_vm(buffer, sizeof(buffer), false);
+  //check_vm(buffer, sizeof(buffer), false);
 
   //debug
 
