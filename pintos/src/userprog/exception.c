@@ -178,6 +178,8 @@ page_fault (struct intr_frame *f)
     }
     
     vme = find_vme(fault_addr);
+    if (vme == NULL)
+      printf("still no vme\n");
   }
 
   bool load_succ = handle_mm_fault(vme);
