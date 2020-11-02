@@ -80,7 +80,7 @@ syscall_handler (struct intr_frame *f)
   // fetch syscall number
   int call_no;
 
-  read_addr(&call_no, esp, 4);
+  read_addr(&call_no, esp, 4, esp);
 
   //debug
   //printf("syscall number: %d\n", call_no);
