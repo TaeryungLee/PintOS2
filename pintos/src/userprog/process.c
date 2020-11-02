@@ -433,6 +433,7 @@ bool handle_mm_fault(struct vm_entry *vme)
   struct page *kpage = alloc_page(PAL_USER);
 
   kpage->vme = vme;
+  vme->pinned = true;
 
   // if page allocation fails, return false
   if (kpage ==  NULL)
@@ -469,6 +470,7 @@ bool handle_mm_fault(struct vm_entry *vme)
     case VM_ANON:
     {
       swap_in(vme->swap_slot, kpage->kaddr);
+      break;
     }
   }
 
@@ -482,6 +484,7 @@ bool handle_mm_fault(struct vm_entry *vme)
   }
   // mark vme as loaded
   vme->is_loaded = true;
+  add_page_to_lru_list(kpage);
   return true;
 }
 
@@ -820,6 +823,7 @@ setup_stack (void **esp)
         vme->vaddr = ((uint8_t *) PHYS_BASE) - PGSIZE;
         vme->writable = 1;
         vme->is_loaded = 1;
+        vme->pinned = true;
 
         // add vme to struct page
         kpage->vme = vme;
@@ -857,3 +861,70 @@ install_page (void *upage, void *kpage, bool writable)
   return (pagedir_get_page (t->pagedir, upage) == NULL
           && pagedir_set_page (t->pagedir, upage, kpage, writable));
 }
+
+
+bool expand_stack(void *addr)
+{
+  struct page *stack = alloc_page(PAL_USER | PAL_ZERO);
+  if((size_t)(PHYS_BASE - pg_round_down(addr)) > (1 << 23))
+    printf("stack is not full but called expand\n");
+
+  if (stack == NULL)
+    return false;
+
+  struct vm_entry* vme = calloc(1, sizeof(struct vm_entry));
+  bool install;
+
+  if (vme == NULL)
+  {
+    free_page(stack->kaddr);
+    return false;
+  }
+   //initialize vme
+  vme->vaddr = pg_round_down(addr);
+  vme->type = VM_ANON;
+  vme->is_loaded = 1;
+  vme->writable = 1;
+  vme->pinned = 1;
+
+  stack->vme = vme;
+
+  install = install_page(vme->vaddr, stack->kaddr, vme->writable);
+  if (!install)
+  {
+    free_page(stack->kaddr);
+    free(vme);
+    return false;
+  }
+  if (intr_context())
+    vme->pinned = false;
+  add_page_to_lru_list(stack);
+  insert_vme(&thread_current()->vm, vme);
+  return true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

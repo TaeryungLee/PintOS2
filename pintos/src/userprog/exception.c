@@ -158,14 +158,14 @@ page_fault (struct intr_frame *f)
   if (!not_present)
     exits(-1, NULL);
   struct vm_entry* vme = find_vme(fault_addr);
-  printf("%d %d %d\n", not_present, write, user);
-  printf("%#x %#x %#x %#x\n", vme, vme->vaddr, vme->file, fault_addr);
+  //printf("%d %d %d\n", not_present, write, user);
+  //printf("%#x %#x %#x %#x\n", vme, vme->vaddr, vme->file, fault_addr);
   //printf("size %d\n", sizeof(struct vm_entry));
 
   if (vme == NULL)
   {
-    printf("no vme fuck\n");
-    /*
+    //printf("no vme fuck\n");
+    
     if (!verify_stack((int32_t) fault_addr, f->esp))
     {
       //printf("verify fucked\n");
@@ -176,16 +176,20 @@ page_fault (struct intr_frame *f)
       //printf("expand fucked\n");
       exits(-1, NULL);
     }
-    */
+    
+    vme = find_vme(fault_addr);
   }
 
   bool load_succ = handle_mm_fault(vme);
 
   if (!load_succ)
   {
-    printf("handle failed fuck\n");
+    //printf("handle failed fuck\n");
     exits(-1, NULL);
   }
+
+  vme->pinned = false;
+
   //printf("successfully loaded\n");
   struct thread *cur = thread_current();
 
