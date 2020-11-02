@@ -169,12 +169,12 @@ page_fault (struct intr_frame *f)
 
     if (!verify_stack((int32_t) fault_addr, f->esp))
     {
-      printf("verify fucked\n");
+      //printf("verify fucked\n");
       //printf("addr %#x %#x\n", fault_addr, f->esp);
-      printf("%#x %#x %d\n", 
-        (unsigned int)PHYS_BASE, (unsigned int)fault_addr, (unsigned int)PHYS_BASE - (unsigned int)fault_addr);
-      printf("%d %d \n", !(f->esp > 0xc0000000), 8 * 1024 * 1024 < (unsigned int)PHYS_BASE - (unsigned int)fault_addr);
-      if (!(f->esp > 0xc0000000) && (8 * 1024 * 1024 < (unsigned int)PHYS_BASE - (unsigned int)fault_addr))
+      //printf("%#x %#x %d\n", 
+        //(unsigned int)PHYS_BASE, (unsigned int)fault_addr, (unsigned int)PHYS_BASE - (unsigned int)fault_addr);
+      //printf("%d %d \n", !(f->esp > 0xc0000000), 8 * 1024 * 1024 < (unsigned int)PHYS_BASE - (unsigned int)fault_addr);
+      if (!(f->esp > 0xc0000000) && !(8 * 1024 * 1024 < (unsigned int)PHYS_BASE - (unsigned int)fault_addr))
       {
         exits(-1, NULL);
       }
