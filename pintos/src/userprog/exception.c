@@ -168,13 +168,13 @@ page_fault (struct intr_frame *f)
     
     if (!verify_stack((int32_t) fault_addr, f->esp))
     {
-      printf("verify fucked\n");
-      printf("addr %#x %#x\n", fault_addr, f->esp);
+      //printf("verify fucked\n");
+      //printf("addr %#x %#x\n", fault_addr, f->esp);
       exits(-1, NULL);
     }
     if (!expand_stack(fault_addr))
     {
-      printf("expand fucked\n");
+      //printf("expand fucked\n");
       exits(-1, NULL);
     }
     
@@ -184,8 +184,8 @@ page_fault (struct intr_frame *f)
     //printf("expand success\n");
     return;
   }
-  printf("%d %d %d\n", not_present, write, user);
-  printf("%#x %#x %#x %#x\n", vme, vme->vaddr, vme->file, fault_addr);
+  //printf("%d %d %d\n", not_present, write, user);
+  //printf("%#x %#x %#x %#x\n", vme, vme->vaddr, vme->file, fault_addr);
   bool load_succ = handle_mm_fault(vme);
   //printf("load succ\n");
   if (!load_succ)

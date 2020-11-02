@@ -10,6 +10,7 @@
 #include "userprog/process.h"
 #include "threads/synch.h"
 #include "vm/page.h"
+#include "userprog/exception.h"
 
 
 static void syscall_handler (struct intr_frame *);
@@ -234,10 +235,33 @@ syscall_handler (struct intr_frame *f)
 /* 
 Helper Functions
 */
+
+bool
+check_expand(void *esp, void *addr)
+{
+  struct vm_entry *vme;
+  vme = find_vme(addr);
+
+  if (vme == NULL)
+  {
+    if (!verify_stack((int32_t) esp, (int32_t) addr))
+      return false;
+    if (!expand_stack(addr))
+      return false;
+  }
+  return true;
+}
+
+
 void 
-read_addr(void *dest, char *src, int count)
+read_addr(void *dest, char *src, int count, void *esp)
 {
   check(src, count);
+  if (!check_expand(esp, dest) ||
+    !check_expand(esp, src) ||
+    !check_expand(esp, dest + count) ||
+    !check_expand(esp, src + count))
+    exits(-1, NULL);
 	for (int i=0; i<count; i++)
 		*(char *) (dest + i) = read_byte(src + i) & 0xff;
 }
