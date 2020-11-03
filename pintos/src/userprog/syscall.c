@@ -744,7 +744,7 @@ void munmap(int mapid)
   struct list_elem *e;
   struct list_elem *prev;
 
-  if (list_size(&cur->mmap_file) == 0)
+  if (list_size(&cur->mmap_list) == 0)
     return;
 
   if (cur->mmap_next <= mapid)
