@@ -320,7 +320,7 @@ process_exit (void)
 
   // Modified 3-2
   // close files in mmap_list
-  
+  printf("exit, remaining mmap %d\n", cur->mmap_next);
   munmap(0);
   
   vm_destroy(&cur->vm);
