@@ -113,6 +113,16 @@ void free_page(void *kaddr)
 }
 
 
+void try_free_page(void *kaddr)
+{
+	struct page *page = find_page_from_lru_list(kaddr);
+
+	if (page == NULL)
+		return;
+
+	_free_page(page);
+}
+
 
 // get next lru_clock
 // if lru list is not empty, this function infinitely gives next element

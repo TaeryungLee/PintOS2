@@ -16,6 +16,7 @@ void free_page(void *kaddr);
 
 struct list_elem* get_next_lru_clock();
 void try_to_free_pages(void);
+void try_free_page(void *kaddr);
 
 
 #endif

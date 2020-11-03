@@ -814,7 +814,7 @@ void do_munmap(struct mmap_file *mmap_file)
     // clear page table 
     pagedir_clear_page(cur->pagedir, vme->vaddr);
     // free page
-    free_page(pd);
+    try_free_page(pd);
     vme->is_loaded = false;
 
     // prepare to advnace
