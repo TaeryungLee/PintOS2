@@ -721,7 +721,7 @@ if ((unsigned int) addr % (unsigned int)PGSIZE != 0)
     list_push_back(&mmap_file->vme_list, &vme->mmap_elem);
     if(insert_vme(&cur->vm, vme) == NULL)
     {
-      printf("vme insert failed\n");
+      //printf("vme insert failed\n");
       exits(-1, NULL);
     }
 
