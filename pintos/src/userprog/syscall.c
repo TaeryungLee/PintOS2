@@ -239,8 +239,8 @@ syscall_handler (struct intr_frame *f)
       read_addr(&fd, esp+4, 4);
       read_addr(&addr, esp+8, 4);
 
-      check(addr, sizeof(addr));
-      check_vm(addr, sizeof(addr), false, esp);
+      //check(addr, sizeof(addr));
+      //check_vm(addr, sizeof(addr), false, esp);
 
       f->eax = mmap(fd, addr);
       break;
@@ -700,7 +700,7 @@ int mmap(int fd, void *addr)
 
     // initialize new vm entry
     vme->type = VM_FILE;
-    vme->vaddr = addr;
+    vme->vaddr = current_addr;
     vme->writable = 1;
     vme->is_loaded = 0;
 
