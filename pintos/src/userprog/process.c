@@ -304,11 +304,7 @@ process_exit (void)
   */
   //free(&cur->files);
   // Modified 2.4
-  for (int i = 2; i < cur->fd_next; i++)
-  {
-    process_close_file(i);
-  }
-
+  munmap(0);
   // If orphan, remove itself
   /*
   if (cur->parent->is_exited)
