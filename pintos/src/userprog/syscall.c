@@ -722,7 +722,7 @@ if ((unsigned int) addr % (unsigned int)PGSIZE != 0)
     if(insert_vme(&cur->vm, vme) == NULL)
     {
       //printf("vme insert failed\n");
-      exits(-1, NULL);
+      return -1;
     }
 
     // proceed
