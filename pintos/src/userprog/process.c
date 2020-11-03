@@ -476,6 +476,7 @@ bool handle_mm_fault(struct vm_entry *vme)
         printf("fuck2\n");
         return false;
       }
+      break;
     }
 
     // case 3: loaded from swap disk
