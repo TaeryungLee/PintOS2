@@ -320,8 +320,13 @@ process_exit (void)
 
   // Modified 3-2
   // close files in mmap_list
-  printf("exit, remaining mmap %d\n", cur->mmap_next);
-  munmap(0);
+  //printf("exit, remaining mmap %d\n", cur->mmap_next);
+  for (int i = 1; i < cur->mmap_next; i++)
+  {
+    struct mmap_file *found = find_mmap_file(i);
+    if (!(found == NULL))
+      munmap(i);
+  }
   
   vm_destroy(&cur->vm);
 
@@ -916,7 +921,21 @@ bool expand_stack(void *addr)
 }
 
 
-
+struct mmap_file* find_mmap_file(int mapid)
+{
+  struct list_elem *e;
+  struct thread *cur = thread_current();
+  struct mmap_file *iter;
+  for (e = list_begin(&cur->mmap_list);
+    e != list_end(&cur->mmap_list);
+    e = list_next(e))
+  {
+    iter = list_entry(e, struct mmap_file, elem);
+    if(f->mapid == mapid)
+      return f;
+  }
+  return NULL;
+}
 
 
 
