@@ -28,6 +28,7 @@ void argument_stack(char **parse, int count, void **esp);
 int process_add_file(struct file *f);
 struct file *process_get_file(int fd);
 void process_close_file(int fd);
+struct mmap_file* find_mmap_file(int mapid);
 
 /* Starts a new thread running a user program loaded from
    FILENAME.  The new thread may be scheduled (and may even exit)
@@ -931,8 +932,8 @@ struct mmap_file* find_mmap_file(int mapid)
     e = list_next(e))
   {
     iter = list_entry(e, struct mmap_file, elem);
-    if(f->mapid == mapid)
-      return f;
+    if(iter->mapid == mapid)
+      return iter;
   }
   return NULL;
 }
