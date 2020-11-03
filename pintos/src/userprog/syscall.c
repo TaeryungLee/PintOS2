@@ -241,8 +241,9 @@ syscall_handler (struct intr_frame *f)
 
       //check(addr, sizeof(addr));
       //check_vm(addr, sizeof(addr), false, esp);
-
-      f->eax = mmap(fd, addr);
+      int res = mmap(fd, addr);
+      printf("%d\n", res);
+      f->eax = res;
       break;
     }
     case SYS_MUNMAP:
