@@ -685,7 +685,7 @@ int mmap(int fd, void *addr)
   }
 
   // add mmap file into thread
-  list_push_back(cur->mmap_list, &mmap_file->elem);
+  list_push_back(&cur->mmap_list, &mmap_file->elem);
 
   // iterate to add vm entry
   file_len = file_length(mmap_file->file);
@@ -693,8 +693,8 @@ int mmap(int fd, void *addr)
   while(file_len > 0)
   {
     // remaining bytes to read
-    page_read_bytes = file_len < PGSIZE ? file_len : PGSIZE;
-    page_zero_bytes = PGSIZE - page_read_bytes;
+    size_t page_read_bytes = file_len < PGSIZE ? file_len : PGSIZE;
+    size_t page_zero_bytes = PGSIZE - page_read_bytes;
 
     vme = calloc(1, sizeof(struct vm_entry));
 
