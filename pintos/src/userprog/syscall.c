@@ -50,6 +50,8 @@ int write(int fd, void* buffer, int size, struct intr_frame *f);
 void seek(int fd, int count, struct intr_frame *f);
 void tell(int fd, struct intr_frame *f);
 void close(int fd, struct intr_frame *f);
+int mmap(int fd, void *addr);
+void munmap(int mapid);
 
 /*
 Main Functions
