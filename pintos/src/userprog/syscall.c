@@ -10,6 +10,8 @@
 #include "userprog/process.h"
 #include "threads/synch.h"
 #include "vm/page.h"
+#include "vm/frame.h"
+#include "vm/swap.h"
 #include "userprog/exception.h"
 
 
@@ -230,6 +232,27 @@ syscall_handler (struct intr_frame *f)
       close(fd, f);
       break;
     }
+    case SYS_MMAP:
+    {
+      int fd;
+      void *addr;
+      read_addr(&fd, esp+4, 4);
+      read_addr(&addr, esp+8, 4);
+
+      check(addr, sizeof(addr));
+      check_vm(addr, sizeof(addr), false, esp);
+
+      f->eax = mmap(fd, addr);
+      break;
+    }
+    case SYS_MUNMAP:
+    {
+      int mapid;
+      read_addr(&mapid, esp+4, 4);
+      munmap(mapid);
+      break;
+    }
+
   }
 }
 
@@ -630,5 +653,190 @@ void close(int fd, struct intr_frame *f)
     cur_thread->files[fd_v] = NULL;
   }
 }
+
+// Modified 3-2
+int mmap(int fd, void *addr)
+{
+  struct thread *cur = thread_current();
+  struct mmap_file *mmap_file;
+  struct vm_entry *vme;
+  struct file *file;
+  void* current_addr = addr;
+  int file_len;
+  int32_t ofs = 0;
+
+  mmap_file = calloc(1, sizeof(struct mmap_file));
+
+  if (mmap_file == NULL)
+  {
+    printf("mmap file alloc failed\n");
+    exits(-1, NULL);
+  }
+
+  // init mmap file
+  mmap_file->mapid = cur->mmap_next;
+  cur->mmap_next += 1;
+  list_init(&mmap_file->vme_list);
+  mmap_file->file = file_reopen(process_get_file(fd));
+  if (mmap_file->file == NULL)
+  {
+    printf("cannot find mmap file\n");
+    exits(-1, NULL);
+  }
+
+  // add mmap file into thread
+  list_push_back(cur->mmap_list, &mmap_file->elem);
+
+  // iterate to add vm entry
+  file_len = file_length(mmap_file->file);
+
+  while(file_len > 0)
+  {
+    // remaining bytes to read
+    page_read_bytes = file_len < PGSIZE ? file_len : PGSIZE;
+    page_zero_bytes = PGSIZE - page_read_bytes;
+
+    vme = calloc(1, sizeof(struct vm_entry));
+
+    // initialize new vm entry
+    vme->type = VM_FILE;
+    vme->vaddr = addr;
+    vme->writable = 1;
+    vme->is_loaded = 0;
+
+    vme->file = mmap_file->file;
+    vme->offset = ofs;
+    vme->read_bytes = page_read_bytes;
+    vme->zero_bytes = page_zero_bytes;
+
+    // insert vm entry to mmap_file and vm
+    list_push_back(&mmap_file->vme_list, &vme->mmap_elem);
+    if(insert_vme(&cur->vm, vme) == NULL)
+    {
+      printf("vme insert failed\n");
+      exits(-1, NULL);
+    }
+
+    // proceed
+    current_addr += page_read_bytes;    // ?
+    file_len -= page_read_bytes;
+    ofs += page_read_bytes;
+  }
+  return cur->mmap_next - 1;
+}
+
+
+void munmap(int mapid)
+{
+  struct mmap_file *mmap_file;
+  struct thread *cur = thread_current();
+  struct list_elem *e;
+
+  if (cur->mmap_next <= mapid)
+  {
+    printf("invalid mapid %d, nent mapid is %d\n", mapid, cur->mmap_next);
+    exits(-1, NULL);
+  }
+
+
+  for (e = list_begin(&cur->mmap_list);
+    e != list_end(&cur->mmap_list);
+    e = list_next(e))
+  {
+    mmap_file = list_entry(e, struct mmap_file, elem);
+
+    if(mmap_file->mapid == mapid || mapid == 0)
+    {
+      // found wanted mmap file, call do_munmap
+      do_munmap(mmap_file);
+
+      // clean up
+
+      if (mapid != 0)
+        return;
+    }
+  }
+  if (mapid != 0)
+  {
+  printf("mmap file not found\n");
+  exits(-1, NULL);
+  }
+}
+
+
+void do_munmap(struct mmap_file *mmap_file)
+{
+  struct thread *cur = thread_current();
+  struct list_elem *e;
+  struct vm_entry *vme;
+
+  for (e = list_begin(&mmap_file->vme_list);
+    e != list_end(&mmap_file->vme_list);
+    e = list_next(e))
+  {
+    vme = list_entry(e, struct vm_entry, mmap_elem);
+    // if vme is loaded to physical memory
+    if (vme->is_loaded == true)
+    {
+      // if page is dirty, then must write back
+      if (pagedir_is_dirty(cur->pagedir, vme->vaddr))
+        file_write_at(vme->file, vme->vaddr, vme->read_bytes, vme->offset);
+      // free page
+      free_page(pagedir_get_page(cur->pagedir, vme->vaddr));
+      vme->is_loaded = false;
+    }
+    e = list_prev(list_remove(e));
+    delete_vme(&cur->vm, vme);
+  }
+  // remove from thread
+  list_remove(&mmap_file->elem);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

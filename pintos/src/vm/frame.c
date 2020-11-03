@@ -224,7 +224,7 @@ void try_to_free_pages(void)
 		//printf("%#x is not accessed\n", e);
 
 
-		// Will be modified 3-2: implement case VM_BIN
+		// Will be modified 3-2: implement case VM_FILE
 
 		switch (vme->type)
 		{
@@ -239,6 +239,8 @@ void try_to_free_pages(void)
 			}
 			case VM_FILE:
 			{
+				if(pagedir_is_dirty(t->pagedir, vme->vaddr))
+					file_write_at(page->vme->file, page->kaddr, page->vme->read_bytes, page->vme->offset);
 				break;
 			}
 			case VM_ANON:
@@ -246,6 +248,25 @@ void try_to_free_pages(void)
 				vme->swap_slot = swap_out(page->kaddr);
 				break;
 			}
+		}
+
+		if (vme->type == VM_FILE)
+		{
+			e = get_next_lru_clock();
+
+			if (e == start)
+			{
+				if (count == 0)
+				{
+					count ++;
+					continue;
+				}
+				else
+					break;
+			} 
+			if (e == NULL)
+				break;
+			continue;
 		}
 
 		//printf("swapped %#x\n", e);

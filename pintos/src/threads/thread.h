@@ -132,6 +132,9 @@ struct thread
 
     int to_load;
     int loaded;
+
+    struct list mmap_list;
+    int mmap_next;
   };
 
 /* If false (default), use round-robin scheduler.

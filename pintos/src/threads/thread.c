@@ -223,6 +223,11 @@ thread_create (const char *name, int priority,
   // Modified 3-1.1
   vm_init(&t->vm);
 
+  // Modified 3-2
+  // initialize current thread's mmap features
+  cur->mmap_next = 1;
+  list_init(&mmap_file->vme_list);
+  
   /* Add to run queue. */
   thread_unblock (t);
 

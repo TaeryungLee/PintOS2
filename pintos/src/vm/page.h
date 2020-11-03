@@ -37,6 +37,14 @@ struct vm_entry
 	struct hash_elem elem;		// Hash table element
 };
 
+struct mmap_file
+{
+  int mapid;
+  struct file *file;
+  struct list_elem elem;
+  struct list vme_list;
+};
+
 struct page
 {
 	void *kaddr;

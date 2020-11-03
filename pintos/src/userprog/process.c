@@ -318,6 +318,11 @@ process_exit (void)
   cur->is_exited = 1;
   // sema_up(&cur->exit_sema); -> Defined in thread_exit which calls this function
 
+  // Modified 3-2
+  // close files in mmap_list
+  for (int i = 1; mapid < cur->mmap_next; i ++)
+    munmap(i);
+
   vm_destroy(&cur->vm);
 
   pd = cur->pagedir;
@@ -463,7 +468,14 @@ bool handle_mm_fault(struct vm_entry *vme)
     // will be modified 3-2
     case VM_FILE:
     {
-      
+      bool load_succ = load_file(kpage->kaddr, vme);
+
+      if (!load_succ)
+      {
+        free_page(kpage->kaddr);
+        //printf("fuck2\n");
+        return false;
+      }
     }
 
     // case 3: loaded from swap disk
