@@ -320,7 +320,7 @@ process_exit (void)
 
   // Modified 3-2
   // close files in mmap_list
-  for (int i = 1; mapid < cur->mmap_next; i ++)
+  for (int i = 1; i < cur->mmap_next; i ++)
     munmap(i);
 
   vm_destroy(&cur->vm);
