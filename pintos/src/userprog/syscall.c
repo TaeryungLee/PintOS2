@@ -735,6 +735,7 @@ void munmap(int mapid)
   struct mmap_file *mmap_file;
   struct thread *cur = thread_current();
   struct list_elem *e;
+  struct list_elem *prev;
 
   if (cur->mmap_next <= mapid)
   {
@@ -744,7 +745,8 @@ void munmap(int mapid)
 
 
   for (e = list_begin(&cur->mmap_list);
-    e != list_end(&cur->mmap_list);)
+    e != list_end(&cur->mmap_list);
+    e = list_next(e))
   {
     mmap_file = list_entry(e, struct mmap_file, elem);
 
@@ -755,7 +757,12 @@ void munmap(int mapid)
 
       // clean up
       file_close(mmap_file->file);
-      e = list_remove(e);
+
+      // prepare to advance
+      prev = list_prev(e);
+      list_remove(e);
+      e = prev;
+
       free(mmap_file);
 
       if (mapid != 0)
@@ -774,32 +781,39 @@ void do_munmap(struct mmap_file *mmap_file)
 {
   struct thread *cur = thread_current();
   struct list_elem *e;
+  struct list_elem *prev;
   struct vm_entry *vme;
+  void* pd;
 
   for (e = list_begin(&mmap_file->vme_list);
-    e != list_end(&mmap_file->vme_list);)
+    e != list_end(&mmap_file->vme_list);
+    e = list_next(e))
   {
     printf("unmapping %d\n", mmap_file->mapid);
     vme = list_entry(e, struct vm_entry, mmap_elem);
+    pd = pagedir_get_page(cur->pagedir, vme->vaddr);
     // if vme is loaded to physical memory
     if (vme->is_loaded == true)
     {
       // if page is dirty, then must write back
       if (pagedir_is_dirty(cur->pagedir, vme->vaddr))
         file_write_at(vme->file, vme->vaddr, vme->read_bytes, vme->offset);
-      // clear page table
-      pagedir_clear_page(cur->pagedir, vme->vaddr);
-      // free page
-      free_page(pagedir_get_page(cur->pagedir, vme->vaddr));
-      vme->is_loaded = false;
     }
-    e = list_remove(e);
-    delete_vme(&cur->vm, vme);
-    
+    // clear page table 
+    pagedir_clear_page(cur->pagedir, vme->pagedir);
+    // free page
+    free_page(pd);
+    vme->is_loaded = false;
+
+    // prepare to advnace
+    prev = list_prev(e);
+    list_remove(e);
+    e = prev;
+
     // remove from thread
     list_remove(&mmap_file->elem);
+    delete_vme(&cur->vm, vme);
   }
-
 }
 
 
