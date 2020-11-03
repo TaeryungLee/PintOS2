@@ -165,8 +165,6 @@ page_fault (struct intr_frame *f)
 
   if (vme == NULL)
   {
-    //printf("no vme fuck\n");
-
     if (!verify_stack((int32_t) fault_addr, f->esp))
     {
       if (!(f->esp > 0xc0000000))
@@ -178,7 +176,6 @@ page_fault (struct intr_frame *f)
     }
     if (!expand_stack(fault_addr))
     {
-      //printf("expand fucked\n");
       exits(-1, NULL);
     }
     
@@ -195,7 +192,6 @@ page_fault (struct intr_frame *f)
   //printf("load succ\n");
   if (!load_succ)
   {
-    //printf("handle failed fuck\n");
     exits(-1, NULL);
   }
 

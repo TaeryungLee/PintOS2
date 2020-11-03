@@ -445,7 +445,6 @@ bool handle_mm_fault(struct vm_entry *vme)
   // if page allocation fails, return false
   if (kpage ==  NULL)
   {
-    //printf("fuck1\n");
     return false;
   }
 
@@ -461,7 +460,6 @@ bool handle_mm_fault(struct vm_entry *vme)
       if (!load_succ)
       {
         free_page(kpage->kaddr);
-        //printf("fuck2\n");
         return false;
       }
       break;
@@ -475,7 +473,6 @@ bool handle_mm_fault(struct vm_entry *vme)
       if (!load_succ)
       {
         free_page(kpage->kaddr);
-        printf("fuck2\n");
         return false;
       }
       break;
@@ -694,7 +691,6 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
   int count = 1;
   //debug
   if (reopen == NULL)
-    printf("reopen fucked\n");
   while (read_bytes > 0 || zero_bytes > 0) 
     {
       //printf("thr name %s tid %d count: %d\n", thread_current()->name, thread_current()->tid, count);
