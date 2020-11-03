@@ -244,7 +244,7 @@ syscall_handler (struct intr_frame *f)
       //check(addr, sizeof(addr));
       //check_vm(addr, sizeof(addr), false, esp);
       int res = mmap(fd, addr);
-      printf("%d\n", res);
+      //printf("%d\n", res);
       f->eax = res;
       break;
     }
