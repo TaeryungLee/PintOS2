@@ -680,7 +680,8 @@ int mmap(int fd, void *addr)
   mmap_file->mapid = cur->mmap_next;
   cur->mmap_next += 1;
   list_init(&mmap_file->vme_list);
-  mmap_file->file = file_reopen(process_get_file(fd));
+  file = process_get_file(fd);
+  mmap_file->file = file_reopen(file);
   if (mmap_file->file == NULL)
   {
     printf("cannot find mmap file\n");
