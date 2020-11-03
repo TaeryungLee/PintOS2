@@ -789,7 +789,7 @@ void do_munmap(struct mmap_file *mmap_file)
     e != list_end(&mmap_file->vme_list);
     e = list_next(e))
   {
-    printf("unmapping %d\n", mmap_file->mapid);
+    //printf("unmapping %d\n", mmap_file->mapid);
     vme = list_entry(e, struct vm_entry, mmap_elem);
     pd = pagedir_get_page(cur->pagedir, vme->vaddr);
     // if vme is loaded to physical memory
