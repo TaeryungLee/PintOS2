@@ -51,6 +51,16 @@ void seek(int fd, int count, struct intr_frame *f);
 void tell(int fd, struct intr_frame *f);
 void close(int fd, struct intr_frame *f);
 
+
+void
+do_mummap (struct mmap_file *mmap_file);
+
+void
+mummap (int mapid);
+
+int
+mmap (int fd, void *addr);
+
 /*
 Main Functions
 */
