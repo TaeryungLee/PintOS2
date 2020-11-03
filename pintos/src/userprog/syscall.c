@@ -729,6 +729,7 @@ int mmap(int fd, void *addr)
   return cur->mmap_next - 1;
 }
 
+/*
 
 void munmap(int mapid)
 {
@@ -801,6 +802,71 @@ void do_munmap(struct mmap_file *mmap_file)
 }
 
 
+*/
+
+void munmap(int mapping)
+{
+  struct mmap_file *map_file;
+  struct thread *cur = thread_current();
+  struct list_elem *element;
+  struct list_elem *tmp;
+  /* find mmap_file which mapid is equal to mapping */
+  for(element = list_begin(&cur->mmap_list) ; element != list_end(&cur->mmap_list) ; element = list_next(element))
+  {
+    map_file = list_entry(element, struct mmap_file, elem);
+    /* if mapping is CLOSE_ALL, close all map_file.
+       find mmap_file's mapid is equal to mapping and remove mmap_file from mmap_list. */
+    if(mapping == 0 || map_file->mapid == mapping)
+    {
+      do_munmap(map_file);
+      /* close file */
+      file_close(map_file->file);
+      /* remove from mmap_list */
+      tmp = list_prev(element);
+      list_remove(element);
+      element = tmp;
+      /* free the mmap_file */
+      free(map_file);
+      if(mapping != 0)
+        break;
+    }
+  }
+}
+
+void do_munmap(struct mmap_file *mmap_file)
+{
+  struct thread *cur = thread_current();
+  struct list_elem *element;
+  struct list_elem *tmp;
+  struct list *vm_list = &(mmap_file->vme_list);
+  struct vm_entry *vme;
+  void *physical_address;
+  /* remove all vm_entry */
+  for(element = list_begin(vm_list); element != list_end(vm_list); element = list_next(element))
+  {
+    vme = list_entry(element, struct vm_entry, mmap_elem);
+    /* if vm_entry is loaded to physical memory */
+    if(vme->is_loaded == true)
+    {
+      physical_address = pagedir_get_page(cur->pagedir, vme->vaddr);
+      /* if vm_entry's physical memory is dirty, write to disk */
+      if(pagedir_is_dirty(cur->pagedir, vme->vaddr) == true)
+      {
+        file_write_at(vme->file, vme->vaddr, vme->read_bytes, vme->offset);
+      }
+      /* clear page table */
+      pagedir_clear_page(cur->pagedir, vme->vaddr);
+      /* free physical memory */
+      free_page(physical_address);
+    }
+    /* remove from vme_list*/
+    tmp = list_prev(element);
+    list_remove(element);
+    element = tmp;
+    /* delete vm_entry from hash and free */
+    delete_vme(&cur->vm, vme);
+  }
+}
 
 
 
