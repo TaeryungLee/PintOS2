@@ -668,6 +668,10 @@ int mmap(int fd, void *addr)
   int file_len;
   int32_t ofs = 0;
 
+if ((unsigned int) addr & (unsigned int)PGSIZE != 0)
+  exits(-1, NULL);
+
+
   mmap_file = calloc(1, sizeof(struct mmap_file));
 
   if (mmap_file == NULL)
@@ -742,10 +746,6 @@ void munmap(int mapid)
     printf("invalid mapid %d, nent mapid is %d\n", mapid, cur->mmap_next);
     exits(-1, NULL);
   }
-
-  if ((unsigned int) addr & (unsigned int)PGSIZE != 0)
-    exits(-1, NULL);
-
 
   for (e = list_begin(&cur->mmap_list);
     e != list_end(&cur->mmap_list);
