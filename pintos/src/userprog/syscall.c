@@ -800,7 +800,7 @@ void do_munmap(struct mmap_file *mmap_file)
         file_write_at(vme->file, vme->vaddr, vme->read_bytes, vme->offset);
     }
     // clear page table 
-    pagedir_clear_page(cur->pagedir, vme->pagedir);
+    pagedir_clear_page(cur->pagedir, vme->vaddr);
     // free page
     free_page(pd);
     vme->is_loaded = false;
