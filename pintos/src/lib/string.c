@@ -57,6 +57,8 @@ memcmp (const void *a_, const void *b_, size_t size)
 
   ASSERT (a != NULL || size == 0);
   ASSERT (b != NULL || size == 0);
+  msg("%s", &a_);
+  msg("%s", &b_);
 
   for (; size-- > 0; a++, b++)
     if (*a != *b)
