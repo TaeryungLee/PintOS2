@@ -778,6 +778,7 @@ void do_munmap(struct mmap_file *mmap_file)
     e != list_end(&mmap_file->vme_list);
     e = list_next(e))
   {
+    printf("unmapping %d", mmap_file->mapid);
     vme = list_entry(e, struct vm_entry, mmap_elem);
     // if vme is loaded to physical memory
     if (vme->is_loaded == true)
