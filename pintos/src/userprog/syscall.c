@@ -669,7 +669,7 @@ int mmap(int fd, void *addr)
   int32_t ofs = 0;
 
 if ((unsigned int) addr % (unsigned int)PGSIZE != 0)
-  exits(-1, NULL);
+  return -1;
 
 
   mmap_file = calloc(1, sizeof(struct mmap_file));
