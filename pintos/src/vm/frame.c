@@ -105,7 +105,7 @@ void free_page(void *kaddr)
 
 	if (page == NULL)
 	{
-		printf("finding fucked\n");
+		//printf("finding fucked\n");
 		exits(-1, NULL);
 	}
 
