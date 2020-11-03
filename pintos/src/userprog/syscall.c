@@ -820,7 +820,7 @@ mmap (int fd, void *addr)
   if (!(mmap_file->file = process_get_file (fd)))
     return -1;
   mmap_file->file = file_reopen(mmap_file->file);
-  mmap_file->mapid = thread_current ()->next_mapid++;
+  mmap_file->mapid = thread_current ()->mmap_next++;
   list_push_back (&thread_current ()->mmap_list, &mmap_file->elem);
 
   int length = file_length (mmap_file->file);
