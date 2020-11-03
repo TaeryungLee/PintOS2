@@ -790,7 +790,7 @@ void do_munmap(struct mmap_file *mmap_file)
       if (pagedir_is_dirty(cur->pagedir, vme->vaddr))
         file_write_at(vme->file, vme->vaddr, vme->read_bytes, vme->offset);
       // clear page table
-      pagedir_clear_page(cur->pagedir, vme->pagedir);
+      pagedir_clear_page(cur->pagedir, vme->vaddr);
       // free page
       free_page(pagedir_get_page(cur->pagedir, vme->vaddr));
       vme->is_loaded = false;
