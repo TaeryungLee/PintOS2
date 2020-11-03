@@ -611,7 +611,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
 
  done:
   /* We arrive here whether the load is successful or not. */
-  file_close (file);
+  //file_close (file);
   return success;
 }
 
@@ -687,7 +687,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
   // Modified 3.1-1
   struct file* reopen = file_reopen(file);
 
-  //file_seek (reopen, ofs);
+  file_seek (reopen, ofs);
   int count = 1;
   //debug
   if (reopen == NULL)
@@ -749,7 +749,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       vme->writable = writable;
       vme->is_loaded = 0;                 // not loaded yet
 
-      vme->file = reopen;                   // used in lazy loading
+      vme->file = file;                   // used in lazy loading
       vme->offset = ofs;                  // used in lazy loading
       vme->read_bytes = page_read_bytes;  // used in lazy loading
       vme->zero_bytes = page_zero_bytes;  // used in lazy loading
