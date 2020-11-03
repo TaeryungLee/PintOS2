@@ -321,7 +321,7 @@ process_exit (void)
   // Modified 3-2
   // close files in mmap_list
   
-  //munmap(0);
+  munmap(0);
   
   vm_destroy(&cur->vm);
 
