@@ -744,6 +744,9 @@ void munmap(int mapid)
   struct list_elem *e;
   struct list_elem *prev;
 
+  if (list_size(&cur->mmap_file) == 0)
+    return;
+
   if (cur->mmap_next <= mapid)
   {
     printf("invalid mapid %d, nent mapid is %d\n", mapid, cur->mmap_next);
