@@ -722,7 +722,7 @@ int mmap(int fd, void *addr)
     }
 
     // proceed
-    current_addr += page_read_bytes;    // ?
+    current_addr += PGSIZE;    // ?
     file_len -= page_read_bytes;
     ofs += page_read_bytes;
   }
