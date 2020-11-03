@@ -668,7 +668,7 @@ int mmap(int fd, void *addr)
   int file_len;
   int32_t ofs = 0;
 
-if ((unsigned int) addr & (unsigned int)PGSIZE != 0)
+if ((unsigned int) addr % (unsigned int)PGSIZE != 0)
   exits(-1, NULL);
 
 
