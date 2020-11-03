@@ -802,7 +802,7 @@ void do_munmap(struct mmap_file *mmap_file)
 
 
 
-static int
+int
 mmap (int fd, void *addr)
 {
   struct mmap_file *mmap_file;
@@ -850,7 +850,7 @@ mmap (int fd, void *addr)
 
 
 
-static void
+void
 mummap (int mapid)
 {
   struct mmap_file *f = find_mmap_file (mapid);
