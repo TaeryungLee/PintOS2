@@ -51,16 +51,6 @@ void seek(int fd, int count, struct intr_frame *f);
 void tell(int fd, struct intr_frame *f);
 void close(int fd, struct intr_frame *f);
 
-
-void
-do_mummap (struct mmap_file *mmap_file);
-
-void
-mummap (int mapid);
-
-int
-mmap (int fd, void *addr);
-
 /*
 Main Functions
 */
@@ -665,8 +655,6 @@ void close(int fd, struct intr_frame *f)
   }
 }
 
-/*
-
 // Modified 3-2
 int mmap(int fd, void *addr)
 {
@@ -804,100 +792,6 @@ void do_munmap(struct mmap_file *mmap_file)
   // remove from thread
   list_remove(&mmap_file->elem);
 }
-
-
-
-
-*/
-
-
-
-int
-mmap (int fd, void *addr)
-{
-  struct mmap_file *mmap_file;
-  size_t offset = 0;
-
-  if (pg_ofs (addr) != 0 || !addr)
-    return -1;
-  if (is_user_vaddr (addr) == false)
-    return -1;
-  mmap_file = (struct mmap_file *)malloc (sizeof (struct mmap_file));
-  if (mmap_file == NULL)
-    return -1;
-  memset (mmap_file, 0, sizeof(struct mmap_file));
-  list_init (&mmap_file->vme_list);
-  if (!(mmap_file->file = process_get_file (fd)))
-    return -1;
-  mmap_file->file = file_reopen(mmap_file->file);
-  mmap_file->mapid = thread_current ()->mmap_next++;
-  list_push_back (&thread_current ()->mmap_list, &mmap_file->elem);
-
-  int length = file_length (mmap_file->file);
-  while (length > 0)
-    {
-      if (find_vme (addr))
-        return -1;
-
-      struct vm_entry *vme = (struct vm_entry *)malloc (sizeof (struct vm_entry));
-      memset (vme, 0, sizeof (struct vm_entry));
-      vme->type = VM_FILE;
-      vme->writable = true;
-      vme->vaddr = addr;
-      vme->offset = offset;
-      vme->read_bytes = length < PGSIZE ? length : PGSIZE;
-      vme->zero_bytes = 0;
-      vme->file = mmap_file->file;
-
-      list_push_back (&mmap_file->vme_list, &vme->mmap_elem);
-      insert_vme (&thread_current ()->vm, vme);
-      addr += PGSIZE;
-      offset += PGSIZE;
-      length -= PGSIZE;
-    }
-  return mmap_file->mapid;
-}
-
-
-
-void
-mummap (int mapid)
-{
-  struct mmap_file *f = find_mmap_file (mapid);
-  if (!f)
-    return;
-  do_mummap (f);
-}
-
-
-
-void
-do_mummap (struct mmap_file *mmap_file)
-{
-  ASSERT (mmap_file != NULL);
-
-  struct list_elem *e;
-  for (e = list_begin (&mmap_file->vme_list);
-       e != list_end (&mmap_file->vme_list); )
-    {
-      struct vm_entry *vme = list_entry (e, struct vm_entry, mmap_elem);
-      if (vme->is_loaded &&
-          pagedir_is_dirty(thread_current ()->pagedir, vme->vaddr))
-        {
-          if (file_write_at (vme->file, vme->vaddr, vme->read_bytes, vme->offset)
-              != (int) vme->read_bytes)
-              NOT_REACHED ();
-          free_page_vaddr (vme->vaddr);
-        }
-      vme->is_loaded = false;
-      e = list_remove (e);
-      delete_vme (&thread_current()->vm, vme);
-    }
-  list_remove (&mmap_file->elem);
-  free (mmap_file);
-}
-
-
 
 
 
