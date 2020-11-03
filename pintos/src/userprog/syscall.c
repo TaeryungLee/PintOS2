@@ -733,6 +733,7 @@ if (addr == NULL)
     file_len -= page_read_bytes;
     ofs += page_read_bytes;
   }
+   printf("mmap: list size %d\n", list_size(&cur->mmap_list));
   return cur->mmap_next - 1;
 }
 
@@ -747,7 +748,7 @@ void munmap(int mapid)
   if (list_size(&cur->mmap_list) == 0)
     return;
 
-  printf("%d\n", list_size(&cur->mmap_list));
+  printf("munmap: list size %d\n", list_size(&cur->mmap_list));
 
   if (cur->mmap_next <= mapid)
   {
