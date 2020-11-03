@@ -743,6 +743,9 @@ void munmap(int mapid)
     exits(-1, NULL);
   }
 
+  if ((unsigned int) addr & (unsigned int)PGSIZE != 0)
+    exits(-1, NULL);
+
 
   for (e = list_begin(&cur->mmap_list);
     e != list_end(&cur->mmap_list);
