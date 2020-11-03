@@ -473,7 +473,7 @@ bool handle_mm_fault(struct vm_entry *vme)
       if (!load_succ)
       {
         free_page(kpage->kaddr);
-        //printf("fuck2\n");
+        printf("fuck2\n");
         return false;
       }
     }
