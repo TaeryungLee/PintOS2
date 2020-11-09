@@ -691,6 +691,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
   int count = 1;
   //debug
   if (reopen == NULL)
+    printf("reopen failed\n");
   while (read_bytes > 0 || zero_bytes > 0) 
     {
       //printf("thr name %s tid %d count: %d\n", thread_current()->name, thread_current()->tid, count);
