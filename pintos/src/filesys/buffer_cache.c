@@ -1,8 +1,7 @@
-#include <stdio.h>
 #include <string.h>
 #include "filesys/buffer_cache.h"
 #include "threads/palloc.h"
-#include "threads/synch.h"
+//#include "threads/synch.h"
 #include "devices/block.h"
 #include <debug.h>
 
