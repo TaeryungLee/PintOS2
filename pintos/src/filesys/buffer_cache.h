@@ -1,3 +1,6 @@
+#ifndef FILESYS_BUFFER_CACHE_H
+#define FILESYS_BUFFER_CACHE_H
+
 #include "filesys/filesys.h"
 #include "filesys/inode.h"
 #include "threads/synch.h"
