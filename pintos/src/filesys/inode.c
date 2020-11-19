@@ -10,14 +10,23 @@
 /* Identifies an inode. */
 #define INODE_MAGIC 0x494e4f44
 
+//modified4.2
+#define INDIRECT_BLOCK_ENTRIES (BLOCK_SECTOR_SIZE / sizeof(block_sector_t))
+#define DIRECT_BLOCK_ENTRIES 123
+
 /* On-disk inode.
    Must be exactly BLOCK_SECTOR_SIZE bytes long. */
 struct inode_disk
   {
-    block_sector_t start;               /* First data sector. */
+    //block_sector_t start;               /* First data sector. */
     off_t length;                       /* File size in bytes. */
     unsigned magic;                     /* Magic number. */
-    uint32_t unused[125];               /* Not used. */
+    //uint32_t unused[125];               /* Not used. */
+
+    //modified 4.2
+    block_sector_t direct_map_table[DIRECT_BLOCK_ENTRIES];
+    block_sector_t indirect_block_sec;
+    block_sector_t double_indirect_block_sec;
   };
 
 /* Returns the number of sectors to allocate for an inode SIZE
@@ -36,19 +45,96 @@ struct inode
     int open_cnt;                       /* Number of openers. */
     bool removed;                       /* True if deleted, false otherwise. */
     int deny_write_cnt;                 /* 0: writes ok, >0: deny writes. */
-    struct inode_disk data;             /* Inode content. */
+    //struct inode_disk data;             /* Inode content. */
+
+    //modified 4.2
+    struct lock *extend_lock;
   };
+
+//modified 4.2
+enum direct_t
+{
+  NORMAL_DIRECT,
+  INDIRECT,
+  DOUBLE_INDIRECT,
+  OUT_LIMIT
+};
+
+//modified 4.2
+struct sector_location
+{
+  int directness;
+  int index1;
+  int index2;
+};
+
+//modified 4.2
+struct inode_indirect_block
+{
+  block_sector_t map_table[INDIRECT_BLOCK_ENTRIES];
+};
 
 /* Returns the block device sector that contains byte offset POS
    within INODE.
    Returns -1 if INODE does not contain data for a byte at offset
    POS. */
+
+//modified 4-2
 static block_sector_t
-byte_to_sector (const struct inode *inode, off_t pos) 
+byte_to_sector (const struct inode_disk *inode_disk, off_t pos) 
 {
-  ASSERT (inode != NULL);
-  if (pos < inode->data.length)
-    return inode->data.start + pos / BLOCK_SECTOR_SIZE;
+  //ASSERT (inode != NULL);
+  block_sector_t result_sec;
+
+  if (pos < inode_disk->length)
+  {
+    struct inode_indirect_block *ind_block;
+    struct sector_location sec_loc;
+    locate_byte(pos, &sec_loc); //인덱스 블록 offset 계산
+    switch(sec_loc.directness)
+    {
+      case NORMAL_DIRECT:
+      {
+        result_sec = inode_disk->direct_map_table[sec_loc.index1];
+        break;
+      }
+      case INDIRECT:
+      {
+        ind_block = (struct inode_indirect_block *) malloc(BLOCK_SECTOR_SIZE);
+        if(ind_block)
+        {
+          bc_read(inode_disk->indirect_block_sec, &ind_block, 0, sizeof(struct inode_indirect_block), 0);
+          result_sec = ind_block -> map_table[sec_loc.index1];
+        }
+        else
+        {
+          result_sec = 0;
+        }
+        free(ind_block);
+        break;
+      }
+      case DOUBLE_INDIRECT:
+      {
+        ind_block = (struct inode_indirect_block *) malloc(BLOCK_SECTOR_SIZE);
+        block_sector_t temp_sec;
+        if(ind_block)
+        {
+          bc_read(inode_disk->double_indirect_block_sec, &ind_block, 0, sizeof(struct inode_indirect_block), 0);
+          temp_sec = ind_block->map_table[sec_loc.index2];
+          bc_read(temp_sec, &ind_block, 0, sizeof(struct inode_indirect_block), 0);
+          result_sec = ind_block -> map_table[sec_loc.index1];
+        }
+        else
+        {
+          result_sec = 0;
+        }
+        free(ind_block);
+        break;
+      }
+    }
+    return result_sec;
+  }
+    //return inode->data.start + pos / BLOCK_SECTOR_SIZE;
   else
     return -1;
 }
@@ -342,4 +428,63 @@ off_t
 inode_length (const struct inode *inode)
 {
   return inode->data.length;
+}
+
+
+//below from here, modified 4.2
+static bool get_disk_inode(const struct inode *inode, struct inode_disk *inode_disk)
+{
+  bc_read(inode->sector, inode_disk, 0, sizeof(struct inode_disk), 0);
+}
+
+static void locate_byte(off_t pos, struct sector_location *sec_loc)
+{
+  off_t pos_sector = pos / BLOCK_SECTOR_SIZE;
+
+  //direct
+  if(pos_sector < DIRECT_BLOCK_ENTRIES)
+  {
+    sec_loc -> directness = NORMAL_DIRECT;
+    sec_loc -> index1 = pos_sector;
+  }
+  else if(pos_sector < (off_t)(DIRECT_BLOCK_ENTRIES + INDIRECT_BLOCK_ENTRIES))
+  {
+    sec_loc -> directness = INDIRECT;
+    sec_loc -> index1 = pos_sector;
+  }
+  else if(pos_sector < (off_t)(DIRECT_BLOCK_ENTRIES + INDIRECT_BLOCK_ENTRIES * (INDIRECT_BLOCK_ENTRIES + 1)))
+  {
+    sec_loc -> directness = DOUBLE_INDIRECT;
+    sec_loc -> index1 = pos_sector % INDIRECT_BLOCK_ENTRIES;
+    sec_loc -> index2 = pos_sector / INDIRECT_BLOCK_ENTRIES;
+  }
+  else
+  {
+    sec_loc->directness = OUT_LIMIT;
+  }
+}
+
+//uncompleted
+static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_sector, struct sector_location sec_loc)
+{
+  switch(sec_loc.directness)
+  {
+    case NORMAL_DIRECT:
+      inode_disk -> direct_map_table[sec_loc.index1] = new_sector;
+      break;
+
+    case INDIRECT:
+      struct inode_indirect_block *new_block = malloc(BLOCK_SECTOR_SIZE);
+      if(new_block == NULL)
+      {
+        return false;
+      }   
+
+      free_map_allocate
+  }
+}
+
+bool inode_update_file_length(struct inode_disk *inode_disk, off_t start_pos, off_t end_pos)
+{
+  
 }

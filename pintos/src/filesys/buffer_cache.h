@@ -13,7 +13,7 @@ struct buffer_head
     bool clock_bit;                         //clock bit for clock algorithm
     struct lock lock;                       //lock 변수
     void *buffer;                           //buffer cache entry 가리키는 데이터 포인터
-}
+};
 
 bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chunk_size, int sector_ofs);
 bool bc_write(block_sector_t sector_idx, void *buffer, off_t bytes_written, int chunk_size, int sector_ofs);
