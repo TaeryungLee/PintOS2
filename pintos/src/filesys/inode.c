@@ -6,7 +6,7 @@
 #include "filesys/filesys.h"
 #include "filesys/free-map.h"
 #include "threads/malloc.h"
-#include "threads/synch.h"
+//#include "threads/synch.h"
 #include "filesys/buffer_cache.h"
 
 /* Identifies an inode. */
