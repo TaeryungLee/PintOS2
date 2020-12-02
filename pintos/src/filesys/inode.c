@@ -6,6 +6,8 @@
 #include "filesys/filesys.h"
 #include "filesys/free-map.h"
 #include "threads/malloc.h"
+#include "threads/synch.h"
+#include "filesys/buffer_cache.h"
 
 /* Identifies an inode. */
 #define INODE_MAGIC 0x494e4f44
@@ -73,6 +75,12 @@ struct inode_indirect_block
 {
   block_sector_t map_table[INDIRECT_BLOCK_ENTRIES];
 };
+
+static bool get_disk_inode(const struct inode *inode, struct inode_disk *inode_disk);
+static void locate_byte(off_t pos, struct sector_location *sec_loc);
+static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_sector, struct sector_location sec_loc);
+bool inode_update_file_length(struct inode_disk *inode_disk, off_t start_pos, off_t end_pos);
+static void free_inode_sectors(struct inode_disk *inode_disk);
 
 /* Returns the block device sector that contains byte offset POS
    within INODE.
@@ -390,7 +398,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 
   if(write_end > old_length - 1)
   {
-    inode_update_file_length(&disk_inode, disk_inode->length, write_end);
+    inode_update_file_length(disk_inode, disk_inode->length, write_end);
   }
   lock_release(&inode->extend_lock);
 
@@ -485,7 +493,7 @@ inode_length (const struct inode *inode)
 //below from here, modified 4.2
 static bool get_disk_inode(const struct inode *inode, struct inode_disk *inode_disk)
 {
-  bc_read(inode->sector, inode_disk, 0, sizeof(struct inode_disk), 0);
+  return bc_read(inode->sector, inode_disk, 0, sizeof(struct inode_disk), 0);
 }
 
 static void locate_byte(off_t pos, struct sector_location *sec_loc)
