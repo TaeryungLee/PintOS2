@@ -6,7 +6,7 @@
 #include "filesys/filesys.h"
 #include "filesys/free-map.h"
 #include "threads/malloc.h"
-//#include "threads/synch.h"
+#include "threads/synch.h"
 #include "filesys/buffer_cache.h"
 
 /* Identifies an inode. */
@@ -241,7 +241,7 @@ inode_open (block_sector_t sector)
   inode->removed = false;
 
   //modified 4-2
-  lock_init(&inode -> extend_lock);
+  lock_init(inode -> extend_lock);
   //block_read (fs_device, inode->sector, &inode->data);
   return inode;
 }
@@ -289,7 +289,7 @@ inode_close (struct inode *inode)
 
           //modified 4-2
           get_disk_inode(inode, disk_inode);
-          free_inode_sectors(&disk_inode);
+          free_inode_sectors(disk_inode);
           free_map_release(inode->sector, 1);
           free(disk_inode);
         }
@@ -319,13 +319,13 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
 
   //modified 4-2
   struct inode_disk *inode_disk;
-  get_disk_inode(inode, &inode_disk);
+  get_disk_inode(inode, inode_disk);
 
 
   while (size > 0) 
     {
       /* Disk sector to read, starting byte offset within sector. */
-      block_sector_t sector_idx = byte_to_sector (&inode_disk, offset);
+      block_sector_t sector_idx = byte_to_sector (inode_disk, offset);
       int sector_ofs = offset % BLOCK_SECTOR_SIZE;
 
       /* Bytes left in inode, bytes left in sector, lesser of the two. */
@@ -391,8 +391,8 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
   {
     return 0;
   }
-  get_disk_inode(inode, &disk_inode);
-  lock_acquire(&inode->extend_lock);
+  get_disk_inode(inode, disk_inode);
+  lock_acquire(inode->extend_lock);
   int old_length = disk_inode->length;
   int write_end = offset + size - 1;
 
@@ -400,7 +400,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
   {
     inode_update_file_length(disk_inode, disk_inode->length, write_end);
   }
-  lock_release(&inode->extend_lock);
+  lock_release(inode->extend_lock);
 
 
   while (size > 0) 
@@ -453,7 +453,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 
   
   //modified 4-2
-    bc_wirte(inode->sector, disk_inode, 0 , BLOCK_SECTOR_SIZE, 0);
+    bc_write(inode->sector, disk_inode, 0 , BLOCK_SECTOR_SIZE, 0);
   
   //free (bounce);
 
