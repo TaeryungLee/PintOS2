@@ -14,7 +14,7 @@
 
 //modified4.2
 #define INDIRECT_BLOCK_ENTRIES (BLOCK_SECTOR_SIZE / sizeof(block_sector_t))
-#define DIRECT_BLOCK_ENTRIES 123
+#define DIRECT_BLOCK_ENTRIES 128
 
 /* On-disk inode.
    Must be exactly BLOCK_SECTOR_SIZE bytes long. */
