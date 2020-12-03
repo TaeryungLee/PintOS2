@@ -200,7 +200,7 @@ inode_create (block_sector_t sector, off_t length)
       {
         inode_update_file_length(disk_inode, disk_inode->length, length);
       } 
-      bc_wirte(sector, disk_inode, 0 , BLOCK_SECTOR_SIZE, 0);
+      bc_write(sector, disk_inode, 0 , BLOCK_SECTOR_SIZE, 0);
       free (disk_inode);
       success = true;
     }
@@ -603,7 +603,7 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t start_pos, of
     } 
     else
     {
-      block_sector_t sector_idx = byte_to_sector(&inode_disk, offset);
+      block_sector_t sector_idx = byte_to_sector(inode_disk, offset);
       struct sector_location sec_loc;
       if(free_map_allocate(1, &sector_idx))
       {

@@ -55,7 +55,7 @@ void bc_init(void)
 {
     struct buffer_head *bh = buffer_head;
     char cache_array[BUFFER_CAHCHE_ENTRY_NB * BLOCK_SECTOR_SIZE];
-    p_buffer_cache = cache_array;
+    p_buffer_cache = &cache_array;
     for(bh ; bh != buffer_head + BUFFER_CAHCHE_ENTRY_NB; bh++)
     {
         p_buffer_cache += BLOCK_SECTOR_SIZE;
