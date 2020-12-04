@@ -166,7 +166,7 @@ inode_init (void)
 bool
 inode_create (block_sector_t sector, off_t length)
 {
-  struct inode_disk *disk_inode = NULL;
+  struct inode_disk *disk_inode;
   bool success = false;
 
   ASSERT (length >= 0);
@@ -198,7 +198,8 @@ inode_create (block_sector_t sector, off_t length)
       //modified 4-2
       if(length > 0)
       {
-        inode_update_file_length(disk_inode, disk_inode->length, length);
+        off_t start_pos = (off_t) sector;
+        inode_update_file_length(disk_inode, start_pos, start_pos + length - 1 );
       } 
       bc_write(sector, disk_inode, 0 , BLOCK_SECTOR_SIZE, 0);
       free (disk_inode);
@@ -400,7 +401,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 
   if(write_end > old_length - 1)
   {
-    inode_update_file_length(disk_inode, disk_inode->length, write_end);
+    inode_update_file_length(disk_inode, offset, write_end);
   }
   lock_release(&inode->extend_lock);
 
