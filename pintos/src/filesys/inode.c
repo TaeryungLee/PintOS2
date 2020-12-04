@@ -288,6 +288,7 @@ inode_close (struct inode *inode)
                             bytes_to_sectors (inode->data.length)); */
 
           //modified 4-2
+          bc_read(inode->sector, disk_inode, 0, BLOCK_SECTOR_SIZE, 0);
           get_disk_inode(inode, disk_inode);
           free_inode_sectors(disk_inode);
           free_map_release(inode->sector, 1);
@@ -560,7 +561,7 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
       }
       bc_read(inode_disk->double_indirect_block_sec, ind_block_1, 0, sizeof(struct inode_indirect_block), 0);
       temp_sec = ind_block_1->map_table[sec_loc.index2];
-      bc_read(new_block, ind_block_2, 0, sizeof(struct inode_indirect_block), 0);
+      bc_read(temp_sec, ind_block_2, 0, sizeof(struct inode_indirect_block), 0);
       ind_block_2->map_table[sec_loc.index1] = new_sector;
       bc_write(inode_disk->double_indirect_block_sec, ind_block_1, 0, sizeof(struct inode_indirect_block), 0);
       bc_write(temp_sec, ind_block_2, 0, sizeof(struct inode_indirect_block), 0);
