@@ -288,7 +288,7 @@ inode_close (struct inode *inode)
                             bytes_to_sectors (inode->data.length)); */
 
           //modified 4-2
-          bc_read(inode->sector, &disk_inode, 0, BLOCK_SECTOR_SIZE, 0);
+          bc_read(inode->sector, disk_inode, 0, BLOCK_SECTOR_SIZE, 0);
           get_disk_inode(inode, disk_inode);
           free_inode_sectors(disk_inode);
           free_map_release(inode->sector, 1);
