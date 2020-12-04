@@ -75,7 +75,7 @@ void bc_term(void)
 struct buffer_head *bc_select_victim(void)
 {
     struct buffer_head *bh = buffer_head;
-    for(bh ; bh != buffer_head + BUFFER_CAHCHE_ENTRY_NB; bh++)
+    for(; bh != buffer_head + BUFFER_CAHCHE_ENTRY_NB; bh++)
     {
         if(bh->clock_bit == false)
         {
