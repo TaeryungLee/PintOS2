@@ -613,7 +613,7 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t start_pos, of
       }
       else
       {
-        free(zeroes);
+        //free(zeroes);
         return false;
       }
       bc_write(sector_idx, zeroes, 0, BLOCK_SECTOR_SIZE, 0);  
@@ -621,7 +621,7 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t start_pos, of
     size -= chunk_size;
     offset += chunk_size;
   }
-  free(zeroes);
+  //free(zeroes);
   return true;
 }
 
