@@ -28,7 +28,7 @@ bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chun
         bh->sector_addr = sector_idx;
         block_read(fs_device, sector_idx, bh->buffer);
     }
-    memcpy(buffer + bytes_read, bh->buffer + sector_ofs, chunk_size);
+    memcpy(&buffer + bytes_read, &bh->buffer + sector_ofs, chunk_size);
     bh->clock_bit = true;
     return success;
 }
@@ -45,7 +45,7 @@ bool bc_write(block_sector_t sector_idx, void *buffer, off_t bytes_written, int 
         bh->sector_addr = sector_idx;
         block_read(fs_device, sector_idx, bh->buffer);
     }
-    memcpy(bh->buffer + sector_ofs, buffer + bytes_written, chunk_size);
+    memcpy(&bh->buffer + sector_ofs, &buffer + bytes_written, chunk_size);
     bh->clock_bit = true;
     bh->dirty_flag = true;
     return success;
@@ -56,7 +56,7 @@ void bc_init(void)
     struct buffer_head *bh = buffer_head;
     char cache_array[BUFFER_CAHCHE_ENTRY_NB * BLOCK_SECTOR_SIZE];
     p_buffer_cache = &cache_array;
-    for(bh ; bh != buffer_head + BUFFER_CAHCHE_ENTRY_NB; bh++)
+    for(; bh != buffer_head + BUFFER_CAHCHE_ENTRY_NB; bh++)
     {
         p_buffer_cache += BLOCK_SECTOR_SIZE;
         memset(bh, 0, sizeof(struct buffer_head));
@@ -93,7 +93,7 @@ struct buffer_head *bc_select_victim(void)
 struct buffer_head *bc_lookup(block_sector_t sector)
 {
     struct buffer_head *bh = buffer_head;
-    for(bh ; bh != buffer_head + BUFFER_CAHCHE_ENTRY_NB; bh++)
+    for(; bh != buffer_head + BUFFER_CAHCHE_ENTRY_NB; bh++)
     {
         if(bh-> sector_addr == sector)
         {
@@ -113,7 +113,7 @@ void bc_flush_entry(struct buffer_head *p_flush_entry)
 void bc_flush_all_entries(void)
 {
     struct buffer_head *bh = buffer_head;
-    for(bh ; bh != buffer_head + BUFFER_CAHCHE_ENTRY_NB; bh++)
+    for(; bh != buffer_head + BUFFER_CAHCHE_ENTRY_NB; bh++)
     {
         bc_flush_entry(bh);
     }
