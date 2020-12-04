@@ -20,7 +20,7 @@ bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chun
 {
 
     struct buffer_head *bh;
-    if(bc_lookup(sector_idx) == NULL)
+    if(bc_lookup(sector_idx) != NULL)
     {
         bh = bc_select_victim();
         bc_flush_entry(bh);
@@ -36,7 +36,7 @@ bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chun
 bool bc_write(block_sector_t sector_idx, void *buffer, off_t bytes_written, int chunk_size, int sector_ofs)
 {
     struct buffer_head *bh;
-    if(bc_lookup(sector_idx) == NULL)
+    if(bc_lookup(sector_idx) != NULL)
     {
         bh = bc_select_victim();
         bc_flush_entry(bh);
