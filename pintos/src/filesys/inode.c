@@ -402,7 +402,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
   {
     inode_update_file_length(disk_inode, disk_inode->length, write_end);
   }
-  lock_release(inode->extend_lock);
+  lock_release(&inode->extend_lock);
 
 
   while (size > 0) 
