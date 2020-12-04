@@ -28,7 +28,7 @@ bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chun
         bh->sector_addr = sector_idx;
         block_read(fs_device, sector_idx, bh->buffer);
     }
-    memcpy(&buffer + bytes_read, &bh->buffer + sector_ofs, chunk_size);
+    memcpy(buffer + bytes_read, &bh->buffer + sector_ofs, chunk_size);
     bh->clock_bit = true;
     return success;
 }
