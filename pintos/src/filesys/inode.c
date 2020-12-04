@@ -394,7 +394,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
     return 0;
   }
   get_disk_inode(inode, disk_inode);
-  lock_acquire(inode->extend_lock);
+  lock_acquire(&inode->extend_lock);
   int old_length = disk_inode->length;
   int write_end = offset + size - 1;
 
@@ -457,7 +457,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
   
   //modified 4-2
     bc_write(inode->sector, disk_inode, 0 , BLOCK_SECTOR_SIZE, 0);
-  
+
   //free (bounce);
 
   return bytes_written;
