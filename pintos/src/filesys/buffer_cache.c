@@ -18,7 +18,7 @@ static struct buffer_head *clock_hand;
 //buffer_cache = bh->buffer
 bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chunk_size, int sector_ofs)
 {
-    bool success = false;
+
     struct buffer_head *bh;
     if(bc_lookup(sector_idx) == NULL)
     {
@@ -30,12 +30,11 @@ bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chun
     }
     memcpy(buffer + bytes_read, bh->buffer + sector_ofs, chunk_size);
     bh->clock_bit = true;
-    return success;
+    return true;
 }
 
 bool bc_write(block_sector_t sector_idx, void *buffer, off_t bytes_written, int chunk_size, int sector_ofs)
 {
-    bool success = false;
     struct buffer_head *bh;
     if(bc_lookup(sector_idx) == NULL)
     {
@@ -48,7 +47,7 @@ bool bc_write(block_sector_t sector_idx, void *buffer, off_t bytes_written, int 
     memcpy(bh->buffer + sector_ofs, buffer + bytes_written, chunk_size);
     bh->clock_bit = true;
     bh->dirty_flag = true;
-    return success;
+    return true;
 }
 
 void bc_init(void)
