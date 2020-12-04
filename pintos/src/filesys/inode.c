@@ -485,7 +485,7 @@ off_t
 inode_length (const struct inode *inode)
 { 
   struct inode_disk *inode_disk;
-  bc_read(inode->sector, &inode_disk, 0, BLOCK_SECTOR_SIZE, 0);
+  bc_read(inode->sector, inode_disk, 0, BLOCK_SECTOR_SIZE, 0);
   return inode_disk->length;
 }
 
@@ -493,7 +493,7 @@ inode_length (const struct inode *inode)
 //below from here, modified 4.2
 static bool get_disk_inode(const struct inode *inode, struct inode_disk *inode_disk)
 {
-  return bc_read(inode->sector, &inode_disk, 0, sizeof(struct inode_disk), 0);
+  return bc_read(inode->sector, inode_disk, 0, sizeof(struct inode_disk), 0);
 }
 
 static void locate_byte(off_t pos, struct sector_location *sec_loc)
