@@ -241,7 +241,7 @@ inode_open (block_sector_t sector)
   inode->removed = false;
 
   //modified 4-2
-  lock_init(inode -> extend_lock);
+  lock_init(&inode->extend_lock);
   //block_read (fs_device, inode->sector, &inode->data);
   return inode;
 }
