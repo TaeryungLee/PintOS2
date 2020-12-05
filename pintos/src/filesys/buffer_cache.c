@@ -54,7 +54,7 @@ void bc_init(void)
 {
     struct buffer_head *bh = buffer_head;
     char cache_array[BUFFER_CAHCHE_ENTRY_NB * BLOCK_SECTOR_SIZE];
-    p_buffer_cache = &cache_array;
+    p_buffer_cache = cache_array;
     for(; bh != buffer_head + BUFFER_CAHCHE_ENTRY_NB; bh++)
     {
         p_buffer_cache += BLOCK_SECTOR_SIZE;
@@ -96,10 +96,12 @@ struct buffer_head *bc_lookup(block_sector_t sector)
     {
         if(bh-> sector_addr == sector)
         {
-            return bh;
+            if(bh->valid_flag == true)
+            {
+                return bh;
+            }
         }
     }
-
     return NULL;
 }
 
