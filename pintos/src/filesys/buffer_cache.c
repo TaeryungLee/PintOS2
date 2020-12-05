@@ -5,15 +5,11 @@
 #include "devices/block.h"
 #include <debug.h>
 
-
 //buffer cache 전역변수
 #define BUFFER_CAHCHE_ENTRY_NB 64
 static char *p_buffer_cache;
 static struct buffer_head  buffer_head[BUFFER_CAHCHE_ENTRY_NB];
 static struct buffer_head *clock_hand;
-
-
-
 
 //buffer_cache = bh->buffer
 bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chunk_size, int sector_ofs)
