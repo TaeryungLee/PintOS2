@@ -46,6 +46,7 @@ bool bc_write(block_sector_t sector_idx, void *buffer, off_t bytes_written, int 
     return true;
 }
 
+
 void bc_init(void)
 {
     struct buffer_head *bh = buffer_head;
