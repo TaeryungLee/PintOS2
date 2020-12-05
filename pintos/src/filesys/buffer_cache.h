@@ -6,27 +6,22 @@
 #include "threads/synch.h"
 
 struct buffer_head
-  {
-  	// 더러운지를 나타냅니다.
-    bool dirty;
-    // 사용 중인지를 나타냅니다.
-    bool valid;
-    // 캐시된 섹터 번호입니다.
-    block_sector_t address;
-    // clock 알고리즘에서 사용합니다.
-    bool clock;
-    // 쓰기 작업을 하기 전에 이 락을 획득합니다.
-    struct lock lock;
-    // 데이터 버퍼를 가리킵니다.
-    void *buffer;
-  };
+{
+    bool dirty_flag;                        //해당 entry가 dirty?
+    bool valid_flag;                        //해당 entry의 사용여부
+    block_sector_t sector_addr;             //해당 entry의 disk sector 주소
+    bool clock_bit;                         //clock bit for clock algorithm
+    struct lock lock;                       //lock 변수
+    void *buffer;                           //buffer cache entry 가리키는 데이터 포인터
+};
 
-void bc_init (void);
-void bc_term (void);
-bool bc_read (block_sector_t, void *, off_t, int, int);
-bool bc_write (block_sector_t, void *, off_t, int, int);
-struct buffer_head *bc_lookup (block_sector_t);
-struct buffer_head *bc_select_victim (void);
-void bc_flush_entry (struct buffer_head *);
+bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chunk_size, int sector_ofs);
+bool bc_write(block_sector_t sector_idx, void *buffer, off_t bytes_written, int chunk_size, int sector_ofs);
+struct buffer_head *bc_lookup(block_sector_t sector); //버퍼캐시를 순회하면 target sector가 있는지 검색
+struct buffer_head *bc_select_victim(void); //버퍼캐시에서 victim 선정, entry head 포인터 반환
+void bc_flush_entry(struct buffer_head *p_flush_entry); //인자로 주어진 entry의 dirty비트를 false로 세팅하고 해당 내역 disk로 flush
+void bc_flush_all_entries(void); //버퍼캐시를 순회하면서 dirty 비트가 true인 entry를 모두 디스크로 flush
+void bc_init(void); //버퍼캐시 초기화
+void bc_term(void); //모든 dirty entry flush 및 버퍼캐시 해지
 
 #endif
