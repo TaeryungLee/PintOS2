@@ -131,7 +131,7 @@ void bc_flush_entry(struct buffer_head *p_flush_entry)
     {
         return;
     }
-    else if(p_flush_entry->dirty_flag == false)
+    if(p_flush_entry->dirty_flag == false)
     {
         return;
     }
