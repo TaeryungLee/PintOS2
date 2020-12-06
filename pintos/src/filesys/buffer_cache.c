@@ -137,10 +137,11 @@ void bc_flush_entry(struct buffer_head *p_flush_entry)
 void bc_flush_all_entries(void)
 {
     struct buffer_head *bh = buffer_head;
-    for(; bh != buffer_head + BUFFER_CACHE_ENTRY_NB; bh++)
+    for(int i=0; i < BUFFER_CACHE_ENTRY_NB; i++)
     {
         lock_acquire(&bh -> lock);
         bc_flush_entry(bh);
         lock_release(&bh -> lock);
+        bh++;
     }
 }
