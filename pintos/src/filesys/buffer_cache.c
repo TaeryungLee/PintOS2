@@ -87,7 +87,7 @@ struct buffer_head *bc_select_victim(void)
             lock_acquire(&clock_hand->lock);
             if(clock_hand->clock_bit == false)
             {
-                if(clock_hand->dirty_flag == false)
+                if(clock_hand->valid_bit == false)
                 {
                     return clock_hand++;
                 }
@@ -98,7 +98,6 @@ struct buffer_head *bc_select_victim(void)
         }
         clock_hand = buffer_head;
     }
-    NOT_REACHED();
 }
 
 struct buffer_head *bc_lookup(block_sector_t sector)
