@@ -99,7 +99,7 @@ struct buffer_head *bc_lookup(block_sector_t sector)
     struct buffer_head *bh = buffer_head;
     for(; bh != buffer_head + BUFFER_CACHE_ENTRY_NB; bh++)
     {
-        if(bh-> sector_addr == sector)
+        if(bh->sector_addr == sector)
         {
             if(bh->valid_flag == true)
             {
@@ -114,6 +114,7 @@ struct buffer_head *bc_lookup(block_sector_t sector)
 
 void bc_flush_entry(struct buffer_head *p_flush_entry)
 {
+    ASSERT (lock_held_by_current_thread (&p_flush_entry->lock));
     p_flush_entry->dirty_flag = false;
     block_write(fs_device, p_flush_entry->sector_addr, p_flush_entry->buffer);
 }
