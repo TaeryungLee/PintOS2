@@ -61,7 +61,7 @@ void bc_init(void)
 {
     struct buffer_head *bh = buffer_head;
     void *cache = p_buffer_cache;
-    for(int i=0; i < 64; i++)
+    for(int i=0; i < BUFFER_CACHE_ENTRY_NB; i++)
     {
         //printf("%x", bh);
         memset(bh, 0, sizeof(struct buffer_head));
@@ -110,7 +110,7 @@ struct buffer_head *bc_lookup(block_sector_t sector)
 {
     //lock_acquire(&cache_lock);
     struct buffer_head *bh = buffer_head;
-    for(; bh != buffer_head + BUFFER_CACHE_ENTRY_NB; bh++)
+    for(int i=0; i < BUFFER_CACHE_ENTRY_NB; i++)
     {
         if(bh->sector_addr == sector)
         {
@@ -121,6 +121,7 @@ struct buffer_head *bc_lookup(block_sector_t sector)
                 return bh;
             }
         }
+        bh++;
     }
     return NULL;
 }
