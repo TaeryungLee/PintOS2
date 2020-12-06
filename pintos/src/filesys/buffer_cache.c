@@ -78,23 +78,23 @@ void bc_term(void)
 
 struct buffer_head *bc_select_victim(void)
 {
-    struct buffer_head *victim;
-    for(; clock_hand != buffer_head + BUFFER_CACHE_ENTRY_NB; clock_hand++)
+    //struct buffer_head *victim;
+    for(;;)
     {
-        if(clock_hand->clock_bit == false)
+        for(; clock_hand != buffer_head + BUFFER_CACHE_ENTRY_NB; clock_hand++)
         {
-            if(clock_hand->dirty_flag == false)
+            lock_acquire(&clock_hand->lock);
+            if(clock_hand->clock_bit == false)
             {
-                return clock_hand++;
+                if(clock_hand->dirty_flag == false)
+                {
+                    return clock_hand++;
+                }
+                clock_hand->clock = false;
+                lock_release(&clock_hand->lock);        
             }
-            else
-            {
-                bc_flush_entry(clock_hand);
-                return clock_hand ++;
-            }
-       
+            clock_hand = buffer_head;
         }
-        clock_hand->clock_bit = false;
     }
 }
 
