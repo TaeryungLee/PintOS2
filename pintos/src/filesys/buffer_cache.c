@@ -99,8 +99,8 @@ struct buffer_head *bc_select_victim(void)
             lock_release(&clock_hand->lock);     
         }
         clock_hand = buffer_head;
-        NOT_REACHED();
     }
+    NOT_REACHED();
 }
 
 struct buffer_head *bc_lookup(block_sector_t sector)
