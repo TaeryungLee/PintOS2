@@ -98,6 +98,7 @@ struct buffer_head *bc_select_victim(void)
         }
         clock_hand = buffer_head;
     }
+    NOT_REACHED();
 }
 
 struct buffer_head *bc_lookup(block_sector_t sector)
