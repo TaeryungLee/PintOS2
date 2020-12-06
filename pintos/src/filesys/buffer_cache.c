@@ -67,13 +67,8 @@ void bc_init(void)
 
 void bc_term(void)
 {   
-    struct buffer_head *bh = buffer_head;
-    for(; bh != buffer_head + BUFFER_CACHE_ENTRY_NB; bh++)
-    {
-        lock_acquire(&bh -> lock);
-        bc_flush_all_entries();
-        lock_release(&bh -> lock);
-    }
+    bc_flush_all_entries();
+
 }
 
 struct buffer_head *bc_select_victim(void)
@@ -128,6 +123,8 @@ void bc_flush_all_entries(void)
     struct buffer_head *bh = buffer_head;
     for(; bh != buffer_head + BUFFER_CACHE_ENTRY_NB; bh++)
     {
+        lock_acquire(&bh -> lock);
         bc_flush_entry(bh);
+        lock_release(&bh -> lock);
     }
 }
