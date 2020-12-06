@@ -82,9 +82,10 @@ void bc_term(void)
 
 struct buffer_head *bc_select_victim(void)
 {
-    clock_hand = buffer_head;
+
     while(true)
     {
+        clock_hand = buffer_head;
         //for(; clock_hand != buffer_head + BUFFER_CACHE_ENTRY_NB; clock_hand++)
         for(int i=0; i < BUFFER_CACHE_ENTRY_NB; i++)
         {
@@ -98,7 +99,6 @@ struct buffer_head *bc_select_victim(void)
             clock_hand++;    
             //printf("%x\n", clock_hand); 
         }
-        clock_hand = buffer_head;
     }
 }
 
