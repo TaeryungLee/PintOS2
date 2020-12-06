@@ -94,6 +94,10 @@ struct buffer_head *bc_select_victim(void)
             {
                 return clock_hand++;
             }
+            if(clock_hand->valid_flag == false)
+            {
+                return clock_hand++;
+            }
             clock_hand->clock_bit = false;
             lock_release(&clock_hand->lock);
             clock_hand++;    
