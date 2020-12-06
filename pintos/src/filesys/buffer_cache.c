@@ -4,6 +4,7 @@
 //#include "threads/synch.h"
 #include "devices/block.h"
 #include <debug.h>
+#include <stdio.h>
 
 //buffer cache 전역변수
 #define BUFFER_CACHE_ENTRY_NB 64
@@ -58,6 +59,7 @@ void bc_init(void)
     void *cache = p_buffer_cache;
     for(; bh != buffer_head + BUFFER_CACHE_ENTRY_NB; bh++)
     {
+        printf("%f", bh);
         cache += BLOCK_SECTOR_SIZE;
         memset(bh, 0, sizeof(struct buffer_head));
         lock_init(&bh->lock);
