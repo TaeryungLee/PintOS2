@@ -87,7 +87,7 @@ struct buffer_head *bc_select_victim(void)
             lock_acquire(&clock_hand->lock);
             if(clock_hand->clock_bit == false)
             {
-                if(clock_hand->valid_bit == false)
+                if(clock_hand->valid_flag == false)
                 {
                     return clock_hand++;
                 }
