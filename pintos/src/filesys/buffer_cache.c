@@ -104,7 +104,7 @@ struct buffer_head *bc_lookup(block_sector_t sector)
         {
             if(bh->valid_flag == true)
             {
-                lock_acquire(&bh->lock);
+                //lock_acquire(&bh->lock);
                 return bh;
             }
         }
