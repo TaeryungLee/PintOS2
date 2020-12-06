@@ -127,8 +127,8 @@ struct buffer_head *bc_lookup(block_sector_t sector)
 
 void bc_flush_entry(struct buffer_head *p_flush_entry)
 {
-    //if (!p_flush_entry->valid_flag || !p_flush_entry->dirty_flag)
-        //return;
+    if (!p_flush_entry->valid_flag || !p_flush_entry->dirty_flag)
+        return;
     p_flush_entry->dirty_flag = false;
     block_write(fs_device, p_flush_entry->sector_addr, p_flush_entry->buffer);
 }
