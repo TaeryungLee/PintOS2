@@ -86,22 +86,16 @@ struct buffer_head *bc_select_victim(void)
     while(true)
     {
         clock_hand = buffer_head;
-        //for(; clock_hand != buffer_head + BUFFER_CACHE_ENTRY_NB; clock_hand++)
-        for(int i=0; i < BUFFER_CACHE_ENTRY_NB; i++)
+        for(; clock_hand != buffer_head + BUFFER_CACHE_ENTRY_NB; clock_hand++)
         {
             lock_acquire(&clock_hand->lock);
             if(clock_hand->clock_bit == false)
             {
                 return clock_hand++;
             }
-            if(clock_hand->valid_flag == false)
-            {
-                return clock_hand++;
-            }
+
             clock_hand->clock_bit = false;
             lock_release(&clock_hand->lock);
-            clock_hand++;    
-            //printf("%x\n", clock_hand); 
         }
     }
 }
