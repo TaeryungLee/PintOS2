@@ -84,8 +84,7 @@ struct buffer_head *bc_select_victim(void)
 {
 
     while(true)
-    {
-        clock_hand = buffer_head;
+    {        
         for(; clock_hand != buffer_head + BUFFER_CACHE_ENTRY_NB; clock_hand++)
         {
             lock_acquire(&clock_hand->lock);
@@ -97,6 +96,7 @@ struct buffer_head *bc_select_victim(void)
             clock_hand->clock_bit = false;
             lock_release(&clock_hand->lock);
         }
+        clock_hand = buffer_head;
     }
 }
 
