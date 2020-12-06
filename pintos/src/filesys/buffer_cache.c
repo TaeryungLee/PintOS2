@@ -61,7 +61,7 @@ void bc_init(void)
     void *cache = p_buffer_cache;
     for(; bh != buffer_head + BUFFER_CACHE_ENTRY_NB; bh++)
     {
-        printf("%x", bh);
+        //printf("%x", bh);
         memset(bh, 0, sizeof(struct buffer_head));
         lock_init(&bh->lock);
         bh->buffer = cache;
