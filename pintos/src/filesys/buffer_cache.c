@@ -75,19 +75,24 @@ void bc_term(void)
 
 struct buffer_head *bc_select_victim(void)
 {
-    struct buffer_head *bh = buffer_head;
-    for(; bh != buffer_head + BUFFER_CACHE_ENTRY_NB; bh++)
+    struct buffer_head *victim;
+    for(; clock_hand != buffer_head + BUFFER_CACHE_ENTRY_NB; clock_hand++)
     {
-        if(bh->clock_bit == false)
+        if(clock_hand->clock_bit == false)
         {
-            if(bh->dirty_flag == true)
+            if(clock_hand->dirty_flag == false)
             {
-                bc_flush_entry(bh);
+                return clock_hand++;
             }
+            else
+            {
+                bc_flush_entry(clock_hand);
+            }
+       
         }
-        bh->clock_bit = false;
+        clock_hand->clock_bit = false;
     }
-    return bh;
+    return ;
 }
 
 struct buffer_head *bc_lookup(block_sector_t sector)
