@@ -27,8 +27,8 @@ bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chun
         lock_release(&cache_lock);
         block_read(fs_device, sector_idx, bh->buffer);
     }
-    memcpy(buffer + bytes_read, bh->buffer + sector_ofs, chunk_size);
     bh->clock_bit = true;
+    memcpy(buffer + bytes_read, bh->buffer + sector_ofs, chunk_size);
     lock_release (&bh->lock);
     return true;
 }
@@ -45,9 +45,10 @@ bool bc_write(block_sector_t sector_idx, void *buffer, off_t bytes_written, int 
         lock_release(&cache_lock);
         block_read(fs_device, sector_idx, bh->buffer);
     }
-    memcpy(bh->buffer + sector_ofs, buffer + bytes_written, chunk_size);
+    
     bh->clock_bit = true;
     bh->dirty_flag = true;
+    memcpy(bh->buffer + sector_ofs, buffer + bytes_written, chunk_size);
     lock_release(&bh->lock);
     return true;
 }
