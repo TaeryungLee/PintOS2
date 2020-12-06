@@ -61,10 +61,10 @@ void bc_init(void)
     for(; bh != buffer_head + BUFFER_CACHE_ENTRY_NB; bh++)
     {
         printf("%x", bh);
-        cache += BLOCK_SECTOR_SIZE;
         memset(bh, 0, sizeof(struct buffer_head));
         lock_init(&bh->lock);
         bh->buffer = cache;
+        cache += BLOCK_SECTOR_SIZE;
     }
     clock_hand = buffer_head;
     lock_init(&cache_lock);
