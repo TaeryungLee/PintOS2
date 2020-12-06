@@ -6,9 +6,9 @@
 #include <debug.h>
 
 //buffer cache 전역변수
-#define BUFFER_CAHCHE_ENTRY_NB 64
-static char *p_buffer_cache;
-static struct buffer_head  buffer_head[BUFFER_CAHCHE_ENTRY_NB];
+#define BUFFER_CACHE_ENTRY_NB 64
+static char p_buffer_cache[BUFFER_CACHE_ENTRY_NB * BLOCK_SECTOR_SIZE];
+static struct buffer_head  buffer_head[BUFFER_CACHE_ENTRY_NB];
 static struct buffer_head *clock_hand;
 
 //buffer_cache = bh->buffer
@@ -50,15 +50,16 @@ bool bc_write(block_sector_t sector_idx, void *buffer, off_t bytes_written, int 
 void bc_init(void)
 {
     struct buffer_head *bh = buffer_head;
-    char cache_array[BUFFER_CAHCHE_ENTRY_NB * BLOCK_SECTOR_SIZE];
-    p_buffer_cache = cache_array;
-    for(; bh != buffer_head + BUFFER_CAHCHE_ENTRY_NB; bh++)
+    void *cache = p_buffer_cache;
+    for(; bh != buffer_head + BUFFER_CACHE_ENTRY_NB; bh++)
     {
-        p_buffer_cache += BLOCK_SECTOR_SIZE;
+        cache += BLOCK_SECTOR_SIZE;
         memset(bh, 0, sizeof(struct buffer_head));
         lock_init(&bh->lock);
-        bh->buffer = p_buffer_cache;
+        bh->buffer = cache;
     }
+    clock_hand = buffer_head;
+    lock_init(&buffer_head->lock);
 }
 
 void bc_term(void)
@@ -72,7 +73,7 @@ void bc_term(void)
 struct buffer_head *bc_select_victim(void)
 {
     struct buffer_head *bh = buffer_head;
-    for(; bh != buffer_head + BUFFER_CAHCHE_ENTRY_NB; bh++)
+    for(; bh != buffer_head + BUFFER_CACHE_ENTRY_NB; bh++)
     {
         if(bh->clock_bit == false)
         {
@@ -89,7 +90,7 @@ struct buffer_head *bc_select_victim(void)
 struct buffer_head *bc_lookup(block_sector_t sector)
 {
     struct buffer_head *bh = buffer_head;
-    for(; bh != buffer_head + BUFFER_CAHCHE_ENTRY_NB; bh++)
+    for(; bh != buffer_head + BUFFER_CACHE_ENTRY_NB; bh++)
     {
         if(bh-> sector_addr == sector)
         {
@@ -111,7 +112,7 @@ void bc_flush_entry(struct buffer_head *p_flush_entry)
 void bc_flush_all_entries(void)
 {
     struct buffer_head *bh = buffer_head;
-    for(; bh != buffer_head + BUFFER_CAHCHE_ENTRY_NB; bh++)
+    for(; bh != buffer_head + BUFFER_CACHE_ENTRY_NB; bh++)
     {
         bc_flush_entry(bh);
     }
