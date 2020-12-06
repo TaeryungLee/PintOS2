@@ -87,12 +87,12 @@ struct buffer_head *bc_select_victim(void)
             else
             {
                 bc_flush_entry(clock_hand);
+                return clock_hand ++;
             }
        
         }
         clock_hand->clock_bit = false;
     }
-    return ;
 }
 
 struct buffer_head *bc_lookup(block_sector_t sector)
@@ -104,6 +104,7 @@ struct buffer_head *bc_lookup(block_sector_t sector)
         {
             if(bh->valid_flag == true)
             {
+                lock_acquire(&bh->lock);
                 return bh;
             }
         }
