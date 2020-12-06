@@ -91,12 +91,12 @@ struct buffer_head *bc_select_victim(void)
             if(clock_hand->clock_bit == false)
             {
                     return clock_hand++;
-            }else
+            }else if(clock_hand->clock_bit == false)
             {
-                if(clock_hand->clock_bit == false)
-                {
-                    return clock_hand++;
-                }
+                
+
+                return clock_hand++;
+
             }
             
             clock_hand->clock_bit = false;
@@ -127,8 +127,14 @@ struct buffer_head *bc_lookup(block_sector_t sector)
 
 void bc_flush_entry(struct buffer_head *p_flush_entry)
 {
-    if (!p_flush_entry->valid_flag || !p_flush_entry->dirty_flag)
+    if (p_flush_entry->valid_flag == false)
+    {
         return;
+    }
+    else if(p_flush_entry->dirty_flag == false)
+    {
+        return;
+    }
     p_flush_entry->dirty_flag = false;
     block_write(fs_device, p_flush_entry->sector_addr, p_flush_entry->buffer);
 }
