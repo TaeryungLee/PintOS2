@@ -95,7 +95,7 @@ struct buffer_head *bc_select_victim(void)
             clock_hand->clock_bit = false;
             lock_release(&clock_hand->lock);
             //clock_hand++;    
-            printf("%x", clock_hand); 
+            printf("%x\n", clock_hand); 
         }
         clock_hand = buffer_head;
     }
