@@ -250,7 +250,7 @@ inode_open (block_sector_t sector)
   //modified 4-2
   //block_read (fs_device, inode->sector, &inode->data);
   lock_init(&inode->extend_lock);
-  bc_read(sector, &inode->data, 0, BLOCK_SECTOR_SIZE, 0);
+  //bc_read(sector, &inode->data, 0, BLOCK_SECTOR_SIZE, 0);
   return inode;
 }
 
