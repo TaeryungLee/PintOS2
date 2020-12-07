@@ -204,7 +204,7 @@ inode_create (block_sector_t sector, off_t length)
       if(length > 0)
       {
         off_t start_pos = (off_t) sector;
-        inode_update_file_length(disk_inode, start_pos, start_pos + length - 1 );
+        inode_update_file_length(disk_inode, start_pos, start_pos + length - 1);
       } 
       bc_write(sector, disk_inode, 0 , BLOCK_SECTOR_SIZE, 0);
       free (disk_inode);
@@ -531,8 +531,9 @@ static void locate_byte(off_t pos, struct sector_location *sec_loc)
   else if(pos_sector < (off_t)(DIRECT_BLOCK_ENTRIES + INDIRECT_BLOCK_ENTRIES * (INDIRECT_BLOCK_ENTRIES + 1)))
   {
     sec_loc -> directness = DOUBLE_INDIRECT;
-    sec_loc -> index1 = pos_sector % INDIRECT_BLOCK_ENTRIES; //**check
     sec_loc -> index2 = pos_sector / INDIRECT_BLOCK_ENTRIES;
+    sec_loc -> index1 = pos_sector % INDIRECT_BLOCK_ENTRIES; //**check
+    
   }
   else
   {
