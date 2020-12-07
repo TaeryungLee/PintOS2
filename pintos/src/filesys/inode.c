@@ -224,6 +224,10 @@ inode_open (block_sector_t sector)
 
   /* Initialize. */
   list_push_front (&open_inodes, &inode->elem);
+  if(inode->elem == NULL)
+  {
+    printf("NULL");
+  }
   inode->sector = sector;
   inode->open_cnt = 1;
   inode->deny_write_cnt = 0;
