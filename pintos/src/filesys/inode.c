@@ -179,27 +179,9 @@ inode_create (block_sector_t sector, off_t length)
   if (disk_inode != NULL)
     {
       size_t sectors = bytes_to_sectors (length);
-      disk_inode->length = length;
+      disk_inode->length = 0;
       disk_inode->magic = INODE_MAGIC;
-      /*
-      if (free_map_allocate (sectors, &disk_inode->start)) 
-        {
-          block_write (fs_device, sector, disk_inode);
-          if (sectors > 0) 
-            {
-              static char zeros[BLOCK_SECTOR_SIZE];
-              size_t i;
-              
-              for (i = 0; i < sectors; i++) 
 
-                //modified 4.1
-                //block_write (fs_device, disk_inode->start + i, zeros);
-                bc_write (disk_inode->start + i, zeros, 0, BLOCK_SECTOR_SIZE, 0);
-            }
-          success = true; 
-        }*/
-
-      
       //modified 4-2
       if(length > 0)
       {
