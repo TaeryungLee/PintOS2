@@ -8,6 +8,7 @@
 #include "threads/malloc.h"
 #include "threads/synch.h"
 #include "filesys/buffer_cache.h"
+#include <stdio.h>
 
 /* Identifies an inode. */
 #define INODE_MAGIC 0x494e4f44
@@ -181,7 +182,7 @@ inode_create (block_sector_t sector, off_t length)
       size_t sectors = bytes_to_sectors (length);
       disk_inode->length = 0;
       disk_inode->magic = INODE_MAGIC;
-
+      printf("inode_length: %f \n", disk_inode->length);
       //modified 4-2
       if(length > 0)
       {
@@ -587,7 +588,7 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t start_pos, of
   {
     return false;
   }
-
+  printf("size:%f  size_old:%f", size, size_old);
   if(size_old < size)
   {
     return false;
