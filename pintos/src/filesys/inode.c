@@ -179,7 +179,8 @@ inode_create (block_sector_t sector, off_t length)
   disk_inode = calloc (1, sizeof *disk_inode);
   if (disk_inode != NULL)
     {
-      size_t sectors = bytes_to_sectors (length);
+      //size_t sectors = bytes_to_sectors (length);
+      memset(disk_inode, -1, sizeof( struct inode_disk));
       disk_inode->length = 0;
       disk_inode->magic = INODE_MAGIC;
       printf("inode_length: %d \n", disk_inode->length);
