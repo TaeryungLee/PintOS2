@@ -598,18 +598,19 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t start_pos, of
   off_t size = end_pos - start_pos;
   off_t offset = start_pos;
 
+/*
   off_t inode_left = size_old - offset;
   int sector_left = BLOCK_SECTOR_SIZE - (offset % BLOCK_SECTOR_SIZE);
   int min_left = inode_left < sector_left ? inode_left : sector_left;
+  int chunk_size = size < min_left ? size : min_left;*/
 
-  //int chunk_size = size < min_left ? size : min_left;
   int chunk_size = BLOCK_SECTOR_SIZE;
   if(chunk_size < 0)
   {
     return false;
   }
 
-  if(offset < size)
+  if(size_old < size)
   {
     return false;
   }
