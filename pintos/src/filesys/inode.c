@@ -296,8 +296,8 @@ inode_close (struct inode *inode)
                             bytes_to_sectors (inode->data.length)); */
 
           //modified 4-2
-          bc_read(inode->sector, disk_inode, 0, BLOCK_SECTOR_SIZE, 0);
           get_disk_inode(inode, disk_inode);
+          bc_read(inode->sector, disk_inode, 0, BLOCK_SECTOR_SIZE, 0);
           free_inode_sectors(disk_inode);
           free_map_release(inode->sector, 1);
           //free(disk_inode);
@@ -602,7 +602,8 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t start_pos, of
   int sector_left = BLOCK_SECTOR_SIZE - (offset % BLOCK_SECTOR_SIZE);
   int min_left = inode_left < sector_left ? inode_left : sector_left;
 
-  int chunk_size = size < min_left ? size : min_left;
+  //int chunk_size = size < min_left ? size : min_left;
+  int chunk_size = BLOCK_SECTOR_SIZE;
   if(chunk_size < 0)
   {
     return false;
