@@ -391,7 +391,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
   const uint8_t *buffer = buffer_;
   off_t bytes_written = 0;
   uint8_t *bounce = NULL;
-  struct inode_disk *disk_inode = malloc(sizeof (struct inode_disk)); //modified 4-2
+  struct inode_disk *disk_inode; //modified 4-2
 
 
   if (inode->deny_write_cnt)
@@ -399,16 +399,12 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 
 
   //modified 4-2
-  if(disk_inode == NULL)
-  {
-    return 0;
-  }
-  get_disk_inode(inode, disk_inode);
   lock_acquire(&inode->extend_lock);
+  get_disk_inode(inode, disk_inode);
   int old_length = disk_inode->length;
   int write_end = offset + size - 1;
 
-  if(write_end > old_length - 1)
+  if(write_end > old_length-1)
   {
     inode_update_file_length(disk_inode, offset, write_end);
   }
@@ -459,8 +455,8 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
         }
       */
 
-    //modified 4-1  
-    bc_write(sector_idx, buffer, bytes_written, chunk_size, sector_ofs); 
+      //modified 4-1  
+      bc_write(sector_idx, buffer, bytes_written, chunk_size, sector_ofs); 
     
       /* Advance. */
       size -= chunk_size;
@@ -470,7 +466,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 
   
   //modified 4-2
-    bc_write(inode->sector, disk_inode, 0 , BLOCK_SECTOR_SIZE, 0);
+  bc_write(inode->sector, disk_inode, 0 , BLOCK_SECTOR_SIZE, 0);
 
   //free (bounce);
 
