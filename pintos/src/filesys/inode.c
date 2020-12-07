@@ -109,7 +109,7 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
       }
       case INDIRECT:
       {
-        ind_block = (struct inode_indirect_block *) malloc(BLOCK_SECTOR_SIZE);
+        //ind_block = (struct inode_indirect_block *) malloc(BLOCK_SECTOR_SIZE);
         if(ind_block)
         {
           bc_read(inode_disk->indirect_block_sec, ind_block, 0, sizeof(struct inode_indirect_block), 0);
@@ -124,7 +124,7 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
       }
       case DOUBLE_INDIRECT:
       {
-        ind_block = (struct inode_indirect_block *) malloc(BLOCK_SECTOR_SIZE);
+        //ind_block = (struct inode_indirect_block *) malloc(BLOCK_SECTOR_SIZE);
         block_sector_t temp_sec;
         if(ind_block)
         {
@@ -137,7 +137,7 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
         {
           result_sec = 0;
         }
-        free(ind_block);
+        //free(ind_block);
         break;
       }
     }
@@ -387,7 +387,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
   int old_length = disk_inode->length;
   int write_end = offset + size - 1;
 
-  if(write_end > old_length-1)
+  if(write_end > old_length)
   {
     inode_update_file_length(disk_inode, offset, write_end);
   }
