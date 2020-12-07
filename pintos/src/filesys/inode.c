@@ -589,7 +589,7 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t start_pos, of
     return false;
   }
   printf("size:%d  size_old:%d", size, size_old);
-  if(size_old < size)
+  if(size_old > size)
   {
     return false;
   }
