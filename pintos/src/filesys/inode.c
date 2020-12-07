@@ -231,8 +231,8 @@ inode_open (block_sector_t sector)
 
 
   //modified 4-2
-  //block_read (fs_device, inode->sector, &inode->data);
   lock_init(&inode->extend_lock);
+  //block_read (fs_device, inode->sector, &inode->data);
   //bc_read(sector, &inode->data, 0, BLOCK_SECTOR_SIZE, 0);
   return inode;
 }
@@ -329,27 +329,6 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
       int chunk_size = size < min_left ? size : min_left;
       if (chunk_size <= 0)
         break;
-      /*
-      if (sector_ofs == 0 && chunk_size == BLOCK_SECTOR_SIZE)
-        {
-          // Read full sector directly into caller's buffer. 
-          //block_read (fs_device, sector_idx, buffer + bytes_read);
-          bc_read(sector_idx, buffer, bytes_read, chunk_size, sector_ofs);
-        }
-      else 
-        {
-          // Read sector into bounce buffer, then partially copy
-          // into caller's buffer.
-          if (bounce == NULL) 
-            {
-              bounce = malloc (BLOCK_SECTOR_SIZE);
-              if (bounce == NULL)
-                break;
-            }
-          block_read (fs_device, sector_idx, bounce);
-          memcpy (buffer + bytes_read, bounce + sector_ofs, chunk_size);
-        }
-      */
 
       bc_read(sector_idx, buffer, bytes_read, chunk_size, sector_ofs);
       /* Advance. */
@@ -374,24 +353,23 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
   const uint8_t *buffer = buffer_;
   off_t bytes_written = 0;
   uint8_t *bounce = NULL;
-  struct inode_disk *disk_inode; //modified 4-2
-
-
+  struct inode_disk *disk_inode; //modified 4.2
+  
   if (inode->deny_write_cnt)
     return 0;
 
 
-  //modified 4-2
+  //modified 4.2
   lock_acquire(&inode->extend_lock);
   get_disk_inode(inode, disk_inode);
   int old_length = disk_inode->length;
-  int write_end = offset + size ;
+  int write_end = offset + size;
 
   if(write_end > old_length)
   {
-    inode_update_file_length(disk_inode, disk_inode->length, write_end);
+    inode_update_file_length(disk_inode, old_length, write_end);
   }
-  lock_release(&inode->extend_lock);
+
 
 
   while (size > 0) 
@@ -409,34 +387,6 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
       int chunk_size = size < min_left ? size : min_left;
       if (chunk_size <= 0)
         break;
-      /*
-      if (sector_ofs == 0 && chunk_size == BLOCK_SECTOR_SIZE)
-        {
-          // Write full sector directly to disk. 
-          //block_write (fs_device, sector_idx, buffer + bytes_written);
-          bc_write(sector_idx, buffer, bytes_written, chunk_size, sector_ofs);
-        }
-      else 
-        {
-          // We need a bounce buffer. 
-          if (bounce == NULL) 
-            {
-              bounce = malloc (BLOCK_SECTOR_SIZE);
-              if (bounce == NULL)
-                break;
-            }
-
-          // If the sector contains data before or after the chunk
-          // we're writing, then we need to read in the sector
-          // first.  Otherwise we start with a sector of all zeros. 
-          if (sector_ofs > 0 || chunk_size < sector_left) 
-            block_read (fs_device, sector_idx, bounce);
-          else
-            memset (bounce, 0, BLOCK_SECTOR_SIZE);
-          memcpy (bounce + sector_ofs, buffer + bytes_written, chunk_size);
-          block_write (fs_device, sector_idx, bounce);
-        }
-      */
 
       //modified 4-1  
       bc_write(sector_idx, buffer, bytes_written, chunk_size, sector_ofs); 
@@ -447,9 +397,9 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
       bytes_written += chunk_size;
     }
 
-  
+  lock_release(&inode->extend_lock);
   //modified 4-2
-  bc_write(inode->sector, disk_inode, 0 , BLOCK_SECTOR_SIZE, 0);
+  //bc_write(inode->sector, disk_inode, 0 , BLOCK_SECTOR_SIZE, 0);
 
   //free (bounce);
 
@@ -625,6 +575,7 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t start_pos, of
   return true;
 }*/
 
+//need to change
 bool inode_update_file_length(struct inode_disk *inode_disk, off_t length, off_t new_length)
 {
   static char zeroes[BLOCK_SECTOR_SIZE];
