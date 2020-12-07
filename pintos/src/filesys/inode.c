@@ -507,7 +507,7 @@ static void locate_byte(off_t pos, struct sector_location *sec_loc)
     sec_loc -> directness = INDIRECT;
     sec_loc -> index1 = pos_sector;
   }
-  else if(pos_sector < (off_t)(DIRECT_BLOCK_ENTRIES + INDIRECT_BLOCK_ENTRIES * (INDIRECT_BLOCK_ENTRIES + 1)))
+  else if(pos_sector < (off_t)(DIRECT_BLOCK_ENTRIES + INDIRECT_BLOCK_ENTRIES * INDIRECT_BLOCK_ENTRIES))
   {
     sec_loc -> directness = DOUBLE_INDIRECT;
     sec_loc -> index2 = pos_sector / INDIRECT_BLOCK_ENTRIES;
