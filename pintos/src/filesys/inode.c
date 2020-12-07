@@ -50,7 +50,7 @@ struct inode
     //struct inode_disk data;             /* Inode content. */
 
     //modified 4.2
-    struct lock *extend_lock;
+    struct lock extend_lock;
   };
 
 //modified 4.2
