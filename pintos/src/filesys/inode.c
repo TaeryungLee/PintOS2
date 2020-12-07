@@ -665,7 +665,7 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t length, off_t
       {
         return false;
       }
-      if (!bc_write (sector, zeros, 0, BLOCK_SECTOR_SIZE, 0))
+      if (!bc_write (sector, zeroes, 0, BLOCK_SECTOR_SIZE, 0))
       {
         return false; 
       }
