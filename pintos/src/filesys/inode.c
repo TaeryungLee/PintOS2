@@ -102,6 +102,7 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
     struct sector_location *sec_loc;
     locate_byte(pos, sec_loc); //인덱스 블록 offset 계산
     block_sector_t temp_sec;
+    block_sector_t error = -1;
     switch(sec_loc->directness)
     {
       case NORMAL_DIRECT:
@@ -112,7 +113,7 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
       case INDIRECT:
       {
         ind_block = malloc(sizeof (struct inode_indirect_block));
-        if(ind_block)
+        if(inode_disk->indirect_block_sec != error)
         {
           bc_read(inode_disk->indirect_block_sec, ind_block, 0, sizeof(struct inode_indirect_block), 0);
           result_sec = ind_block -> map_table[sec_loc->index1];
@@ -128,7 +129,7 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
       {
         ind_block = malloc(sizeof (struct inode_indirect_block));
 
-        if(ind_block)
+        if(inode_disk->double_indirect_block_sec != error)
         {
           bc_read(inode_disk->double_indirect_block_sec, ind_block, 0, sizeof(struct inode_indirect_block), 0);
           temp_sec = ind_block->map_table[sec_loc->index2];
