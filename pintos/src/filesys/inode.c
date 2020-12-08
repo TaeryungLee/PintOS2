@@ -89,7 +89,7 @@ static void free_inode_sectors(struct inode_disk *inode_disk);
    POS. */
 
 //modified 4-2
-/*
+
 static block_sector_t
 byte_to_sector (const struct inode_disk *inode_disk, off_t pos) 
 {
@@ -150,7 +150,7 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
 
   else
     return -1;
-}*/
+}
 
 static block_sector_t
 byte_to_sector (const struct inode_disk *inode_disk, off_t pos) 
