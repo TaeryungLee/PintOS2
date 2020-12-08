@@ -518,7 +518,7 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
       return false;
   }
   free(new_block);
-  return false;
+  return true;
 }
 
 /*
