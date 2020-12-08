@@ -89,7 +89,7 @@ static void free_inode_sectors(struct inode_disk *inode_disk);
    POS. */
 
 //modified 4-2
-/*
+
 static block_sector_t
 byte_to_sector (const struct inode_disk *inode_disk, off_t pos) 
 {
@@ -147,50 +147,6 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
 
   else
     return -1;
-}*/
-static block_sector_t
-byte_to_sector (const struct inode_disk *inode_disk, off_t pos) 
-{
-  ASSERT (inode_disk != NULL);
-
-  // 테이블을 메모리에서 다루기 위한 변수입니다.
-  struct inode_indirect_block ind_block;
-  // 테이블의 유형과 테이블에서의 위치를 나타냅니다.
-  struct sector_location sec_loc;
-
-  // 현재 살펴보고 있는 테이블의 섹터 번호입니다.
-  // 실행 흐름에 따라서 한 단계 테이블 또는 두 단계 테이블을 가리킵니다.
-  block_sector_t table_sector = inode_disk->indirect_block_sec;
-
-  if ((pos < inode_disk->length) == false)
-    return -1;
-
-  // 바이트 단위 위치에서, 테이블 유형과 테이블에서의 위치를 얻습니다.
-  locate_byte (pos, &sec_loc);
-  switch (sec_loc.directness)
-    {
-      case NORMAL_DIRECT:
-        // 바로 가져옵니다.
-        return inode_disk->direct_map_table[sec_loc.index1];
-      case DOUBLE_INDIRECT:
-        // 한 번 참조합니다.
-        if (inode_disk->double_indirect_block_sec == (block_sector_t) -1)
-          return -1;
-        if (!bc_read (inode_disk->double_indirect_block_sec, &ind_block, 0, sizeof (struct inode_indirect_block), 0))
-          return -1;
-        // 아직 수행하지 않은 한 번의 참조는 아래에서 계속 수행합니다.
-        table_sector = ind_block.map_table[sec_loc.index2];
-      case INDIRECT:
-        if (table_sector == (block_sector_t) -1)
-          return -1;
-        if (!bc_read (table_sector, &ind_block, 0, sizeof (struct inode_indirect_block), 0))
-          return -1;
-        return ind_block.map_table[sec_loc.index1];
-      default:
-        return -1;
-    }
-  // 여기에 도달할 수 없습니다.
-  NOT_REACHED ();
 }
 
 
@@ -535,7 +491,7 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
     }
     case INDIRECT:
     {
-      new_block = malloc(BLOCK_SECTOR_SIZE);
+      new_block = malloc(sizeof (struct inode_indirect_block));
       if(new_block == NULL)
       {
         return false;
@@ -551,7 +507,7 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
       struct inode_indirect_block *ind_block_2;
       block_sector_t temp_sec;
 
-      new_block = malloc(BLOCK_SECTOR_SIZE);
+      new_block = malloc(sizeof (struct inode_indirect_block));
       if(new_block == NULL)
       {
         return false;
