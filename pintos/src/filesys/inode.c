@@ -549,19 +549,19 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
   
   while (size > 0)
     {
-      /* Sector to write, starting byte offset within sector. */
+      // Sector to write, starting byte offset within sector. 
 
       // 경쟁적으로 테이블에 접근할 수 있으므로 락을 취득한 상태에서 수행합니다.
       block_sector_t sector_idx = byte_to_sector (&inode_disk, offset);
       lock_release (&inode->extend_lock);
       int sector_ofs = offset % BLOCK_SECTOR_SIZE;
   
-      /* Bytes left in inode, bytes left in sector, lesser of the two. */
+      // Bytes left in inode, bytes left in sector, lesser of the two. 
       off_t inode_left = inode_disk.length - offset;
       int sector_left = BLOCK_SECTOR_SIZE - sector_ofs;
       int min_left = inode_left < sector_left ? inode_left : sector_left;
 
-      /* Number of bytes to actually write into this sector. */
+      // Number of bytes to actually write into this sector. 
       int chunk_size = size < min_left ? size : min_left;
       if (chunk_size <= 0)
         {
@@ -573,7 +573,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
       // 섹터 번호가 정해진 이후, 데이터 쓰기 작업은 락을 해제한 상태에서 수행해도 괜찮습니다.
       bc_write (sector_idx, (void *)buffer, bytes_written, chunk_size, sector_ofs);
 
-      /* Advance. */
+      // Advance. 
       size -= chunk_size;
       offset += chunk_size;
       bytes_written += chunk_size;
