@@ -569,7 +569,7 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
   free(new_block);
   return true;
 }
-
+/*
 static bool
 register_sector (struct inode_disk *inode_disk,
                  block_sector_t new_sector,
@@ -649,7 +649,7 @@ register_sector (struct inode_disk *inode_disk,
       return false;
     }
   NOT_REACHED ();
-}
+}*/
 
 
 /*
