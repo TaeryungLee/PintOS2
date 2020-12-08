@@ -622,6 +622,7 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t length, off_t
         return false; 
       }
     }
+  printf("%d", inode_disk->length);
   return true;
   
 }
