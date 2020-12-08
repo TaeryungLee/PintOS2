@@ -369,6 +369,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
   if(write_end > old_length)
   {
     inode_update_file_length(disk_inode, old_length, write_end);
+    bc_write (inode->sector, disk_inode, 0, BLOCK_SECTOR_SIZE, 0);
   }
 
 
@@ -471,7 +472,6 @@ static void locate_byte(off_t pos, struct sector_location *sec_loc)
   }
 }
 
-//uncompleted
 static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_sector, struct sector_location sec_loc)
 {
   struct inode_indirect_block *new_block;
