@@ -544,7 +544,7 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
       new_block = malloc(sizeof (struct inode_indirect_block));
       if(inode_disk->indirect_block_sec == error)
       {
-        if(free_map_allocate(1, inode_disk->indirect_block_sec) == false)
+        if(free_map_allocate(1, &inode_disk->indirect_block_sec) == false)
         {
           return false;
         }
@@ -563,7 +563,7 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
       new_block = malloc(sizeof (struct inode_indirect_block));
       if(inode_disk->double_indirect_block_sec == error)
       {
-        if(free_map_allocate(1, inode_disk->double_indirect_block_sec) == false)
+        if(free_map_allocate(1, &inode_disk->double_indirect_block_sec) == false)
         {
           return false;
         }
