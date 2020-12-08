@@ -353,7 +353,7 @@ inode_remove (struct inode *inode)
 /* Reads SIZE bytes from INODE into BUFFER, starting at position OFFSET.
    Returns the number of bytes actually read, which may be less
    than SIZE if an error occurs or end of file is reached. */
-/*
+
 off_t
 inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset) 
 {
@@ -362,7 +362,8 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
   uint8_t *bounce = NULL;
 
   //modified 4-2
-  struct inode_disk *inode_disk = malloc(sizeof (struct inode_disk)); 
+  struct inode_disk *inode_disk = malloc(sizeof (struct inode_disk));
+  lock_acquire(&inode->extend_lock);
   get_disk_inode(inode, inode_disk);
 
 
@@ -389,11 +390,11 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
       bytes_read += chunk_size;
     }
   free (bounce);
-
+  lock_release(&inode->extend_lock);
   return bytes_read;
 }
-*/
 
+/*
 off_t
 inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset) 
 {
@@ -409,7 +410,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
 
   while (size > 0)
     {
-      /* Disk sector to read, starting byte offset within sector. */
+       Disk sector to read, starting byte offset within sector. 
 
       // 경쟁적으로 테이블에 접근할 수 있으므로 락을 취득한 상태에서 수행합니다.
       block_sector_t sector_idx = byte_to_sector (&inode_disk, offset);
@@ -417,12 +418,12 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
 
       int sector_ofs = offset % BLOCK_SECTOR_SIZE;
 
-      /* Bytes left in inode, bytes left in sector, lesser of the two. */
+      //Bytes left in inode, bytes left in sector, lesser of the two. 
       off_t inode_left = inode_disk.length - offset;
       int sector_left = BLOCK_SECTOR_SIZE - sector_ofs;
       int min_left = inode_left < sector_left ? inode_left : sector_left;
 
-      /* Number of bytes to actually copy out of this sector. */
+      // Number of bytes to actually copy out of this sector. 
       int chunk_size = size < min_left ? size : min_left;
       if (chunk_size <= 0)
         {
@@ -434,7 +435,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
       // 섹터 번호가 정해진 이후, 데이터 읽기 작업은 락을 해제한 상태에서 수행해도 괜찮습니다.
       bc_read (sector_idx, buffer, bytes_read, chunk_size, sector_ofs);
 
-      /* Advance. */
+      // Advance. 
       size -= chunk_size;
       offset += chunk_size;
       bytes_read += chunk_size;
@@ -446,6 +447,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
   lock_release (&inode->extend_lock);
   return bytes_read;
 }
+*/
 
 /* Writes SIZE bytes from BUFFER into INODE, starting at OFFSET.
    Returns the number of bytes actually written, which may be
