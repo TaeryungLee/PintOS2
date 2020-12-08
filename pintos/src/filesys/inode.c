@@ -112,35 +112,35 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
       }
       case INDIRECT:
       {
-        ind_block = malloc(sizeof (struct inode_indirect_block));
+        //ind_block = malloc(sizeof (struct inode_indirect_block));
         if(inode_disk->indirect_block_sec != error)
         {
-          if(bc_read(inode_disk->indirect_block_sec, ind_block, 0, sizeof(struct inode_indirect_block), 0) == true)
-            result_sec = ind_block -> map_table[sec_loc->index1];
+          bc_read(inode_disk->indirect_block_sec, ind_block, 0, sizeof(struct inode_indirect_block), 0);
+          result_sec = ind_block -> map_table[sec_loc->index1];
         }
         else
         {
           result_sec = -1;
         }
-        free(ind_block);
+        //free(ind_block);
         break;
       }
       case DOUBLE_INDIRECT:
       {
-        ind_block = malloc(sizeof (struct inode_indirect_block));
+        //ind_block = malloc(sizeof (struct inode_indirect_block));
 
         if(inode_disk->double_indirect_block_sec != error)
         {
-          if(bc_read(inode_disk->double_indirect_block_sec, ind_block, 0, sizeof(struct inode_indirect_block), 0) == true)
-            temp_sec = ind_block->map_table[sec_loc->index2];
-          if(bc_read(temp_sec, ind_block, 0, sizeof(struct inode_indirect_block), 0) == true)
-            result_sec = ind_block->map_table[sec_loc->index1];
+          bc_read(inode_disk->double_indirect_block_sec, ind_block, 0, sizeof(struct inode_indirect_block), 0);
+          temp_sec = ind_block->map_table[sec_loc->index2];
+          bc_read(temp_sec, ind_block, 0, sizeof(struct inode_indirect_block), 0);
+          result_sec = ind_block->map_table[sec_loc->index1];
         }
         else
         {
           result_sec = -1;
         }
-        free(ind_block);
+        //free(ind_block);
         break;
       }
     }
