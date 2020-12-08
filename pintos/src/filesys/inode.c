@@ -362,7 +362,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
   uint8_t *bounce = NULL;
 
   //modified 4-2
-  struct inode_disk *inode_disk = malloc(sizeof (struct inode_disk));
+  //struct inode_disk *inode_disk = malloc(sizeof (struct inode_disk));
   lock_acquire(&inode->extend_lock);
   get_disk_inode(inode, inode_disk);
 
@@ -378,7 +378,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
       }
 
       // Bytes left in inode, bytes left in sector, lesser of the two.
-      off_t inode_left = inode_length (inode) - offset;
+      off_t inode_left = inode_disk->length - offset;
       int sector_left = BLOCK_SECTOR_SIZE - sector_ofs;
       int min_left = inode_left < sector_left ? inode_left : sector_left;
 
@@ -387,7 +387,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
       if (chunk_size <= 0)
         break;
 
-      bc_read(sector_idx, (void *)buffer, bytes_read, chunk_size, sector_ofs);
+      bc_read(sector_idx, buffer, bytes_read, chunk_size, sector_ofs);
       // Advance.
       size -= chunk_size;
       offset += chunk_size;
