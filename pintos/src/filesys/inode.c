@@ -605,7 +605,7 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t length, off_t
       
       if (sector != (block_sector_t) -1)
       {
-        pritnf("continue");
+        pritnf("continue \n");
         continue;
       }
       
