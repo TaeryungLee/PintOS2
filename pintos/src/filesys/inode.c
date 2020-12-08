@@ -383,8 +383,10 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
       // Number of bytes to actually copy out of this sector.
       int chunk_size = size < min_left ? size : min_left;
       if (chunk_size <= 0)
+      {
         lock_acquire(&inode->extend_lock);
         break;
+      }
 
       bc_read(sector_idx, buffer, bytes_read, chunk_size, sector_ofs);
       // Advance.
