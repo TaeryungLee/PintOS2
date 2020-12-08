@@ -362,8 +362,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
   uint8_t *bounce = NULL;
 
   //modified 4-2
-  //struct inode_disk *inode_disk = malloc(sizeof (struct inode_disk));
-  struct inode_disk *inode_disk;
+  struct inode_disk *inode_disk = malloc(sizeof (struct inode_disk));
   lock_acquire(&inode->extend_lock);
   get_disk_inode(inode, inode_disk);
 
@@ -372,6 +371,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
     {
       // Disk sector to read, starting byte offset within sector. 
       block_sector_t sector_idx = byte_to_sector (inode_disk, offset);
+      lock_release(&inode->extend_lock);
       int sector_ofs = offset % BLOCK_SECTOR_SIZE;
 
 
@@ -383,6 +383,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
       // Number of bytes to actually copy out of this sector.
       int chunk_size = size < min_left ? size : min_left;
       if (chunk_size <= 0)
+        lock_acquire(&inode->extend_lock);
         break;
 
       bc_read(sector_idx, buffer, bytes_read, chunk_size, sector_ofs);
@@ -390,6 +391,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
       size -= chunk_size;
       offset += chunk_size;
       bytes_read += chunk_size;
+      lock_acquire(&inode->extend_lock);
     }
   free (bounce);
   lock_release(&inode->extend_lock);
