@@ -119,7 +119,7 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
         }
         else
         {
-          result_sec = 0;
+          result_sec = -1;
         }
         free(ind_block);
         break;
@@ -137,7 +137,7 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
         }
         else
         {
-          result_sec = 0;
+          result_sec = -1;
         }
         free(ind_block);
         break;
