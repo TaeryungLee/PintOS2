@@ -89,7 +89,7 @@ static void free_inode_sectors(struct inode_disk *inode_disk);
    POS. */
 
 //modified 4-2
-
+/*
 static block_sector_t
 byte_to_sector (const struct inode_disk *inode_disk, off_t pos) 
 {
@@ -151,7 +151,7 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
   else
     return -1;
 }
-/*
+*/
 static block_sector_t
 byte_to_sector (const struct inode_disk *inode_disk, off_t pos) 
 {
@@ -195,7 +195,7 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
     }
   // 여기에 도달할 수 없습니다.
   NOT_REACHED ();
-}*/
+}
 
 
 /* List of open inodes, so that opening a single inode twice
@@ -676,7 +676,7 @@ locate_byte (off_t pos, struct sector_location *sec_loc)
       sec_loc->index1 = pos_sector % INDIRECT_BLOCK_ENTRIES;
     }
 }
-
+/*
 static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_sector, struct sector_location sec_loc)
 {
   struct inode_indirect_block *new_block;
@@ -748,7 +748,8 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
   free(new_block);
   return true;
 }
-/*
+*/
+
 static bool
 register_sector (struct inode_disk *inode_disk,
                  block_sector_t new_sector,
@@ -829,7 +830,7 @@ register_sector (struct inode_disk *inode_disk,
     }
   NOT_REACHED ();
 }
-*/
+
 
 /*
 bool inode_update_file_length(struct inode_disk *inode_disk, off_t start_pos, off_t end_pos)
