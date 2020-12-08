@@ -548,6 +548,7 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
         {
           return false;
         }
+        memset(new_block, -1, sizeof(struct inode_indirect_block));
       }
       bc_read(inode_disk->indirect_block_sec, new_block, 0, sizeof(struct inode_indirect_block), 0);
       new_block->map_table[sec_loc.index1] = new_sector;
@@ -566,6 +567,9 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
         {
           return false;
         }
+        memset(new_block, -1, sizeof(struct inode_indirect_block));
+        memset(new_block_double, -1, sizeof(struct inode_indirect_block));
+
       }
       bc_read(inode_disk->double_indirect_block_sec, new_block, 0, sizeof(struct inode_indirect_block), 0);
       temp_sec = new_block->map_table[sec_loc.index2];
