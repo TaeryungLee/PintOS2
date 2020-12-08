@@ -393,6 +393,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
    less than SIZE if end of file is reached or an error occurs.
    (Normally a write at end of file would extend the inode, but
    growth is not yet implemented.) */
+   /*
 off_t
 inode_write_at (struct inode *inode, const void *buffer_, off_t size,
                 off_t offset) 
@@ -420,16 +421,16 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 
   while (size > 0) 
     {
-      /* Sector to write, starting byte offset within sector. */
+      // Sector to write, starting byte offset within sector.
       block_sector_t sector_idx = byte_to_sector (disk_inode, offset);
       int sector_ofs = offset % BLOCK_SECTOR_SIZE;
 
-      /* Bytes left in inode, bytes left in sector, lesser of the two. */
+      // Bytes left in inode, bytes left in sector, lesser of the two.
       off_t inode_left = inode_length (inode) - offset;
       int sector_left = BLOCK_SECTOR_SIZE - sector_ofs;
       int min_left = inode_left < sector_left ? inode_left : sector_left;
 
-      /* Number of bytes to actually write into this sector. */
+      // Number of bytes to actually write into this sector.
       int chunk_size = size < min_left ? size : min_left;
       if (chunk_size <= 0)
         break;
@@ -437,7 +438,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
       //modified 4-1  
       bc_write(sector_idx, buffer, bytes_written, chunk_size, sector_ofs); 
     
-      /* Advance. */
+      // Advance. 
       size -= chunk_size;
       offset += chunk_size;
       bytes_written += chunk_size;
@@ -450,7 +451,71 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
   //free (bounce);
 
   return bytes_written;
+}*/
+off_t
+inode_write_at (struct inode *inode, const void *buffer_, off_t size,
+                off_t offset) 
+{
+  struct inode_disk inode_disk;
+  const uint8_t *buffer = buffer_;
+  off_t bytes_written = 0;
+
+  if (inode->deny_write_cnt)
+    return 0;
+
+  // 먼저 락을 취득합니다.
+  lock_acquire (&inode->extend_lock);
+
+  // 디스크 아이노드를 버퍼 캐시에서 읽습니다.
+  get_disk_inode (inode, &inode_disk);
+  
+  if (inode_disk.length < offset + size)
+    {
+      // 크기 변화가 이 쓰기로 인하여 발생됩니다.
+      if (!inode_update_file_length (&inode_disk, inode_disk.length, offset + size))
+        NOT_REACHED ();
+      // 디스크 아이노드는 바로 앞의 수행에서 잠재적으로 변경되었습니다.
+      bc_write (inode->sector, &inode_disk, 0, BLOCK_SECTOR_SIZE, 0);
+    }
+  
+  while (size > 0)
+    {
+      /* Sector to write, starting byte offset within sector. */
+
+      // 경쟁적으로 테이블에 접근할 수 있으므로 락을 취득한 상태에서 수행합니다.
+      block_sector_t sector_idx = byte_to_sector (&inode_disk, offset);
+      lock_release (&inode->extend_lock);
+      int sector_ofs = offset % BLOCK_SECTOR_SIZE;
+  
+      /* Bytes left in inode, bytes left in sector, lesser of the two. */
+      off_t inode_left = inode_disk.length - offset;
+      int sector_left = BLOCK_SECTOR_SIZE - sector_ofs;
+      int min_left = inode_left < sector_left ? inode_left : sector_left;
+
+      /* Number of bytes to actually write into this sector. */
+      int chunk_size = size < min_left ? size : min_left;
+      if (chunk_size <= 0)
+        {
+          // 루프의 시작 직전과 종료 직후에서 락을 취득한 상태로 유지합니다.
+          lock_acquire (&inode->extend_lock);
+          break;
+        }
+
+      // 섹터 번호가 정해진 이후, 데이터 쓰기 작업은 락을 해제한 상태에서 수행해도 괜찮습니다.
+      bc_write (sector_idx, (void *)buffer, bytes_written, chunk_size, sector_ofs);
+
+      /* Advance. */
+      size -= chunk_size;
+      offset += chunk_size;
+      bytes_written += chunk_size;
+      // 다음 byte_to_sector 작업 이전에, 락을 미리 취득합니다.
+      lock_acquire (&inode->extend_lock);
+    }
+  // 마지막으로 락을 해제합니다.
+  lock_release (&inode->extend_lock);
+  return bytes_written;
 }
+
 
 /* Disables writes to INODE.
    May be called at most once per inode opener. */
