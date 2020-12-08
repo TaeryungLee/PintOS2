@@ -353,7 +353,7 @@ inode_remove (struct inode *inode)
 /* Reads SIZE bytes from INODE into BUFFER, starting at position OFFSET.
    Returns the number of bytes actually read, which may be less
    than SIZE if an error occurs or end of file is reached. */
-/*
+
 off_t
 inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset) 
 {
@@ -382,8 +382,26 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
       int chunk_size = size < min_left ? size : min_left;
       if (chunk_size <= 0)
         break;
-
-      bc_read(sector_idx, buffer, bytes_read, chunk_size, sector_ofs);
+      if (sector_ofs == 0 && chunk_size == BLOCK_SECTOR_SIZE)
+        {
+          /* Read full sector directly into caller's buffer. */
+          //block_read (fs_device, sector_idx, buffer + bytes_read);
+          bc_read(sector_idx, buffer, bytes_read, chunk_size, sector_ofs);
+        }
+      else 
+        {
+          /* Read sector into bounce buffer, then partially copy
+             into caller's buffer. */
+          if (bounce == NULL) 
+            {
+              bounce = malloc (BLOCK_SECTOR_SIZE);
+              if (bounce == NULL)
+                break;
+            }
+          block_read (fs_device, sector_idx, bounce);
+          memcpy (buffer + bytes_read, bounce + sector_ofs, chunk_size);
+        }
+      //bc_read(sector_idx, buffer, bytes_read, chunk_size, sector_ofs);
       // Advance.
       size -= chunk_size;
       offset += chunk_size;
@@ -392,9 +410,9 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
   free (bounce);
   lock_release(&inode->extend_lock);
   return bytes_read;
-}*/
+}
 
-
+/*
 off_t
 inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset) 
 {
@@ -446,7 +464,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
   // 마지막으로 락을 해제합니다.
   lock_release (&inode->extend_lock);
   return bytes_read;
-}
+}*/
 
 
 /* Writes SIZE bytes from BUFFER into INODE, starting at OFFSET.
