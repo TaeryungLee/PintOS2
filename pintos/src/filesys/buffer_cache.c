@@ -30,7 +30,7 @@ bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chun
         block_read(fs_device, sector_idx, bh->buffer);
     }
     bh->clock_bit = true;
-    printf("%#x, %#x, %#x", buffer + bytes_read, bh->buffer + sector_ofs, chunk_size);
+    printf("%#p, %#p, %#p", buffer + bytes_read, bh->buffer + sector_ofs, chunk_size);
     memcpy(buffer + bytes_read, bh->buffer + sector_ofs, chunk_size);
     lock_release (&bh->lock);
     return true;
