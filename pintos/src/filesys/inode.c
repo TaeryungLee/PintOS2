@@ -954,6 +954,23 @@ static void free_inode_sectors(struct inode_disk *inode_disk)
   }
 }*/
 static void
+free_sectors (block_sector_t sector)
+{
+  int index;
+  struct inode_indirect_block block;
+  // 테이블을 읽습니다.
+  bc_read (sector, &block, 0, sizeof (struct inode_indirect_block), 0);
+  for (index = 0; index < INDIRECT_BLOCK_ENTRIES; index++)
+    {
+      // 테이블은 순서대로 사용하므로, 유효하지 않은 항목이 처음으로 나왔을 때 종료합니다.
+      if (block.map_table[index] == (block_sector_t) -1)
+        return;
+      // 데이터 섹터를 해제합니다.
+      free_map_release (block.map_table[index], 1);
+    }
+}
+
+static void
 free_inode_sectors (struct inode_disk *inode_disk)
 {
   // 디스크 아이노드가 직접 참조하는 모든 데이터 섹터를 해제합니다.
