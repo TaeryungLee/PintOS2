@@ -89,7 +89,7 @@ static void free_inode_sectors(struct inode_disk *inode_disk);
    POS. */
 
 //modified 4-2
-
+/*
 static block_sector_t
 byte_to_sector (const struct inode_disk *inode_disk, off_t pos) 
 {
@@ -150,8 +150,8 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
 
   else
     return -1;
-}
-/*
+}*/
+
 static block_sector_t
 byte_to_sector (const struct inode_disk *inode_disk, off_t pos) 
 {
@@ -196,7 +196,7 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
   // 여기에 도달할 수 없습니다.
   NOT_REACHED ();
 }
-*/
+
 
 /* List of open inodes, so that opening a single inode twice
    returns the same `struct inode'. */
