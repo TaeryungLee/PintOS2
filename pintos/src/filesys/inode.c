@@ -909,6 +909,7 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t length, off_t
   
 }
 
+/*
 static void free_inode_sectors(struct inode_disk *inode_disk)
 {
   struct inode_indirect_block *ind_block_1;
@@ -951,4 +952,45 @@ static void free_inode_sectors(struct inode_disk *inode_disk)
       i++;
     }
   }
+}*/
+static void
+free_inode_sectors (struct inode_disk *inode_disk)
+{
+  // 디스크 아이노드가 직접 참조하는 모든 데이터 섹터를 해제합니다.
+  int index;
+  for (index = 0; index < DIRECT_BLOCK_ENTRIES; index++)
+    {
+      // 테이블은 순서대로 사용하므로, 유효하지 않은 항목이 처음으로 나왔을 때 종료합니다.
+      if (inode_disk->direct_map_table[index] == (block_sector_t) -1)
+        return;
+      // 데이터 섹터를 해제합니다.
+      free_map_release (inode_disk->direct_map_table[index], 1);
+    }
+  // 한 단계 참조 테이블이 없다면 종료합니다.
+  if (inode_disk->indirect_block_sec == (block_sector_t) -1)
+    return;
+  // 한 단계 참조 테이블이 가리키는 모든 데이터 섹터를 해제합니다.
+  free_sectors (inode_disk->indirect_block_sec);
+  // 한 단계 참조 테이블 그 자체를 해제합니다.
+  free_map_release (inode_disk->indirect_block_sec, 1);
+
+  // 두 단계 참조 테이블이 없다면 종료합니다.
+  if (inode_disk->double_indirect_block_sec == (block_sector_t) -1)
+    return;
+
+  // 두 단계 참조 테이블을 순회합니다.
+  struct inode_indirect_block block;
+  bc_read (inode_disk->double_indirect_block_sec, &block, 0, sizeof (struct inode_indirect_block), 0);
+  for (index = 0; index < DIRECT_BLOCK_ENTRIES; index++)
+  {
+    // 테이블은 순서대로 사용하므로, 유효하지 않은 항목이 처음으로 나왔을 때 종료합니다.
+    if (block.map_table[index] == (block_sector_t) -1)
+      return;
+    // 두 단계 참조 테이블이 가리키는 마지막 단계 참조 테이블을, 같은 방법으로 해제합니다.
+    free_sectors (block.map_table[index]);
+    // 두 단계 참조 테이블이 가리키는 마지막 단계 참조 테이블 그 자체를 해제합니다.
+    free_map_release (block.map_table[index], 1);
+  }
+  // 두 단계 참조 테이블을 그 자체를 해제합니다.
+  free_map_release (inode_disk->double_indirect_block_sec, 1);
 }
