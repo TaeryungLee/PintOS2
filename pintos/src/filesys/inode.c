@@ -485,7 +485,11 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
     }
     case INDIRECT:
     {
-
+      new_block = malloc(BLOCK_SECTOR_SIZE);
+      if(new_block == NULL)
+      {
+        return false;
+      }  
       bc_read(inode_disk->indirect_block_sec, new_block, 0, sizeof(struct inode_indirect_block), 0);
       new_block->map_table[sec_loc.index1] = new_sector;
       bc_write(inode_disk->indirect_block_sec, new_block, 0, sizeof(struct inode_indirect_block), 0);
@@ -497,7 +501,11 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
       struct inode_indirect_block *ind_block_2;
       block_sector_t temp_sec;
 
-
+      new_block = malloc(BLOCK_SECTOR_SIZE);
+      if(new_block == NULL)
+      {
+        return false;
+      }
       bc_read(inode_disk->double_indirect_block_sec, ind_block_1, 0, sizeof(struct inode_indirect_block), 0);
       temp_sec = ind_block_1->map_table[sec_loc.index2];
       bc_read(temp_sec, ind_block_2, 0, sizeof(struct inode_indirect_block), 0);
