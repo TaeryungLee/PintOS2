@@ -396,7 +396,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
       bytes_read += chunk_size;
       lock_acquire(&inode->extend_lock);
     }
-  free (bounce);
+  
   lock_release(&inode->extend_lock);
   return bytes_read;
 }
