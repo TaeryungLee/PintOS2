@@ -103,6 +103,7 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
     locate_byte(pos, &sec_loc); //인덱스 블록 offset 계산
     block_sector_t temp_sec;
     block_sector_t error = (block_sector_t) -1;
+
     switch(sec_loc.directness)
     {
       case NORMAL_DIRECT:
@@ -132,8 +133,7 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
         if(inode_disk->double_indirect_block_sec != error)
         {
           bc_read(inode_disk->double_indirect_block_sec, ind_block, 0, sizeof(struct inode_indirect_block), 0);
-          temp_sec = ind_block->map_table[sec_loc.index2];
-          
+          temp_sec = ind_block->map_table[sec_loc.index2];          
           bc_read(temp_sec, ind_block, 0, sizeof(struct inode_indirect_block), 0);
           result_sec = ind_block->map_table[sec_loc.index1];
         }
@@ -526,7 +526,7 @@ static void locate_byte(off_t pos, struct sector_location *sec_loc)
     sec_loc->directness = OUT_LIMIT;
   }
 }
-/*
+
 static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_sector, struct sector_location sec_loc)
 {
   struct inode_indirect_block *new_block;
@@ -541,12 +541,9 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
     case INDIRECT:
     {
       new_block = malloc(sizeof (struct inode_indirect_block));
-      if(new_block == NULL)
-      {
-        return false;
-      }  
+  
       bc_read(inode_disk->indirect_block_sec, new_block, 0, sizeof(struct inode_indirect_block), 0);
-      new_block->map_table[sec_loc.index1] = new_sector;
+      //new_block->map_table[sec_loc.index1] = new_sector;
       bc_write(inode_disk->indirect_block_sec, new_block, 0, sizeof(struct inode_indirect_block), 0);
       break;
     }
@@ -557,14 +554,11 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
       block_sector_t temp_sec;
 
       new_block = malloc(sizeof (struct inode_indirect_block));
-      if(new_block == NULL)
-      {
-        return false;
-      }
+
       bc_read(inode_disk->double_indirect_block_sec, ind_block_1, 0, sizeof(struct inode_indirect_block), 0);
       temp_sec = ind_block_1->map_table[sec_loc.index2];
       bc_read(temp_sec, ind_block_2, 0, sizeof(struct inode_indirect_block), 0);
-      ind_block_2->map_table[sec_loc.index1] = new_sector;
+      //ind_block_2->map_table[sec_loc.index1] = new_sector;
       bc_write(inode_disk->double_indirect_block_sec, ind_block_1, 0, sizeof(struct inode_indirect_block), 0);
       bc_write(temp_sec, ind_block_2, 0, sizeof(struct inode_indirect_block), 0);
       break;
@@ -574,7 +568,7 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
   }
   free(new_block);
   return true;
-}*/
+}
 
 static bool
 register_sector (struct inode_disk *inode_disk,
