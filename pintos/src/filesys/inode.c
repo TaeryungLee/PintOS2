@@ -95,7 +95,7 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
   //ASSERT (inode != NULL);
   block_sector_t result_sec;
 
-  if (pos <= inode_disk->length)
+  if (pos < inode_disk->length)
   {
     struct inode_indirect_block *ind_block;
     struct sector_location sec_loc;
