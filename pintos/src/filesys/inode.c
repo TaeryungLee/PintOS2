@@ -623,7 +623,7 @@ static bool get_disk_inode(const struct inode *inode, struct inode_disk *inode_d
   return bc_read(inode->sector, inode_disk, 0, sizeof(struct inode_disk), 0);
 }
 
-
+/*
 static void locate_byte(off_t pos, struct sector_location *sec_loc)
 {
   off_t pos_sector = pos / BLOCK_SECTOR_SIZE;
@@ -634,15 +634,15 @@ static void locate_byte(off_t pos, struct sector_location *sec_loc)
     sec_loc -> directness = NORMAL_DIRECT;
     sec_loc -> index1 = pos_sector;
   }
-  else if(pos_sector < (off_t)(DIRECT_BLOCK_ENTRIES + INDIRECT_BLOCK_ENTRIES))
+  else if(pos_sector < DIRECT_BLOCK_ENTRIES + INDIRECT_BLOCK_ENTRIES)
   {
-    pos_sector = pos_sector - (off_t)DIRECT_BLOCK_ENTRIES;
+    pos_sector = pos_sector - DIRECT_BLOCK_ENTRIES;
     sec_loc -> directness = INDIRECT;
     sec_loc -> index1 = pos_sector;
   }
-  else if(pos_sector < (off_t)((2 * DIRECT_BLOCK_ENTRIES) + (INDIRECT_BLOCK_ENTRIES * INDIRECT_BLOCK_ENTRIES)))
+  else if(pos_sector < (2 * DIRECT_BLOCK_ENTRIES) + (INDIRECT_BLOCK_ENTRIES * INDIRECT_BLOCK_ENTRIES))
   {
-    pos_sector = pos_sector - (off_t)(2 * DIRECT_BLOCK_ENTRIES);
+    pos_sector = pos_sector - (2 * DIRECT_BLOCK_ENTRIES);
     sec_loc -> directness = DOUBLE_INDIRECT;
     sec_loc -> index2 = pos_sector / INDIRECT_BLOCK_ENTRIES;
     sec_loc -> index1 = pos_sector % INDIRECT_BLOCK_ENTRIES; //**check
@@ -652,9 +652,9 @@ static void locate_byte(off_t pos, struct sector_location *sec_loc)
   {
     sec_loc->directness = OUT_LIMIT;
   }
-}
+}*/
 
-/*
+
 static void
 locate_byte (off_t pos, struct sector_location *sec_loc)
 {
@@ -685,7 +685,7 @@ locate_byte (off_t pos, struct sector_location *sec_loc)
       sec_loc->index1 = pos_sector % INDIRECT_BLOCK_ENTRIES;
     }
 }
-*/
+
 
 
 static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_sector, struct sector_location sec_loc)
