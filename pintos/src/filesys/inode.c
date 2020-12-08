@@ -481,7 +481,7 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
     case NORMAL_DIRECT:
     {
       inode_disk -> direct_map_table[sec_loc.index1] = new_sector;
-      break;
+      return true;
     }
     case INDIRECT:
     {
