@@ -353,7 +353,7 @@ inode_remove (struct inode *inode)
 /* Reads SIZE bytes from INODE into BUFFER, starting at position OFFSET.
    Returns the number of bytes actually read, which may be less
    than SIZE if an error occurs or end of file is reached. */
-
+/*
 off_t
 inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset) 
 {
@@ -392,9 +392,9 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
   free (bounce);
   lock_release(&inode->extend_lock);
   return bytes_read;
-}
+}*/
 
-/*
+
 off_t
 inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset) 
 {
@@ -410,7 +410,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
 
   while (size > 0)
     {
-       Disk sector to read, starting byte offset within sector. 
+      //Disk sector to read, starting byte offset within sector. 
 
       // 경쟁적으로 테이블에 접근할 수 있으므로 락을 취득한 상태에서 수행합니다.
       block_sector_t sector_idx = byte_to_sector (&inode_disk, offset);
@@ -447,7 +447,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
   lock_release (&inode->extend_lock);
   return bytes_read;
 }
-*/
+
 
 /* Writes SIZE bytes from BUFFER into INODE, starting at OFFSET.
    Returns the number of bytes actually written, which may be
