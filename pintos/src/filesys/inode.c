@@ -460,7 +460,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
    less than SIZE if end of file is reached or an error occurs.
    (Normally a write at end of file would extend the inode, but
    growth is not yet implemented.) */
-/*
+
 off_t
 inode_write_at (struct inode *inode, const void *buffer_, off_t size,
                 off_t offset) 
@@ -515,12 +515,12 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
   //modified 4-2
   //bc_write(inode->sector, disk_inode, 0 , BLOCK_SECTOR_SIZE, 0);
 
-  //free (bounce);
+  free (disk_inode);
 
   return bytes_written;
 }
-*/
 
+/*
 off_t
 inode_write_at (struct inode *inode, const void *buffer_, off_t size,
                 off_t offset) 
@@ -583,7 +583,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
   // 마지막으로 락을 해제합니다.
   lock_release (&inode->extend_lock);
   return bytes_written;
-}
+}*/
 
 
 /* Disables writes to INODE.
