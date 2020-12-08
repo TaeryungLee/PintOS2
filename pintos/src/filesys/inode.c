@@ -89,7 +89,7 @@ static void free_inode_sectors(struct inode_disk *inode_disk);
    POS. */
 
 //modified 4-2
-
+/*
 static block_sector_t
 byte_to_sector (const struct inode_disk *inode_disk, off_t pos) 
 {
@@ -147,6 +147,50 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
 
   else
     return -1;
+}*/
+static block_sector_t
+byte_to_sector (const struct inode_disk *inode_disk, off_t pos) 
+{
+  ASSERT (inode_disk != NULL);
+
+  // 테이블을 메모리에서 다루기 위한 변수입니다.
+  struct inode_indirect_block ind_block;
+  // 테이블의 유형과 테이블에서의 위치를 나타냅니다.
+  struct sector_location sec_loc;
+
+  // 현재 살펴보고 있는 테이블의 섹터 번호입니다.
+  // 실행 흐름에 따라서 한 단계 테이블 또는 두 단계 테이블을 가리킵니다.
+  block_sector_t table_sector = inode_disk->indirect_block_sec;
+
+  if ((pos < inode_disk->length) == false)
+    return -1;
+
+  // 바이트 단위 위치에서, 테이블 유형과 테이블에서의 위치를 얻습니다.
+  locate_byte (pos, &sec_loc);
+  switch (sec_loc.directness)
+    {
+      case NORMAL_DIRECT:
+        // 바로 가져옵니다.
+        return inode_disk->direct_map_table[sec_loc.index1];
+      case DOUBLE_INDIRECT:
+        // 한 번 참조합니다.
+        if (inode_disk->double_indirect_block_sec == (block_sector_t) -1)
+          return -1;
+        if (!bc_read (inode_disk->double_indirect_block_sec, &ind_block, 0, sizeof (struct inode_indirect_block), 0))
+          return -1;
+        // 아직 수행하지 않은 한 번의 참조는 아래에서 계속 수행합니다.
+        table_sector = ind_block.map_table[sec_loc.index2];
+      case INDIRECT:
+        if (table_sector == (block_sector_t) -1)
+          return -1;
+        if (!bc_read (table_sector, &ind_block, 0, sizeof (struct inode_indirect_block), 0))
+          return -1;
+        return ind_block.map_table[sec_loc.index1];
+      default:
+        return -1;
+    }
+  // 여기에 도달할 수 없습니다.
+  NOT_REACHED ();
 }
 
 
@@ -305,7 +349,7 @@ inode_remove (struct inode *inode)
 /* Reads SIZE bytes from INODE into BUFFER, starting at position OFFSET.
    Returns the number of bytes actually read, which may be less
    than SIZE if an error occurs or end of file is reached. */
-   
+   /*
 off_t
 inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset) 
 {
@@ -343,6 +387,62 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
   free (bounce);
 
   return bytes_read;
+}*/
+off_t
+inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset) 
+{
+  struct inode_disk inode_disk;
+  uint8_t *buffer = buffer_;
+  off_t bytes_read = 0;
+
+  // 먼저 락을 취득합니다.
+  lock_acquire (&inode->extend_lock);
+
+  // 디스크 아이노드를 버퍼 캐시에서 읽습니다.
+  get_disk_inode (inode, &inode_disk);
+
+  while (size > 0)
+    {
+      /* Disk sector to read, starting byte offset within sector. */
+
+      // 경쟁적으로 테이블에 접근할 수 있으므로 락을 취득한 상태에서 수행합니다.
+      block_sector_t sector_idx = byte_to_sector (&inode_disk, offset);
+      if (sector_idx == (block_sector_t) -1)
+        break;
+
+      lock_release (&inode->extend_lock);
+
+      int sector_ofs = offset % BLOCK_SECTOR_SIZE;
+
+
+      /* Bytes left in inode, bytes left in sector, lesser of the two. */
+      off_t inode_left = inode_disk.length - offset;
+      int sector_left = BLOCK_SECTOR_SIZE - sector_ofs;
+      int min_left = inode_left < sector_left ? inode_left : sector_left;
+
+      /* Number of bytes to actually copy out of this sector. */
+      int chunk_size = size < min_left ? size : min_left;
+      if (chunk_size <= 0)
+        {
+          // 루프의 시작 직전과 종료 직후에서 락을 취득한 상태로 유지합니다.
+          lock_acquire (&inode->extend_lock);
+          break;
+        }
+
+      // 섹터 번호가 정해진 이후, 데이터 읽기 작업은 락을 해제한 상태에서 수행해도 괜찮습니다.
+      bc_read (sector_idx, buffer, bytes_read, chunk_size, sector_ofs);
+
+      /* Advance. */
+      size -= chunk_size;
+      offset += chunk_size;
+      bytes_read += chunk_size;
+
+      // 다음 byte_to_sector 작업 이전에, 락을 미리 취득합니다.
+      lock_acquire (&inode->extend_lock);
+    }
+  // 마지막으로 락을 해제합니다.
+  lock_release (&inode->extend_lock);
+  return bytes_read;
 }
 
 /* Writes SIZE bytes from BUFFER into INODE, starting at OFFSET.
@@ -350,7 +450,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
    less than SIZE if end of file is reached or an error occurs.
    (Normally a write at end of file would extend the inode, but
    growth is not yet implemented.) */
-   
+   /*
 off_t
 inode_write_at (struct inode *inode, const void *buffer_, off_t size,
                 off_t offset) 
@@ -408,8 +508,70 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
   //free (bounce);
 
   return bytes_written;
-}
+}*/
+off_t
+inode_write_at (struct inode *inode, const void *buffer_, off_t size,
+                off_t offset) 
+{
+  struct inode_disk inode_disk;
+  const uint8_t *buffer = buffer_;
+  off_t bytes_written = 0;
 
+  if (inode->deny_write_cnt)
+    return 0;
+
+  // 먼저 락을 취득합니다.
+  lock_acquire (&inode->extend_lock);
+
+  // 디스크 아이노드를 버퍼 캐시에서 읽습니다.
+  get_disk_inode (inode, &inode_disk);
+  
+  if (inode_disk.length < offset + size)
+    {
+      // 크기 변화가 이 쓰기로 인하여 발생됩니다.
+      if (!inode_update_file_length (&inode_disk, inode_disk.length, offset + size))
+        NOT_REACHED ();
+      // 디스크 아이노드는 바로 앞의 수행에서 잠재적으로 변경되었습니다.
+      bc_write (inode->sector, &inode_disk, 0, BLOCK_SECTOR_SIZE, 0);
+    }
+  
+  while (size > 0)
+    {
+      /* Sector to write, starting byte offset within sector. */
+
+      // 경쟁적으로 테이블에 접근할 수 있으므로 락을 취득한 상태에서 수행합니다.
+      block_sector_t sector_idx = byte_to_sector (&inode_disk, offset);
+      lock_release (&inode->extend_lock);
+      int sector_ofs = offset % BLOCK_SECTOR_SIZE;
+  
+      /* Bytes left in inode, bytes left in sector, lesser of the two. */
+      off_t inode_left = inode_disk.length - offset;
+      int sector_left = BLOCK_SECTOR_SIZE - sector_ofs;
+      int min_left = inode_left < sector_left ? inode_left : sector_left;
+
+      /* Number of bytes to actually write into this sector. */
+      int chunk_size = size < min_left ? size : min_left;
+      if (chunk_size <= 0)
+        {
+          // 루프의 시작 직전과 종료 직후에서 락을 취득한 상태로 유지합니다.
+          lock_acquire (&inode->extend_lock);
+          break;
+        }
+
+      // 섹터 번호가 정해진 이후, 데이터 쓰기 작업은 락을 해제한 상태에서 수행해도 괜찮습니다.
+      bc_write (sector_idx, (void *)buffer, bytes_written, chunk_size, sector_ofs);
+
+      /* Advance. */
+      size -= chunk_size;
+      offset += chunk_size;
+      bytes_written += chunk_size;
+      // 다음 byte_to_sector 작업 이전에, 락을 미리 취득합니다.
+      lock_acquire (&inode->extend_lock);
+    }
+  // 마지막으로 락을 해제합니다.
+  lock_release (&inode->extend_lock);
+  return bytes_written;
+}
 
 
 /* Disables writes to INODE.
@@ -507,7 +669,7 @@ locate_byte (off_t pos, struct sector_location *sec_loc)
     }
 }
 
-
+/*
 static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_sector, struct sector_location sec_loc)
 {
   struct inode_indirect_block *new_block;
@@ -556,7 +718,87 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
   free(new_block);
   return true;
 }
+*/
+static bool
+register_sector (struct inode_disk *inode_disk,
+                 block_sector_t new_sector,
+                 struct sector_location sec_loc)
+{
+  struct inode_indirect_block first_block, second_block;
 
+  // 두 단계 참조인 경우, 첫 번째 참조 테이블이 갱신되어야 하는지를 나타내는 플래그입니다.
+  bool first_dirty = false;
+
+  // 참조 테이블의 섹터 번호를 저장하고 있는 변수에 대한 포인터입니다.
+  // 실행 흐름에 따라서 다양한 장소를 가리킵니다.
+  block_sector_t *table_sector = &inode_disk->indirect_block_sec;
+
+  switch (sec_loc.directness)
+    {
+    case NORMAL_DIRECT:
+      // 디스크 아이노드 직접 참조입니다.
+      inode_disk->direct_map_table[sec_loc.index1] = new_sector;
+      return true;
+    case DOUBLE_INDIRECT:
+      // 두 단계 참조가 일어납니다.
+      table_sector = &inode_disk->double_indirect_block_sec;
+      if (*table_sector == (block_sector_t) -1)
+        {
+          // 두 단계 참조 테이블을 처음으로 사용하는 경우입니다.
+          if (!free_map_allocate (1, table_sector))
+            return false;
+          // unsigned 정수의 가장 큰 값을 유효하지 않은 섹터 번호를 나타내기 위하여 예약하기로 합니다.
+          memset (&first_block, -1, sizeof (struct inode_indirect_block));
+        }
+      else
+        {
+          // 두 단계 참조 테이블이 이미 존재하는 경우입니다. 테이블을 읽습니다.
+          if (!bc_read (*table_sector, &first_block, 0, sizeof (struct inode_indirect_block), 0))
+            return false;
+        }
+      // 메모리에 읽은 두 단계 테이블에서, 다음 테이블에 대한 섹터 번호를 저장하고 있는 변수에 대한 포인터
+      table_sector = &first_block.map_table[sec_loc.index2];
+
+      // 더러움 플래그가 활성화되는 경우는 마지막 단계 테이블이 할당되지 않은 경우입니다.
+      // 마지막 단계 테이블의 섹터 번호는 첫 단계 테이블에 저장되므로 첫 단계 테이블을 다시 쓸 필요가 있기 때문입니다.
+      if (*table_sector == (block_sector_t) -1)
+          first_dirty = true;
+    case INDIRECT:
+      // 여기에서 table_sector는 한 단계 테이블의 유일한 테이블 또는 두 단계 테이블의 마지막 테이블을 가리킵니다.
+      if (*table_sector == (block_sector_t) -1)
+        {
+          // 테이블이 없는 경우에 할당하고
+          if (!free_map_allocate (1, table_sector))
+            return false;
+          memset (&second_block, -1, sizeof (struct inode_indirect_block));
+        }
+      else
+        {
+          // 테이블이 있다면 읽습니다.
+          if (!bc_read (*table_sector, &second_block, 0, sizeof (struct inode_indirect_block), 0))
+            return false;
+        }
+      if (second_block.map_table[sec_loc.index1] == (block_sector_t) -1)
+        second_block.map_table[sec_loc.index1] = new_sector;
+      else
+        // 여기에 도달할 수 없습니다.
+        NOT_REACHED ();
+
+      // 첫 단계 테이블이 더러운 경우에 다시 씁니다.
+      if (first_dirty)
+        {
+          if (!bc_write (inode_disk->double_indirect_block_sec, &first_block, 0, sizeof (struct inode_indirect_block), 0))
+            return false;
+        }
+      // 마지막 단계 테이블은 항상 다시 씁니다.
+      if (!bc_write (*table_sector, &second_block, 0, sizeof (struct inode_indirect_block), 0))
+        return false;
+      return true;
+    default:
+      return false;
+    }
+  NOT_REACHED ();
+}
 
 /*
 bool inode_update_file_length(struct inode_disk *inode_disk, off_t start_pos, off_t end_pos)
