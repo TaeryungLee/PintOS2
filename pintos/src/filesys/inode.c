@@ -526,7 +526,7 @@ static void locate_byte(off_t pos, struct sector_location *sec_loc)
     sec_loc->directness = OUT_LIMIT;
   }
 }
-
+/*
 static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_sector, struct sector_location sec_loc)
 {
   struct inode_indirect_block *new_block;
@@ -574,8 +574,8 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
   }
   free(new_block);
   return true;
-}
-/*
+}*/
+
 static bool
 register_sector (struct inode_disk *inode_disk,
                  block_sector_t new_sector,
@@ -655,7 +655,7 @@ register_sector (struct inode_disk *inode_disk,
       return false;
     }
   NOT_REACHED ();
-}*/
+}
 
 
 /*
