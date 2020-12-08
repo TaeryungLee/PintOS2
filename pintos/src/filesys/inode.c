@@ -373,10 +373,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
       // Disk sector to read, starting byte offset within sector. 
       block_sector_t sector_idx = byte_to_sector (inode_disk, offset);
       int sector_ofs = offset % BLOCK_SECTOR_SIZE;
-      if(sector_idx == -1)
-      {
-        break;
-      }
+
 
       // Bytes left in inode, bytes left in sector, lesser of the two.
       off_t inode_left = inode_disk->length - offset;
