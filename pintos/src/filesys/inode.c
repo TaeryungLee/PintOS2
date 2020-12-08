@@ -349,6 +349,7 @@ inode_remove (struct inode *inode)
 /* Reads SIZE bytes from INODE into BUFFER, starting at position OFFSET.
    Returns the number of bytes actually read, which may be less
    than SIZE if an error occurs or end of file is reached. */
+   /*
 off_t
 inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset) 
 {
@@ -363,28 +364,84 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
 
   while (size > 0) 
     {
-      /* Disk sector to read, starting byte offset within sector. */
+      // Disk sector to read, starting byte offset within sector. 
       block_sector_t sector_idx = byte_to_sector (inode_disk, offset);
       int sector_ofs = offset % BLOCK_SECTOR_SIZE;
 
-      /* Bytes left in inode, bytes left in sector, lesser of the two. */
+      // Bytes left in inode, bytes left in sector, lesser of the two.
       off_t inode_left = inode_length (inode) - offset;
       int sector_left = BLOCK_SECTOR_SIZE - sector_ofs;
       int min_left = inode_left < sector_left ? inode_left : sector_left;
 
-      /* Number of bytes to actually copy out of this sector. */
+      // Number of bytes to actually copy out of this sector.
       int chunk_size = size < min_left ? size : min_left;
       if (chunk_size <= 0)
         break;
 
       bc_read(sector_idx, buffer, bytes_read, chunk_size, sector_ofs);
-      /* Advance. */
+      // Advance.
       size -= chunk_size;
       offset += chunk_size;
       bytes_read += chunk_size;
     }
   free (bounce);
 
+  return bytes_read;
+}*/
+off_t
+inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset) 
+{
+  struct inode_disk inode_disk;
+  uint8_t *buffer = buffer_;
+  off_t bytes_read = 0;
+
+  // 먼저 락을 취득합니다.
+  lock_acquire (&inode->extend_lock);
+
+  // 디스크 아이노드를 버퍼 캐시에서 읽습니다.
+  get_disk_inode (inode, &inode_disk);
+
+  while (size > 0)
+    {
+      /* Disk sector to read, starting byte offset within sector. */
+
+      // 경쟁적으로 테이블에 접근할 수 있으므로 락을 취득한 상태에서 수행합니다.
+      block_sector_t sector_idx = byte_to_sector (&inode_disk, offset);
+      if (sector_idx == (block_sector_t) -1)
+        break;
+
+      lock_release (&inode->extend_lock);
+
+      int sector_ofs = offset % BLOCK_SECTOR_SIZE;
+
+
+      /* Bytes left in inode, bytes left in sector, lesser of the two. */
+      off_t inode_left = inode_disk.length - offset;
+      int sector_left = BLOCK_SECTOR_SIZE - sector_ofs;
+      int min_left = inode_left < sector_left ? inode_left : sector_left;
+
+      /* Number of bytes to actually copy out of this sector. */
+      int chunk_size = size < min_left ? size : min_left;
+      if (chunk_size <= 0)
+        {
+          // 루프의 시작 직전과 종료 직후에서 락을 취득한 상태로 유지합니다.
+          lock_acquire (&inode->extend_lock);
+          break;
+        }
+
+      // 섹터 번호가 정해진 이후, 데이터 읽기 작업은 락을 해제한 상태에서 수행해도 괜찮습니다.
+      bc_read (sector_idx, buffer, bytes_read, chunk_size, sector_ofs);
+
+      /* Advance. */
+      size -= chunk_size;
+      offset += chunk_size;
+      bytes_read += chunk_size;
+
+      // 다음 byte_to_sector 작업 이전에, 락을 미리 취득합니다.
+      lock_acquire (&inode->extend_lock);
+    }
+  // 마지막으로 락을 해제합니다.
+  lock_release (&inode->extend_lock);
   return bytes_read;
 }
 
