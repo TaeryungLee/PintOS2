@@ -544,7 +544,7 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
       new_block = malloc(sizeof (struct inode_indirect_block));
       if(inode_disk->indirect_block_sec == error)
       {
-        free_map_allocate(1, inode_disk->indirect_block_sec);        
+        free_map_allocate(1, inode_disk->indirect_block_sec);
       }
       bc_read(inode_disk->indirect_block_sec, new_block, 0, sizeof(struct inode_indirect_block), 0);
       new_block->map_table[sec_loc.index1] = new_sector;
@@ -559,7 +559,7 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
       new_block = malloc(sizeof (struct inode_indirect_block));
       if(inode_disk->double_indirect_block_sec == error)
       {
-        free_map_allocate(1, inode_disk->double_indirect_block_sec);        
+        free_map_allocate(1, inode_disk->double_indirect_block_sec);    
       }
       bc_read(inode_disk->double_indirect_block_sec, new_block, 0, sizeof(struct inode_indirect_block), 0);
       temp_sec = new_block->map_table[sec_loc.index2];
@@ -567,6 +567,7 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
       new_block_double->map_table[sec_loc.index1] = new_sector;
       bc_write(inode_disk->double_indirect_block_sec, new_block, 0, sizeof(struct inode_indirect_block), 0);
       bc_write(temp_sec, new_block_double, 0, sizeof(struct inode_indirect_block), 0);
+      free(new_block_double);
       break;
     }
     default:
