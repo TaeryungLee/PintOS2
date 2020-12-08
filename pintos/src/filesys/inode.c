@@ -115,13 +115,8 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
         ind_block = malloc(sizeof (struct inode_indirect_block));
         if(inode_disk->indirect_block_sec != error)
         {
-          if(bc_read(inode_disk->indirect_block_sec, ind_block, 0, sizeof(struct inode_indirect_block), 0) == true) 
-            result_sec = ind_block -> map_table[sec_loc.index1];
-          else
-          {
-            result_sec = -1;
-          }
-          
+          bc_read(inode_disk->indirect_block_sec, ind_block, 0, sizeof(struct inode_indirect_block), 0);
+          result_sec = ind_block -> map_table[sec_loc.index1];          
         }
         else
         {
@@ -136,18 +131,11 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
 
         if(inode_disk->double_indirect_block_sec != error)
         {
-          if(bc_read(inode_disk->double_indirect_block_sec, ind_block, 0, sizeof(struct inode_indirect_block), 0) ==true)
-            temp_sec = ind_block->map_table[sec_loc.index2];
-          else
-          {
-            result_sec = -1;
-          }
-          if(bc_read(temp_sec, ind_block, 0, sizeof(struct inode_indirect_block), 0) == true)
-            result_sec = ind_block->map_table[sec_loc.index1];
-          else
-          {
-            result_sec = -1;
-          }
+          bc_read(inode_disk->double_indirect_block_sec, ind_block, 0, sizeof(struct inode_indirect_block), 0);
+          temp_sec = ind_block->map_table[sec_loc.index2];
+          
+          bc_read(temp_sec, ind_block, 0, sizeof(struct inode_indirect_block), 0);
+          result_sec = ind_block->map_table[sec_loc.index1];
         }
         else
         {
@@ -538,7 +526,7 @@ static void locate_byte(off_t pos, struct sector_location *sec_loc)
     sec_loc->directness = OUT_LIMIT;
   }
 }
-/*
+
 static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_sector, struct sector_location sec_loc)
 {
   struct inode_indirect_block *new_block;
@@ -586,7 +574,8 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
   }
   free(new_block);
   return true;
-}*/
+}
+/*
 static bool
 register_sector (struct inode_disk *inode_disk,
                  block_sector_t new_sector,
@@ -666,7 +655,7 @@ register_sector (struct inode_disk *inode_disk,
       return false;
     }
   NOT_REACHED ();
-}
+}*/
 
 
 /*
