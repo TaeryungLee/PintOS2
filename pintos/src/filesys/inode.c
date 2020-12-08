@@ -183,7 +183,7 @@ inode_create (block_sector_t sector, off_t length)
       memset(disk_inode, -1, sizeof( struct inode_disk));
       disk_inode->length = 0;
       disk_inode->magic = INODE_MAGIC;
-      printf("inode_length: %d \n", disk_inode->length);
+      //printf("inode_length: %d \n", disk_inode->length);
       //modified 4-2
       if(length > 0)
       {
@@ -593,10 +593,10 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t length, off_t
   inode_disk->length = new_length;
   new_length--;
 
-  printf("length=%d, new_length=%d \n", length, new_length);
+  //printf("length=%d, new_length=%d \n", length, new_length);
   length = length / BLOCK_SECTOR_SIZE * BLOCK_SECTOR_SIZE;
   new_length = new_length /BLOCK_SECTOR_SIZE * BLOCK_SECTOR_SIZE;
-  printf("length=%d, new_length=%d \n", length, new_length);
+  //printf("length=%d, new_length=%d \n", length, new_length);
   for (; length <= new_length; length += BLOCK_SECTOR_SIZE)
     {
       struct sector_location sec_loc;
@@ -605,28 +605,27 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t length, off_t
       
       if (sector != (block_sector_t) -1)
       {
-        printf("continue \n");
         continue;
       }
       
       if (!free_map_allocate (1, &sector))
       {
-        printf("1\n");
+        //printf("1\n");
         return false;
       }
       locate_byte (length, &sec_loc);
       if (!register_sector (inode_disk, sector, sec_loc))
       {
-        printf("2 \n");
+        //printf("2 \n");
         return false;
       }
       if (!bc_write (sector, zeroes, 0, BLOCK_SECTOR_SIZE, 0))
       {
-        printf("3 \n");
+        //printf("3 \n");
         return false; 
       }
     }
-  printf("%d \n", inode_disk->length);
+  //printf("%d \n", inode_disk->length);
   return true;
   
 }
