@@ -353,7 +353,7 @@ inode_remove (struct inode *inode)
 /* Reads SIZE bytes from INODE into BUFFER, starting at position OFFSET.
    Returns the number of bytes actually read, which may be less
    than SIZE if an error occurs or end of file is reached. */
-/*
+
 off_t
 inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset) 
 {
@@ -395,12 +395,12 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
       bytes_read += chunk_size;
       lock_acquire(&inode->extend_lock);
     }
-  
+  free(inode_disk);
   lock_release(&inode->extend_lock);
   return bytes_read;
-}*/
+}
 
-
+/*
 off_t
 inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset) 
 {
@@ -452,7 +452,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
   // 마지막으로 락을 해제합니다.
   lock_release (&inode->extend_lock);
   return bytes_read;
-}
+}*/
 
 
 /* Writes SIZE bytes from BUFFER into INODE, starting at OFFSET.
