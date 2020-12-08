@@ -94,7 +94,7 @@ static block_sector_t
 byte_to_sector (const struct inode_disk *inode_disk, off_t pos) 
 {
   //ASSERT (inode != NULL);
-  block_sector_t result_sec = -1;
+  block_sector_t result_sec;
 
   if (pos < inode_disk->length)
   {
@@ -102,7 +102,7 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
     struct sector_location *sec_loc;
     locate_byte(pos, sec_loc); //인덱스 블록 offset 계산
     block_sector_t temp_sec;
-    block_sector_t error = -1;
+    block_sector_t error = (block_sector_t) -1;
     switch(sec_loc->directness)
     {
       case NORMAL_DIRECT:
