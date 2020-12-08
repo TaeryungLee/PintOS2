@@ -483,7 +483,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
   if(write_end > old_length)
   {
     inode_update_file_length(disk_inode, old_length, write_end);
-    bc_write(inode->sector, disk_inode, 0, BLOCK_SECTOR_SIZE);
+    bc_write(inode->sector, disk_inode, 0, BLOCK_SECTOR_SIZE, 0);
   }
 
 
