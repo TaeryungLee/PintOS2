@@ -112,7 +112,7 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
       }
       case INDIRECT:
       {
-        //ind_block = malloc(sizeof (struct inode_indirect_block));
+        ind_block = malloc(sizeof (struct inode_indirect_block));
         if(inode_disk->indirect_block_sec != error)
         {
           bc_read(inode_disk->indirect_block_sec, ind_block, 0, sizeof(struct inode_indirect_block), 0);
@@ -122,12 +122,12 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
         {
           result_sec = -1;
         }
-        //free(ind_block);
+        free(ind_block);
         break;
       }
       case DOUBLE_INDIRECT:
       {
-        //ind_block = malloc(sizeof (struct inode_indirect_block));
+        ind_block = malloc(sizeof (struct inode_indirect_block));
 
         if(inode_disk->double_indirect_block_sec != error)
         {
@@ -140,7 +140,7 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
         {
           result_sec = -1;
         }
-        //free(ind_block);
+        free(ind_block);
         break;
       }
     }
@@ -470,8 +470,9 @@ static void locate_byte(off_t pos, struct sector_location *sec_loc)
   {
     pos_sector = pos_sector - (2 * DIRECT_BLOCK_ENTRIES);
     sec_loc -> directness = DOUBLE_INDIRECT;
-    sec_loc -> index2 = pos_sector / INDIRECT_BLOCK_ENTRIES;
     sec_loc -> index1 = pos_sector % INDIRECT_BLOCK_ENTRIES; //**check
+    sec_loc -> index2 = pos_sector / INDIRECT_BLOCK_ENTRIES;
+    
     
   }
   else
