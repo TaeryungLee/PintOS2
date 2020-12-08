@@ -495,7 +495,7 @@ static bool get_disk_inode(const struct inode *inode, struct inode_disk *inode_d
   return bc_read(inode->sector, inode_disk, 0, sizeof(struct inode_disk), 0);
 }
 
-
+/*
 static void locate_byte(off_t pos, struct sector_location *sec_loc)
 {
   off_t pos_sector = pos / BLOCK_SECTOR_SIZE;
@@ -524,6 +524,38 @@ static void locate_byte(off_t pos, struct sector_location *sec_loc)
   {
     sec_loc->directness = OUT_LIMIT;
   }
+}
+*/
+
+static void
+locate_byte (off_t pos, struct sector_location *sec_loc)
+{
+  // 바이트 단위 거리를 블럭 단위로 변환합니다.
+  off_t pos_sector = pos / BLOCK_SECTOR_SIZE;
+
+  // 기본값을 오류로 설정
+  sec_loc->directness = OUT_LIMIT;
+
+  if (pos_sector < DIRECT_BLOCK_ENTRIES)
+    {
+      // 디스크 아이노드에서 직접 참조
+      sec_loc->directness = NORMAL_DIRECT;
+      sec_loc->index1 = pos_sector;
+    }
+  else if ((pos_sector -= DIRECT_BLOCK_ENTRIES) < INDIRECT_BLOCK_ENTRIES)
+    {
+      // 한 단계 참조
+      sec_loc->directness = INDIRECT;
+      sec_loc->index1 = pos_sector;
+    }
+  else if ((pos_sector -= INDIRECT_BLOCK_ENTRIES) < INDIRECT_BLOCK_ENTRIES * INDIRECT_BLOCK_ENTRIES)
+    {
+      // 두 단계 참조
+      sec_loc->directness = DOUBLE_INDIRECT;
+      // index2 이후 index1 순서입니다. 이 순서는 다른 부분의 코드를 간단하게 합니다.
+      sec_loc->index2 = pos_sector / INDIRECT_BLOCK_ENTRIES;
+      sec_loc->index1 = pos_sector % INDIRECT_BLOCK_ENTRIES;
+    }
 }
 
 static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_sector, struct sector_location sec_loc)
