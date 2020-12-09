@@ -106,7 +106,7 @@ struct buffer_head *bc_select_victim(void)
                     block_write(fs_device, ch->sector_addr, ch->buffer);
                     return ch;
                 }
-                return ch++;
+                return ch;
             }
 
             ch->clock_bit = false;
