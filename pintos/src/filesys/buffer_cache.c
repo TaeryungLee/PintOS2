@@ -84,7 +84,7 @@ void bc_term(void)
 struct buffer_head *bc_select_victim(void)
 {
 
-    while(true)
+    for(int i= 0; i<1; i++)
     {        
         for(; clock_hand != buffer_head + BUFFER_CACHE_ENTRY_NB; clock_hand++)
         {
@@ -93,10 +93,7 @@ struct buffer_head *bc_select_victim(void)
             {
                 return clock_hand++;
             }
-            if(clock_hand->valid_flag == false)
-            {
-                return clock_hand++;
-            }
+            
             clock_hand->clock_bit = false;
             lock_release(&clock_hand->lock);
         }
