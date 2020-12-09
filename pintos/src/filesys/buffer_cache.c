@@ -99,6 +99,13 @@ struct buffer_head *bc_select_victim(void)
             lock_acquire(&clock_hand->lock);
             if(clock_hand->clock_bit == false)
             {
+                if(clock_hand->dirty_flag == true)
+                {
+                    lock_acquire(&clock_hand++->lock);
+                    block_write(fs_device, clock_hand->sector_addr, clock_hand->buffer);
+                    lock_release(&clock_hand->lock);
+                    return clock_hand;
+                }
                 return clock_hand++;
             }
             clock_hand->clock_bit = false;
