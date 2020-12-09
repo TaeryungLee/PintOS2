@@ -626,12 +626,13 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t length, off_t
       if (free_map_allocate (1, &sector == true))
       {
         locate_byte (length, &sec_loc);
-        if (register_sector (inode_disk, sector, sec_loc) == true)
+        if (register_sector (inode_disk, sector, sec_loc) == false)
         {
           //printf("2 \n");
-          bc_write (sector, zeroes, 0, BLOCK_SECTOR_SIZE, 0);
-        }else
+          return false;
+        }else if (bc_write (sector, zeroes, 0, BLOCK_SECTOR_SIZE, 0) == false)
         {
+          //printf("3 \n");
           return false; 
         }  
       }
