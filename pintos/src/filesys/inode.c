@@ -633,7 +633,7 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t length, off_t
           //printf("2 \n");
           return false;
         }
-        if (!bc_write (sector, zeroes, 0, BLOCK_SECTOR_SIZE, 0) == false)
+        if (bc_write (sector, zeroes, 0, BLOCK_SECTOR_SIZE, 0) == false)
         {
           //printf("3 \n");
           return false; 
