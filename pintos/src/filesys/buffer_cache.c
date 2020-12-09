@@ -8,7 +8,8 @@
 
 //buffer cache 전역변수
 #define BUFFER_CACHE_ENTRY_NB 64
-static char p_buffer_cache[BUFFER_CACHE_ENTRY_NB * BLOCK_SECTOR_SIZE];
+//static char p_buffer_cache[BUFFER_CACHE_ENTRY_NB * BLOCK_SECTOR_SIZE];
+static void *p_buffer_cache;
 static struct buffer_head  buffer_head[BUFFER_CACHE_ENTRY_NB];
 static struct buffer_head *clock_hand;
 static struct lock cache_lock;
@@ -29,9 +30,9 @@ bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chun
         //lock_release(&cache_lock);
         block_read(fs_device, sector_idx, bh->buffer);
     }
+    memcpy(buffer + bytes_read, bh->buffer + sector_ofs, chunk_size);
     bh->clock_bit = true;
     //printf("\n 1: %#p, 2: %#p, 3: %d \n", buffer + bytes_read, bh->buffer + sector_ofs, chunk_size);
-    memcpy(buffer + bytes_read, bh->buffer + sector_ofs, chunk_size);
     lock_release (&bh->lock);
     return true;
 }
@@ -49,10 +50,9 @@ bool bc_write(block_sector_t sector_idx, void *buffer, off_t bytes_written, int 
         //lock_release(&cache_lock);
         block_read(fs_device, sector_idx, bh->buffer);
     }
-    
+    memcpy(bh->buffer + sector_ofs, buffer + bytes_written, chunk_size);
     bh->clock_bit = true;
     bh->dirty_flag = true;
-    memcpy(bh->buffer + sector_ofs, buffer + bytes_written, chunk_size);
     lock_release(&bh->lock);
     return true;
 }
@@ -61,15 +61,16 @@ bool bc_write(block_sector_t sector_idx, void *buffer, off_t bytes_written, int 
 void bc_init(void)
 {
     struct buffer_head *bh = buffer_head;
-    void *cache = p_buffer_cache;
+    char buffer_cache=[BUFFER_CACHE_ENTRY_NB * BLOCK_SECTOR_SIZE];
+    p_buffer_cache = buffer_cache;
     for(int i=0; i < BUFFER_CACHE_ENTRY_NB; i++)
     {
         //printf("%x", bh);
         memset(bh, 0, sizeof(struct buffer_head));
         lock_init(&bh->lock);
-        bh->buffer = cache;
+        bh->buffer = p_buffer_cache;
         bh ++;
-        cache += BLOCK_SECTOR_SIZE;
+        p_buffer_cache += BLOCK_SECTOR_SIZE;
     }
     clock_hand = buffer_head;
     //lock_init(&cache_lock);
