@@ -105,7 +105,9 @@ struct buffer_head *bc_select_victim(void)
             {
                 if(clock_hand->dirty_flag == true)
                 {
+                    lock_acquire(&clock_hand->lock);
                     block_write(fs_device, clock_hand->sector_addr, clock_hand->buffer);
+                    lock_release(&clock_hand->lock);
                 }
                 return clock_hand;
             }
