@@ -132,8 +132,10 @@ struct buffer_head *bc_lookup(block_sector_t sector)
     {
         if(bh->sector_addr == sector)
         {
+
             //lock_release(&cache_lock);
             return bh;
+
         }
         bh++;
     }
