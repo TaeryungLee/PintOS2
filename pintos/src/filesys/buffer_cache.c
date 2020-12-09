@@ -132,11 +132,8 @@ struct buffer_head *bc_lookup(block_sector_t sector)
     {
         if(bh->sector_addr == sector)
         {
-            if(bh->valid_flag == true)
-            {
-                //lock_release(&cache_lock);
-                return bh;
-            }
+            //lock_release(&cache_lock);
+            return bh;
         }
         bh++;
     }
@@ -153,8 +150,8 @@ void bc_flush_entry(struct buffer_head *p_flush_entry)
     {
         return;
     }
-    p_flush_entry->dirty_flag = false;
     block_write(fs_device, p_flush_entry->sector_addr, p_flush_entry->buffer);
+    p_flush_entry->dirty_flag = false;
 }
 
 void bc_flush_all_entries(void)
