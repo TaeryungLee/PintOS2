@@ -61,7 +61,7 @@ bool bc_write(block_sector_t sector_idx, void *buffer, off_t bytes_written, int 
 void bc_init(void)
 {
     struct buffer_head *bh = buffer_head;
-    char buffer_cache=[BUFFER_CACHE_ENTRY_NB * BLOCK_SECTOR_SIZE];
+    char buffer_cache = [BUFFER_CACHE_ENTRY_NB * BLOCK_SECTOR_SIZE];
     p_buffer_cache = buffer_cache;
     for(int i=0; i < BUFFER_CACHE_ENTRY_NB; i++)
     {
