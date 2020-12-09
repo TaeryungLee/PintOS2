@@ -617,13 +617,13 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t length, off_t
     {
       struct sector_location sec_loc;
 
-      block_sector_t sector = byte_to_sector (inode_disk, length);
+      block_sector_t sector = byte_to_sector (inode_disk, start);
       
       if (sector == (block_sector_t) -1)
       {
         if (free_map_allocate (1, &sector) == true)
         {
-          locate_byte (length, &sec_loc);
+          locate_byte (start, &sec_loc);
           if (register_sector (inode_disk, sector, sec_loc) == false)
           {
             //printf("2 \n");
