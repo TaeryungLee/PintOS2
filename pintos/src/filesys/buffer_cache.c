@@ -100,9 +100,9 @@ struct buffer_head *bc_select_victim(void)
             lock_acquire(&ch->lock);
             if(ch->clock_bit == false)
             {
+                ch++;
                 if(ch->dirty_flag == true)
                 {
-                    ch++;
                     block_write(fs_device, ch->sector_addr, ch->buffer);
                     return ch;
                 }
