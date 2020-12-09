@@ -100,19 +100,13 @@ struct buffer_head *bc_select_victim(void)
             if(clock_hand->clock_bit == false)
             {
                 clock_hand++;
-                if(clock_hand->dirty_flag == true)
-                {
-                    block_write(fs_device, clock_hand->sector_addr, clock_hand->buffer);
-                    return clock_hand;
-                }
                 return clock_hand;
             }
-
             clock_hand->clock_bit = false;
             lock_release(&clock_hand->lock);
             clock_hand++;
         }
-
+        clock_hand = buffer_head;
     }
 }
 
