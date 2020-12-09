@@ -22,7 +22,7 @@ bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chun
     if(bh == NULL)
     {
         bh = bc_select_victim();
-        //bc_flush_entry(bh);
+        bc_flush_entry(bh);
         bh->valid_flag = true;
         bh->sector_addr = sector_idx;
         bh->dirty_flag = false;
@@ -43,7 +43,7 @@ bool bc_write(block_sector_t sector_idx, void *buffer, off_t bytes_written, int 
     if(bh == NULL)
     {
         bh = bc_select_victim();
-        //bc_flush_entry(bh);
+        bc_flush_entry(bh);
         bh->valid_flag = true;
         bh->sector_addr = sector_idx;
         //lock_release(&cache_lock);
@@ -91,10 +91,8 @@ struct buffer_head *bc_select_victim(void)
             lock_acquire(&clock_hand->lock);
             if(clock_hand->clock_bit == false)
             {
-                bc_flush_entry(clock_hand++);
                 return clock_hand++;
             }
-
             clock_hand->clock_bit = false;
             lock_release(&clock_hand->lock);
         }
