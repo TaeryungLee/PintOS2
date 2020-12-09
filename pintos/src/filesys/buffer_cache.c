@@ -94,27 +94,25 @@ struct buffer_head *bc_select_victim(void)
     struct buffer_head *ch = clock_hand;
     while(true)
     {        
-        //for(; clock_hand != buffer_head + BUFFER_CACHE_ENTRY_NB; clock_hand++)
-        for(int i=0; i < BUFFER_CACHE_ENTRY_NB; i++)
+        for(clock_hand = buffer_head; clock_hand != buffer_head + BUFFER_CACHE_ENTRY_NB; clock_hand++)
         {
-            lock_acquire(&ch->lock);
-            if(ch->clock_bit == false)
+            lock_acquire(&clock_hand->lock);
+            if(clock_hand->clock_bit == false)
             {
-                ch++;
-                if(ch->dirty_flag == true)
+                clock_hand++;
+                if(clock_hand->dirty_flag == true)
                 {
                     block_write(fs_device, ch->sector_addr, ch->buffer);
-                    return ch;
+                    return clock_hand;
                 }
-                return ch;
+                return clock_hand;
             }
 
-            ch->clock_bit = false;
+            clock_hand->clock_bit = false;
             lock_release(&ch->lock);
-            ch++;
+            clock_hand++;
         }
-        clock_hand = buffer_head;
-        ch = clock_hand;
+
     }
 }
 
