@@ -91,10 +91,11 @@ void bc_term(void)
 
 struct buffer_head *bc_select_victim(void)
 {
-
+    struct buffer_head *ch;
     while(true)
     {        
-        for(; clock_hand != buffer_head + BUFFER_CACHE_ENTRY_NB; clock_hand++)
+        //for(; clock_hand != buffer_head + BUFFER_CACHE_ENTRY_NB; clock_hand++)
+        for(int i=0; i < BUFFER_CACHE_ENTRY_NB; i++)
         {
             lock_acquire(&clock_hand->lock);
             if(clock_hand->clock_bit == false)
@@ -103,6 +104,7 @@ struct buffer_head *bc_select_victim(void)
             }
             clock_hand->clock_bit = false;
             lock_release(&clock_hand->lock);
+            clock_hand++;
         }
         clock_hand = buffer_head;
     }
