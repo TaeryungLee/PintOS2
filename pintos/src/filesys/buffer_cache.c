@@ -100,7 +100,7 @@ struct buffer_head *bc_select_victim(void)
     {        
         while(clock_hand < buffer_head + BUFFER_CACHE_ENTRY_NB)
         {
-
+            lock_acquire(&clock_hand->lock);
             if(clock_hand->clock_bit == false)
             {
                 /*if(clock_hand->dirty_flag == true)
@@ -112,6 +112,7 @@ struct buffer_head *bc_select_victim(void)
                 return clock_hand;
             }
             clock_hand->clock_bit = false;
+            lock_release(&clock_hand->lock);
             clock_hand++;
         }
         clock_hand = buffer_head;
