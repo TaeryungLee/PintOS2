@@ -9,8 +9,8 @@
 
 //buffer cache 전역변수
 #define BUFFER_CACHE_ENTRY_NB 64
-//static char p_buffer_cache[BUFFER_CACHE_ENTRY_NB * BLOCK_SECTOR_SIZE];
-static void *p_buffer_cache;
+static char buffer_cache[BUFFER_CACHE_ENTRY_NB * BLOCK_SECTOR_SIZE];
+//static void *p_buffer_cache;
 static struct buffer_head  buffer_head[BUFFER_CACHE_ENTRY_NB];
 static struct buffer_head *clock_hand;
 static struct lock cache_lock;
@@ -62,8 +62,7 @@ bool bc_write(block_sector_t sector_idx, void *buffer, off_t bytes_written, int 
 void bc_init(void)
 {
     struct buffer_head *bh = buffer_head;
-    char buffer_cache[BUFFER_CACHE_ENTRY_NB * BLOCK_SECTOR_SIZE];
-    p_buffer_cache = buffer_cache;
+    void *p_buffer_cache = buffer_cache;
     for(int i=0; i < BUFFER_CACHE_ENTRY_NB; i++)
     {
         //printf("%x", bh);
