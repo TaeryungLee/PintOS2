@@ -104,7 +104,7 @@ struct buffer_head *bc_select_victim(void)
         lock_release(&clock_hand->lock);
         clock_hand++;
     }
-
+    return clock_hand;
 }
 
 
