@@ -13,7 +13,7 @@ static char buffer_cache[BUFFER_CACHE_ENTRY_NB * BLOCK_SECTOR_SIZE];
 //static void *p_buffer_cache;
 static struct buffer_head  buffer_head[BUFFER_CACHE_ENTRY_NB];
 static struct buffer_head *clock_hand;
-static struct lock cache_lock;
+//static struct lock cache_lock;
 
 //buffer_cache = bh->buffer
 bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chunk_size, int sector_ofs)
@@ -134,7 +134,7 @@ struct buffer_head *bc_lookup(block_sector_t sector)
         {
             if(bh->valid_flag == false)
             {
-                break;
+                continue;
             }
             //lock_release(&cache_lock);
             return bh;
