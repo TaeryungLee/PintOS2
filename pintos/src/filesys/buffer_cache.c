@@ -66,8 +66,8 @@ void bc_init(void)
     for(int i=0; i < BUFFER_CACHE_ENTRY_NB; i++)
     {
         //printf("%x", bh);
-        //memset(bh, 0, sizeof(struct buffer_head));
-        bh = calloc(0, sizeof(struct buffer_head));
+        memset(bh, 0, sizeof(struct buffer_head));
+        //bh = calloc(0, sizeof(struct buffer_head));
         lock_init(&bh->lock);
         bh->buffer = p_buffer_cache;
         bh ++;
