@@ -70,10 +70,16 @@ void bc_init(void)
         //bh = calloc(0, sizeof(struct buffer_head));
         lock_init(&bh->lock);
         bh->buffer = p_buffer_cache;
+        bh->dirty_flag = false;
+        bh->valid_flag = false;
         bh ++;
         p_buffer_cache += BLOCK_SECTOR_SIZE;
+        if(i == 0)
+        {
+            clock_hand = bh;
+        }
     }
-    clock_hand = buffer_head;
+
     //lock_init(&cache_lock);
 }
 
