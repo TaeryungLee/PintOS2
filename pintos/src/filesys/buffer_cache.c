@@ -83,7 +83,6 @@ void bc_term(void)
 
 struct buffer_head *bc_select_victim(void)
 {
-
     for(int i= 0; i<2; i++)
     {        
         for(; clock_hand != buffer_head + BUFFER_CACHE_ENTRY_NB; clock_hand++)
@@ -99,6 +98,7 @@ struct buffer_head *bc_select_victim(void)
         }
         clock_hand = buffer_head;
     }
+    NOT_REACHED();
 }
 
 struct buffer_head *bc_lookup(block_sector_t sector)
