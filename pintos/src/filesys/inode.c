@@ -473,7 +473,7 @@ static void locate_byte(off_t pos, struct sector_location *sec_loc)
     pos_sector = pos_sector - (2 * DIRECT_BLOCK_ENTRIES);
     sec_loc -> directness = DOUBLE_INDIRECT;
     sec_loc -> index2 = pos_sector / INDIRECT_BLOCK_ENTRIES;
-    sec_loc -> index1 = pos_sector % INDIRECT_BLOCK_ENTRIES; //**check
+    sec_loc -> index1 = pos_sector % INDIRECT_BLOCK_ENTRIES; 
     
   }
   else
@@ -481,40 +481,6 @@ static void locate_byte(off_t pos, struct sector_location *sec_loc)
     sec_loc->directness = OUT_LIMIT;
   }
 }
-
-/*
-static void
-locate_byte (off_t pos, struct sector_location *sec_loc)
-{
-  // 바이트 단위 거리를 블럭 단위로 변환합니다.
-  off_t pos_sector = pos / BLOCK_SECTOR_SIZE;
-
-  // 기본값을 오류로 설정
-  sec_loc->directness = OUT_LIMIT;
-
-  if (pos_sector < DIRECT_BLOCK_ENTRIES)
-    {
-      // 디스크 아이노드에서 직접 참조
-      sec_loc->directness = NORMAL_DIRECT;
-      sec_loc->index1 = pos_sector;
-    }
-  else if ((pos_sector -= DIRECT_BLOCK_ENTRIES) < INDIRECT_BLOCK_ENTRIES)
-    {
-      // 한 단계 참조
-      sec_loc->directness = INDIRECT;
-      sec_loc->index1 = pos_sector;
-    }
-  else if ((pos_sector -= INDIRECT_BLOCK_ENTRIES) < INDIRECT_BLOCK_ENTRIES * INDIRECT_BLOCK_ENTRIES)
-    {
-      // 두 단계 참조
-      sec_loc->directness = DOUBLE_INDIRECT;
-      // index2 이후 index1 순서입니다. 이 순서는 다른 부분의 코드를 간단하게 합니다.
-      sec_loc->index2 = pos_sector / INDIRECT_BLOCK_ENTRIES;
-      sec_loc->index1 = pos_sector % INDIRECT_BLOCK_ENTRIES;
-    }
-}*/
-
-
 
 static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_sector, struct sector_location sec_loc)
 {
@@ -557,13 +523,11 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
       new_block = malloc(sizeof (struct inode_indirect_block));
       if(inode_disk->double_indirect_block_sec == error)
       {
-        if(free_map_allocate(1, &inode_disk->double_indirect_block_sec) == false)
-        {
-          return false;
-        }
+        free_map_allocate(1, &inode_disk->double_indirect_block_sec);
+
+
         memset(new_block, -1, sizeof(struct inode_indirect_block));
         memset(new_block_double, -1, sizeof(struct inode_indirect_block));
-
       }
       else
       {
@@ -587,89 +551,6 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
   free(new_block);
   return true;
 }
-
-/*
-static bool
-register_sector (struct inode_disk *inode_disk,
-                 block_sector_t new_sector,
-                 struct sector_location sec_loc)
-{
-  struct inode_indirect_block first_block, second_block;
-
-  // 두 단계 참조인 경우, 첫 번째 참조 테이블이 갱신되어야 하는지를 나타내는 플래그입니다.
-  bool first_dirty = false;
-
-  // 참조 테이블의 섹터 번호를 저장하고 있는 변수에 대한 포인터입니다.
-  // 실행 흐름에 따라서 다양한 장소를 가리킵니다.
-  block_sector_t *table_sector = &inode_disk->indirect_block_sec;
-
-  switch (sec_loc.directness)
-    {
-    case NORMAL_DIRECT:
-      // 디스크 아이노드 직접 참조입니다.
-      inode_disk->direct_map_table[sec_loc.index1] = new_sector;
-      return true;
-    case DOUBLE_INDIRECT:
-      // 두 단계 참조가 일어납니다.
-      table_sector = &inode_disk->double_indirect_block_sec;
-      if (*table_sector == (block_sector_t) -1)
-        {
-          // 두 단계 참조 테이블을 처음으로 사용하는 경우입니다.
-          if (!free_map_allocate (1, table_sector))
-            return false;
-          // unsigned 정수의 가장 큰 값을 유효하지 않은 섹터 번호를 나타내기 위하여 예약하기로 합니다.
-          memset (&first_block, -1, sizeof (struct inode_indirect_block));
-        }
-      else
-        {
-          // 두 단계 참조 테이블이 이미 존재하는 경우입니다. 테이블을 읽습니다.
-          if (!bc_read (*table_sector, &first_block, 0, sizeof (struct inode_indirect_block), 0))
-            return false;
-        }
-      // 메모리에 읽은 두 단계 테이블에서, 다음 테이블에 대한 섹터 번호를 저장하고 있는 변수에 대한 포인터
-      table_sector = &first_block.map_table[sec_loc.index2];
-
-      // 더러움 플래그가 활성화되는 경우는 마지막 단계 테이블이 할당되지 않은 경우입니다.
-      // 마지막 단계 테이블의 섹터 번호는 첫 단계 테이블에 저장되므로 첫 단계 테이블을 다시 쓸 필요가 있기 때문입니다.
-      if (*table_sector == (block_sector_t) -1)
-          first_dirty = true;
-    case INDIRECT:
-      // 여기에서 table_sector는 한 단계 테이블의 유일한 테이블 또는 두 단계 테이블의 마지막 테이블을 가리킵니다.
-      if (*table_sector == (block_sector_t) -1)
-        {
-          // 테이블이 없는 경우에 할당하고
-          if (!free_map_allocate (1, table_sector))
-            return false;
-          memset (&second_block, -1, sizeof (struct inode_indirect_block));
-        }
-      else
-        {
-          // 테이블이 있다면 읽습니다.
-          if (!bc_read (*table_sector, &second_block, 0, sizeof (struct inode_indirect_block), 0))
-            return false;
-        }
-      if (second_block.map_table[sec_loc.index1] == (block_sector_t) -1)
-        second_block.map_table[sec_loc.index1] = new_sector;
-      else
-        // 여기에 도달할 수 없습니다.
-        NOT_REACHED ();
-
-      // 첫 단계 테이블이 더러운 경우에 다시 씁니다.
-      if (first_dirty)
-        {
-          if (!bc_write (inode_disk->double_indirect_block_sec, &first_block, 0, sizeof (struct inode_indirect_block), 0))
-            return false;
-        }
-      // 마지막 단계 테이블은 항상 다시 씁니다.
-      if (!bc_write (*table_sector, &second_block, 0, sizeof (struct inode_indirect_block), 0))
-        return false;
-      return true;
-    default:
-      return false;
-    }
-  NOT_REACHED ();
-}
-*/
 
 /*
 bool inode_update_file_length(struct inode_disk *inode_disk, off_t start_pos, off_t end_pos)
