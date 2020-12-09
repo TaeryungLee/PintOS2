@@ -83,7 +83,8 @@ void bc_term(void)
 
 struct buffer_head *bc_select_victim(void)
 {
-    for(int i= 0; i<2; i++)
+
+    for(;;)
     {        
         for(; clock_hand != buffer_head + BUFFER_CACHE_ENTRY_NB; clock_hand++)
         {
