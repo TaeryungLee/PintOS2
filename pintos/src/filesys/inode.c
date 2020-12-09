@@ -610,10 +610,10 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t length, off_t
   inode_disk->length = new_length;
 
   //printf("length=%d, new_length=%d \n", length, new_length);
-  length = length / BLOCK_SECTOR_SIZE * BLOCK_SECTOR_SIZE;
-  new_length = (new_length-1) /BLOCK_SECTOR_SIZE * BLOCK_SECTOR_SIZE;
+  off_t start = length / BLOCK_SECTOR_SIZE * BLOCK_SECTOR_SIZE;
+  off_t end = (new_length-1) /BLOCK_SECTOR_SIZE * BLOCK_SECTOR_SIZE;
   //printf("length=%d, new_length=%d \n", length, new_length);
-  for (; length <= new_length; length += BLOCK_SECTOR_SIZE)
+  while(start <= end)
     {
       struct sector_location sec_loc;
 
@@ -640,7 +640,7 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t length, off_t
           return false;
         }
       }
-
+    start += BLOCK_SECTOR_SIZE;
     }
   //printf("%d \n", inode_disk->length);
   return true;
