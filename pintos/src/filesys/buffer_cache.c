@@ -24,6 +24,7 @@ bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chun
     if(bh == NULL)
     {
         bh = bc_select_victim();
+        lock_acquire(bh);
         bc_flush_entry(bh);
         bh->valid_flag = true;
         bh->sector_addr = sector_idx;
@@ -31,6 +32,7 @@ bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chun
         //lock_release(&cache_lock);
         block_read(fs_device, sector_idx, bh->buffer);
     }
+    lock_acquire(&bh->lock);
     memcpy(buffer + bytes_read, bh->buffer + sector_ofs, chunk_size);
     bh->clock_bit = true;
     //printf("\n 1: %#p, 2: %#p, 3: %d \n", buffer + bytes_read, bh->buffer + sector_ofs, chunk_size);
@@ -45,6 +47,7 @@ bool bc_write(block_sector_t sector_idx, void *buffer, off_t bytes_written, int 
     if(bh == NULL)
     {
         bh = bc_select_victim();
+        lock_acquire(bh);
         bc_flush_entry(bh);
         bh->valid_flag = true;
         bh->sector_addr = sector_idx;
@@ -96,13 +99,16 @@ struct buffer_head *bc_select_victim(void)
     {        
         while(clock_hand < buffer_head + BUFFER_CACHE_ENTRY_NB)
         {
-            lock_acquire(&clock_hand->lock);
+
             if(clock_hand->clock_bit == false)
             {
+                if(clock_hand->dirty_flag == true)
+                {
+                    block_write(fs_device, clock_hand->sector_addr, clock_hand->buffer);
+                }
                 return clock_hand;
             }
             clock_hand->clock_bit = false;
-            lock_release(&clock_hand->lock);
             clock_hand++;
         }
         clock_hand = buffer_head;
@@ -119,7 +125,6 @@ struct buffer_head *bc_lookup(block_sector_t sector)
         {
             if(bh->valid_flag == true)
             {
-                lock_acquire(&bh->lock);
                 //lock_release(&cache_lock);
                 return bh;
             }
