@@ -601,6 +601,7 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t start_pos, of
 bool inode_update_file_length(struct inode_disk *inode_disk, off_t length, off_t new_length)
 {
   static char zeroes[BLOCK_SECTOR_SIZE];
+  block_sector_t sector;
 
   if(length > new_length)
   {
@@ -610,12 +611,7 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t length, off_t
   inode_disk->length = new_length;
 
   //printf("length=%d, new_length=%d \n", length, new_length);
-  //off_t start = length / BLOCK_SECTOR_SIZE * BLOCK_SECTOR_SIZE;
-  //off_t end = (new_length-1) /BLOCK_SECTOR_SIZE * BLOCK_SECTOR_SIZE;
-
-  unsigned start, end;
-
-  unsigned rem1, rem2;
+  unsigned start, end, rem1, rem2;
 
   rem1 = length % BLOCK_SECTOR_SIZE;
   rem2 = (new_length - 1) % BLOCK_SECTOR_SIZE;
@@ -627,10 +623,9 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t length, off_t
   while(start <= end)
     {
       struct sector_location sec_loc;
-
-      block_sector_t sector = byte_to_sector (inode_disk, start);
+      sector = byte_to_sector (inode_disk, start);
       
-      if (sector == (block_sector_t) -1)
+      if ((uint32_t) sector == -1)
       {
         if (free_map_allocate (1, &sector) == true)
         {
