@@ -610,8 +610,19 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t length, off_t
   inode_disk->length = new_length;
 
   //printf("length=%d, new_length=%d \n", length, new_length);
-  off_t start = length / BLOCK_SECTOR_SIZE * BLOCK_SECTOR_SIZE;
-  off_t end = (new_length-1) /BLOCK_SECTOR_SIZE * BLOCK_SECTOR_SIZE;
+  //off_t start = length / BLOCK_SECTOR_SIZE * BLOCK_SECTOR_SIZE;
+  //off_t end = (new_length-1) /BLOCK_SECTOR_SIZE * BLOCK_SECTOR_SIZE;
+
+  unsigned start, end;
+
+  unsigned rem1, rem2;
+
+  rem1 = length % BLOCK_SECTOR_SIZE;
+  rem2 = (new_length - 1) % BLOCK_SECTOR_SIZE;
+
+  start = length - rem1;
+  end = (new_length - 1) - rem2;
+
   //printf("length=%d, new_length=%d \n", length, new_length);
   while(start <= end)
     {
