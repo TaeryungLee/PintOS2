@@ -31,8 +31,10 @@ bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chun
         bh->dirty_flag = false;
         //lock_release(&cache_lock);
         block_read(fs_device, sector_idx, bh->buffer);
+    }else
+    {
+        lock_acquire(&bh->lock);
     }
-    lock_acquire(&bh->lock);
     memcpy(buffer + bytes_read, bh->buffer + sector_ofs, chunk_size);
     bh->clock_bit = true;
     //printf("\n 1: %#p, 2: %#p, 3: %d \n", buffer + bytes_read, bh->buffer + sector_ofs, chunk_size);
@@ -53,8 +55,10 @@ bool bc_write(block_sector_t sector_idx, void *buffer, off_t bytes_written, int 
         bh->sector_addr = sector_idx;
         //lock_release(&cache_lock);
         block_read(fs_device, sector_idx, bh->buffer);
+    }else
+    {
+        lock_acquire(&bh->lock);
     }
-    lock_acquire(&bh->lock);
     memcpy(bh->buffer + sector_ofs, buffer + bytes_written, chunk_size);
     bh->clock_bit = true;
     bh->dirty_flag = true;
