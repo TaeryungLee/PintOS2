@@ -24,7 +24,7 @@ bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chun
     if(bh == NULL)
     {
         bh = bc_select_victim();
-        lock_acquire(bh);
+        lock_acquire(&bh->lock);
         bc_flush_entry(bh);
         bh->valid_flag = true;
         bh->sector_addr = sector_idx;
@@ -47,13 +47,14 @@ bool bc_write(block_sector_t sector_idx, void *buffer, off_t bytes_written, int 
     if(bh == NULL)
     {
         bh = bc_select_victim();
-        lock_acquire(bh);
+        lock_acquire(&bh->lock);
         bc_flush_entry(bh);
         bh->valid_flag = true;
         bh->sector_addr = sector_idx;
         //lock_release(&cache_lock);
         block_read(fs_device, sector_idx, bh->buffer);
     }
+    lock_acquire(&bh->lock);
     memcpy(bh->buffer + sector_ofs, buffer + bytes_written, chunk_size);
     bh->clock_bit = true;
     bh->dirty_flag = true;
