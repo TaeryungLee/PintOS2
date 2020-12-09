@@ -92,20 +92,21 @@ void bc_term(void)
 struct buffer_head *bc_select_victim(void)
 {
   //  struct buffer_head *ch = clock_hand;
-         
-    while(clock_hand < buffer_head + BUFFER_CACHE_ENTRY_NB)
-    {
-        lock_acquire(&clock_hand->lock);
-        if(clock_hand->clock_bit == false)
+    while(true)
+    {        
+        while(clock_hand < buffer_head + BUFFER_CACHE_ENTRY_NB)
         {
-            return clock_hand;
+            lock_acquire(&clock_hand->lock);
+            if(clock_hand->clock_bit == false)
+            {
+                return clock_hand;
+            }
+            clock_hand->clock_bit = false;
+            lock_release(&clock_hand->lock);
+            clock_hand++;
         }
-        clock_hand->clock_bit = false;
-        lock_release(&clock_hand->lock);
-        clock_hand++;
+        clock_hand = buffer_head;
     }
-    return clock_hand;
-}
 
 
 struct buffer_head *bc_lookup(block_sector_t sector)
