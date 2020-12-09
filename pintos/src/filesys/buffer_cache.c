@@ -70,7 +70,7 @@ void bc_init(void)
         lock_init(&bh->lock);
         bh->buffer = p_buffer_cache;
         bh ++;
-        p_buffer_cache += BLOCK_SECTOR_SIZE;
+        (char *)(p_buffer_cache) += BLOCK_SECTOR_SIZE;
     }
     clock_hand = buffer_head;
     //lock_init(&cache_lock);
