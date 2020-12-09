@@ -91,7 +91,7 @@ void bc_term(void)
 
 struct buffer_head *bc_select_victim(void)
 {
-    struct buffer_head *ch = clock_hand;
+  //  struct buffer_head *ch = clock_hand;
     while(true)
     {        
         for(clock_hand = buffer_head; clock_hand != buffer_head + BUFFER_CACHE_ENTRY_NB; clock_hand++)
@@ -102,14 +102,14 @@ struct buffer_head *bc_select_victim(void)
                 clock_hand++;
                 if(clock_hand->dirty_flag == true)
                 {
-                    block_write(fs_device, ch->sector_addr, ch->buffer);
+                    block_write(fs_device, clock_hand->sector_addr, clock_hand->buffer);
                     return clock_hand;
                 }
                 return clock_hand;
             }
 
             clock_hand->clock_bit = false;
-            lock_release(&ch->lock);
+            lock_release(&clock_hand->lock);
             clock_hand++;
         }
 
