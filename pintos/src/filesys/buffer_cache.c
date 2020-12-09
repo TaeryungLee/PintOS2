@@ -1,6 +1,7 @@
 #include <string.h>
 #include "filesys/buffer_cache.h"
 #include "threads/palloc.h"
+#include "threads/malloc.h"
 //#include "threads/synch.h"
 #include "devices/block.h"
 #include <debug.h>
@@ -66,11 +67,12 @@ void bc_init(void)
     for(int i=0; i < BUFFER_CACHE_ENTRY_NB; i++)
     {
         //printf("%x", bh);
-        memset(bh, 0, sizeof(struct buffer_head));
+        //memset(bh, 0, sizeof(struct buffer_head));
+        bh = calloc(0, sizeof(struct buffer_head));
         lock_init(&bh->lock);
         bh->buffer = p_buffer_cache;
         bh ++;
-        (char *)(p_buffer_cache) += BLOCK_SECTOR_SIZE;
+        (int *)p_buffer_cache += BLOCK_SECTOR_SIZE;
     }
     clock_hand = buffer_head;
     //lock_init(&cache_lock);
