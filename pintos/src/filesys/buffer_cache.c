@@ -107,7 +107,7 @@ struct buffer_head *bc_select_victim(void)
         }
         clock_hand = buffer_head;
     }
-
+}
 
 struct buffer_head *bc_lookup(block_sector_t sector)
 {
