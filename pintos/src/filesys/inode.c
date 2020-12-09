@@ -529,9 +529,6 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
         bc_read(temp_sec, new_block, 0, sizeof(struct inode_indirect_block), 0);
       }
       
-      //bc_read(inode_disk->double_indirect_block_sec, new_block_double, 0, sizeof(struct inode_indirect_block), 0);
-      //temp_sec = new_block_double->map_table[sec_loc.index2];
-      //bc_read(temp_sec, new_block, 0, sizeof(struct inode_indirect_block), 0);
       new_block->map_table[sec_loc.index1] = new_sector;
       bc_write(inode_disk->double_indirect_block_sec, new_block_double, 0, sizeof(struct inode_indirect_block), 0);
       bc_write(temp_sec, new_block, 0, sizeof(struct inode_indirect_block), 0);
@@ -605,10 +602,6 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t length, off_t
 {
   static char zeroes[BLOCK_SECTOR_SIZE];
 
-  if(length == new_length)
-  {
-    return true;
-  }
   if(length > new_length)
   {
     return false;
@@ -632,22 +625,25 @@ bool inode_update_file_length(struct inode_disk *inode_disk, off_t length, off_t
         continue;
       }
       
-      if (!free_map_allocate (1, &sector))
+      if (free_map_allocate (1, &sector) == true)
       {
-        //printf("1\n");
+        locate_byte (length, &sec_loc);
+        if (register_sector (inode_disk, sector, sec_loc) == false)
+        {
+          //printf("2 \n");
+          return false;
+        }
+        if (!bc_write (sector, zeroes, 0, BLOCK_SECTOR_SIZE, 0) == false)
+        {
+          //printf("3 \n");
+          return false; 
+        }
+      }
+      else
+      {
         return false;
       }
-      locate_byte (length, &sec_loc);
-      if (!register_sector (inode_disk, sector, sec_loc))
-      {
-        //printf("2 \n");
-        return false;
-      }
-      if (!bc_write (sector, zeroes, 0, BLOCK_SECTOR_SIZE, 0))
-      {
-        //printf("3 \n");
-        return false; 
-      }
+  
     }
   //printf("%d \n", inode_disk->length);
   return true;
