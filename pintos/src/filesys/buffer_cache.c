@@ -113,7 +113,8 @@ struct buffer_head *bc_select_victim(void)
             lock_release(&ch->lock);
             ch++;
         }
-        ch = buffer_head;
+        clock_hand = buffer_head;
+        ch = clock_hand;
     }
 }
 
