@@ -13,6 +13,9 @@
 #include "vm/frame.h"
 #include "vm/swap.h"
 #include "userprog/exception.h"
+#include "filesys/directory.h"
+#include "filesys/inode.h"
+#include "filesys/filesys.c"
 
 
 static void syscall_handler (struct intr_frame *);
@@ -261,7 +264,10 @@ syscall_handler (struct intr_frame *f)
       read_addr(&dir, esp+4, 4);
       //check(dir, sizeof(dir));
       //check_vm(dir, sizeof(dir), false, esp);
-      chdir(dir);
+      
+      bool ret = chdir(dir);
+      f->eax = ret;
+      break;
     }
     case SYS_MKDIR:
     {
@@ -269,7 +275,9 @@ syscall_handler (struct intr_frame *f)
       read_addr(&name, esp+4, 4);
       //check(name, sizeof(name));
       //check_vm(name, sizeof(name), false, esp);
-      mkdir(name);
+      
+      bool ret = mkdir(name);
+      f->eax = ret;
       break;
     }
     case SYS_READDIR:
@@ -278,13 +286,18 @@ syscall_handler (struct intr_frame *f)
       char *name;
       read_addr(&fd, esp+4, 4);
       read_addr(&name, esp+8, 4);
-      readdir(fd, name);
+      
+      bool ret = readdir(fd, name);
+      f->eax = ret;
     }
     case SYS_INUMBER:
     {
       int fd;
       read_addr(&fd, esp+4, 4);
-      inumber(fd);
+      
+      int ret = inumber(fd);
+      f->eax = ret;
+      break;
     }
 
   }
@@ -868,6 +881,7 @@ bool chdir(const char* dir)
   return true;  
 }
 
+//modified 4.3
 bool mkdir(const char *dir)
 {
   return filesys_create_dir(dir);
@@ -892,7 +906,8 @@ return success;
 
 }
 
-bool inumber(int fd)
+//modified 4.3
+int inumber(int fd)
 {
   struct file *file = process_get_file(fd);
   struct inode *inode = file->inode;
