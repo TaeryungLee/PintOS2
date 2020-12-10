@@ -20,13 +20,18 @@ struct dir_entry
     char name[NAME_MAX + 1];            /* Null terminated file name. */
     bool in_use;                        /* In use or free? */
   };
+  
+struct on_disk
+  {
+    uint32_t is_dir;                    //파일인 경우 0, 디렉터리인 경우 1
+  };
 
 /* Creates a directory with space for ENTRY_CNT entries in the
    given SECTOR.  Returns true if successful, false on failure. */
 bool
 dir_create (block_sector_t sector, size_t entry_cnt)
 {
-  return inode_create (sector, entry_cnt * sizeof (struct dir_entry));
+  return inode_create (sector, entry_cnt * sizeof (struct dir_entry), (uint32_t) 1);
 }
 
 /* Opens and returns the directory for the given INODE, of which

@@ -9,6 +9,7 @@
 #include "threads/synch.h"
 #include "filesys/buffer_cache.h"
 #include <stdio.h>
+#include "filesys/directory.h"
 
 /* Identifies an inode. */
 #define INODE_MAGIC 0x494e4f44
@@ -25,6 +26,9 @@ struct inode_disk
     off_t length;                       /* File size in bytes. */
     unsigned magic;                     /* Magic number. */
     //uint32_t unused[125];               /* Not used. */
+
+    //modified 4.3
+    struct on_disk *is_dir;             //file=0, director=1
 
     //modified 4.2
     block_sector_t direct_map_table[DIRECT_BLOCK_ENTRIES];
@@ -170,7 +174,7 @@ inode_init (void)
    Returns true if successful.
    Returns false if memory or disk allocation fails. */
 bool
-inode_create (block_sector_t sector, off_t length)
+inode_create (block_sector_t sector, off_t length, uint32_t is_dir)
 {
   struct inode_disk *disk_inode;
   bool success = false;
@@ -188,6 +192,7 @@ inode_create (block_sector_t sector, off_t length)
       memset(disk_inode, -1, sizeof( struct inode_disk));
       disk_inode->length = 0;
       disk_inode->magic = INODE_MAGIC;
+      disk_inode->is_dir = is_dir;
       //printf("inode_length: %d \n", disk_inode->length);
       //modified 4-2
       if(length > 0)
@@ -696,4 +701,14 @@ static void free_inode_sectors(struct inode_disk *inode_disk)
       i++;
     }
   }
+}
+
+//modified 4.3
+bool inode_is_dir(const struct inode *inode)
+{
+  bool result;
+  struct inode_disk *disk_inode = malloc(sizeof(struct inode_disk));
+  get_disk_inode(inode, disk_inode);
+  result = disk_inode->is_dir;
+  return result;
 }

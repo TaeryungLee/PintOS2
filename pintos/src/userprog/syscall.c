@@ -255,6 +255,37 @@ syscall_handler (struct intr_frame *f)
       munmap(mapid);
       break;
     }
+    case SYS_CHDIR:
+    {
+      char *dir;
+      read_addr(&dir, esp+4, 4);
+      //check(dir, sizeof(dir));
+      //check_vm(dir, sizeof(dir), false, esp);
+      chdir(dir);
+    }
+    case SYS_MKDIR:
+    {
+      char *name;
+      read_addr(&name, esp+4, 4);
+      //check(name, sizeof(name));
+      //check_vm(name, sizeof(name), false, esp);
+      mkdir(name);
+      break;
+    }
+    case SYS_READDIR:
+    {
+      int fd;
+      char *name;
+      read_addr(&fd, esp+4, 4);
+      read_addr(&name, esp+8, 4);
+      readdir(fd, name);
+    }
+    case SYS_INUMBER:
+    {
+      int fd;
+      read_addr(&fd, esp+4, 4);
+      inumber(fd);
+    }
 
   }
 }
@@ -820,6 +851,53 @@ void do_munmap(struct mmap_file *mmap_file)
     list_remove(&mmap_file->elem);
     delete_vme(&cur->vm, vme);
   }
+}
+
+//modified 4.3
+bool chdir(const char* dir)
+{
+  char *cp_name;
+  strlcpy(cp_name, dir, 512);
+  //strlcat(cp_name, "/0", 512);
+
+  char *file_name;
+  struct dir *dir = parse_path(cp_name, file_name);
+  struct dir *cur_dir = thread_current()->cur_dir;
+  dir_close(cur_dir);
+  cur_dir = dir;
+  return true;  
+}
+
+bool mkdir(const char *dir)
+{
+  return filesys_create_dir(dir);
+}
+
+//modified 4.3
+bool readdir(int fd, char *name)
+{
+  struct file *file = process_get_file(fd);
+  struct inode *inode = file->inode;
+  bool success = false;
+  if(inode_is_dir(inode) == false)
+  {
+    return success;
+  }
+  struct dir *target = dir_open(inode);
+
+  success = dir_readdir(file, name);
+  
+  
+return success;
+
+}
+
+bool inumber(int fd)
+{
+  struct file *file = process_get_file(fd);
+  struct inode *inode = file->inode;
+  block_sector_t sector = inode_get_inumber(inode);
+  return sector;
 }
 
 

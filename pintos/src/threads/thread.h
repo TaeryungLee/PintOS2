@@ -135,6 +135,9 @@ struct thread
 
     struct list mmap_list;
     int mmap_next;
+
+    //modified 4.3
+    struct dir *cur_dir;
   };
 
 /* If false (default), use round-robin scheduler.

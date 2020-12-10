@@ -318,6 +318,11 @@ process_exit (void)
   // Modified 3-2
   // close files in mmap_list
   //printf("exit, remaining mmap %d\n", cur->mmap_next);
+
+  //modified 4.3
+  dir_close(cur->cur_dir);
+
+  
   for (int i = 1; i < cur->mmap_next; i++)
   {
     struct mmap_file *found = find_mmap_file(i);
