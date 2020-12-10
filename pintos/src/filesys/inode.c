@@ -16,7 +16,7 @@
 
 //modified4.2
 #define INDIRECT_BLOCK_ENTRIES (BLOCK_SECTOR_SIZE / sizeof(block_sector_t))
-#define DIRECT_BLOCK_ENTRIES 124
+#define DIRECT_BLOCK_ENTRIES 123
 
 /* On-disk inode.
    Must be exactly BLOCK_SECTOR_SIZE bytes long. */
@@ -28,7 +28,7 @@ struct inode_disk
     //uint32_t unused[125];               /* Not used. */
 
     //modified 4.3
-    struct on_disk *is_dir;             //file=0, director=1
+    uint32_t *is_dir;             //file=0, director=1
 
     //modified 4.2
     block_sector_t direct_map_table[DIRECT_BLOCK_ENTRIES];
@@ -707,9 +707,12 @@ static void free_inode_sectors(struct inode_disk *inode_disk)
 //modified 4.3
 bool inode_is_dir(const struct inode *inode)
 {
-  bool result;
+  bool result = false;
   struct inode_disk *disk_inode = malloc(sizeof(struct inode_disk));
-  get_disk_inode(inode, disk_inode);
-  result = disk_inode->is_dir;
+  if(get_disk_inode(inode, disk_inode) == false)
+  {
+    result = disk_inode->is_dir;
+  }
+  
   return result;
 }
