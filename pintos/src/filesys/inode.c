@@ -709,10 +709,10 @@ bool inode_is_dir(const struct inode *inode)
 {
   bool result = false;
   struct inode_disk *disk_inode = malloc(sizeof(struct inode_disk));
-  if(get_disk_inode(inode, disk_inode) == false)
+  if(get_disk_inode(inode, disk_inode) == true)
   {
-    result = disk_inode->is_dir;
+    result = (bool)disk_inode->is_dir;
   }
-  
+
   return result;
 }
