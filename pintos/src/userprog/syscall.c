@@ -15,7 +15,7 @@
 #include "userprog/exception.h"
 #include "filesys/directory.h"
 #include "filesys/inode.h"
-#include "filesys/filesys.c"
+#include "filesys/filesys.h"
 
 
 static void syscall_handler (struct intr_frame *);
@@ -31,6 +31,13 @@ void check(void *addr, int count);
 void check_valid_string (const void *str);
 void check_valid_buffer (void *buffer, unsigned size, bool to_write);
 void check_vm (void *addr, unsigned size, bool to_write, void *esp);
+
+//modified 4.3
+bool chdir(const char* dir);
+bool mkdir(const char *dir);
+bool readdir(int fd, char *name);
+int inumber(int fd);
+
 
 /* 
 Memory access handler

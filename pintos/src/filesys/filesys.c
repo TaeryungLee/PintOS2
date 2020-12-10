@@ -7,12 +7,17 @@
 #include "filesys/inode.h"
 #include "filesys/directory.h"
 #include "filesys/buffer_cache.h"
-#include "thread/thread.h"
+#include "threads/thread.h"
 
 /* Partition that contains the file system. */
 struct block *fs_device;
 
 static void do_format (void);
+
+//modified 4.3
+struct dir* parse_path(char *path_name, char *file_name);
+bool filesys_create_dir(const char* name);
+
 
 /* Initializes the file system module.
    If FORMAT is true, reformats the file system. */

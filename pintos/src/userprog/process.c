@@ -321,7 +321,6 @@ process_exit (void)
 
   //modified 4.3
   dir_close(cur->cur_dir);
-
   
   for (int i = 1; i < cur->mmap_next; i++)
   {
@@ -935,26 +934,3 @@ struct mmap_file* find_mmap_file(int mapid)
   }
   return NULL;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
