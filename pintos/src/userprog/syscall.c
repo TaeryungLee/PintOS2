@@ -296,6 +296,7 @@ syscall_handler (struct intr_frame *f)
       
       bool ret = readdir(fd, name);
       f->eax = ret;
+      break;
     }
     case SYS_INUMBER:
     {
@@ -874,10 +875,10 @@ void do_munmap(struct mmap_file *mmap_file)
 }
 
 //modified 4.3
-bool chdir(const char* dir)
+bool chdir(const char* name)
 {
   char *cp_name;
-  strlcpy(cp_name, dir, 512);
+  strlcpy(cp_name, name, 512);
   //strlcat(cp_name, "/0", 512);
 
   char *file_name;
@@ -905,8 +906,7 @@ bool readdir(int fd, char *name)
     return success;
   }
   struct dir *target = dir_open(inode);
-
-  success = dir_readdir(file, name);
+  success = dir_readdir(target, name);
   
   
 return success;
