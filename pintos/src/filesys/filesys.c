@@ -108,20 +108,20 @@ filesys_remove (const char *name)
   struct inode *inode_cur;
   bool success = false;
   dir_lookup(dir, file_name, &inode_cur);
-  char* temp_name[NAME_MAX+1];
+  char temp_name[NAME_MAX+1];
   struct dir *dir_cur = dir_open(inode_cur);
   if(inode_is_dir(inode_cur) == true)
   {    
     if(dir_readdir(dir_cur, temp_name) == false)
     {
-      success = dir_remove(file_name);
+      success = dir_remove(dir, file_name);
     }
   }
   else
   {
-    success = dir_remove(file_name);
+    success = dir_remove(dir, file_name);
   }
-  dir_remove(dir, file_name);
+  //dir_remove(dir, file_name);
   dir_close(dir);
   
 
@@ -148,7 +148,7 @@ struct dir* parse_path(char *path_name, char *file_name)
   //int max_len = 512;
   if(path_name == NULL || file_name == NULL)
   {
-    goto fail;
+    return NULL;
   }
 
   if(strlen(path_name) == 0)
