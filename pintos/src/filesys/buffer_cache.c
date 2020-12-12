@@ -60,19 +60,19 @@ bool bc_write(block_sector_t sector_idx, void *buffer, off_t bytes_written, int 
 
 void bc_init(void)
 {
-    struct buffer_head *bh = buffer_head;
-    void *cache = p_buffer_cache;
-    for(int i=0; i < BUFFER_CACHE_ENTRY_NB; i++)
-    {
-        //printf("%x", bh);
-        memset(bh, 0, sizeof(struct buffer_head));
-        lock_init(&bh->lock);
-        bh->buffer = cache;
-        bh ++;
-        cache += BLOCK_SECTOR_SIZE;
-    }
-    clock_hand = buffer_head;
-    //lock_init(&cache_lock);
+  struct buffer_head *bh = buffer_head;
+  //void *cache = p_buffer_cache;
+  for(int i=0; i < BUFFER_CACHE_ENTRY_NB; i++)
+  {
+      //printf("%x", bh);
+      memset(bh, 0, sizeof(struct buffer_head));
+      lock_init(&bh->lock);
+      //bh->buffer = cache;
+      bh->buffer = p_buffer_cache + (i * BLOCK_SECTOR_SIZE);
+      bh ++;
+      //cache += BLOCK_SECTOR_SIZE;
+  }
+  clock_hand = buffer_head;
 }
 
 void bc_term(void)
