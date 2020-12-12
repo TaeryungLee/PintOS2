@@ -17,7 +17,9 @@ static struct buffer_head *clock_hand;
 bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chunk_size, int sector_ofs)
 {
   struct buffer_head *bh;
-  if(bc_lookup(sector_idx) == NULL)
+  bh = bc_lookup(sector_idx);
+
+  if(bh == NULL)
   {
     bh = bc_select_victim();
     bc_flush_entry(bh);
@@ -35,7 +37,8 @@ bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chun
 bool bc_write(block_sector_t sector_idx, void *buffer, off_t bytes_written, int chunk_size, int sector_ofs)
 {
   struct buffer_head *bh;
-  if(bc_lookup(sector_idx) == NULL)
+  bh = bc_lookup(sector_idx);
+  if(bh == NULL)
   {
     bh = bc_select_victim();
     bc_flush_entry(bh);
@@ -43,6 +46,7 @@ bool bc_write(block_sector_t sector_idx, void *buffer, off_t bytes_written, int 
     bh->sector_addr = sector_idx;
     block_read(fs_device, sector_idx, bh->buffer);
   }
+  
   bh->clock_bit = true;
   bh->dirty_flag = true;
   memcpy(bh->buffer + sector_ofs, buffer + bytes_written, chunk_size);
@@ -75,41 +79,36 @@ void bc_term(void)
 
 struct buffer_head *bc_select_victim(void)
 {
-
-    while(true)
-    {        
-        for(; clock_hand != buffer_head + BUFFER_CACHE_ENTRY_NB; clock_hand++)
-        {
-            lock_acquire(&clock_hand->lock);
-            if(clock_hand->clock_bit == false)
-            {
-                return clock_hand++;
-            }
-            clock_hand->clock_bit = false;
-            lock_release(&clock_hand->lock);
-        }
-        clock_hand = buffer_head;
+  while(true)
+  {        
+    for(; clock_hand != buffer_head + BUFFER_CACHE_ENTRY_NB; clock_hand++)
+    {
+      lock_acquire(&clock_hand->lock);
+      if(clock_hand->clock_bit == false)
+        return clock_hand++;
+      clock_hand->clock_bit = false;
+      lock_release(&clock_hand->lock);
     }
+    clock_hand = buffer_head;
+  }
 }
 
 struct buffer_head *bc_lookup(block_sector_t sector)
 {
-    //lock_acquire(&cache_lock);
-    struct buffer_head *bh = buffer_head;
-    for(int i=0; i < BUFFER_CACHE_ENTRY_NB; i++)
+  struct buffer_head *bh = buffer_head;
+  for(int i=0; i < BUFFER_CACHE_ENTRY_NB; i++)
+  {
+    if(bh->sector_addr == sector)
     {
-        if(bh->sector_addr == sector)
-        {
-            if(bh->valid_flag == true)
-            {
-                lock_acquire(&bh->lock);
-                //lock_release(&cache_lock);
-                return bh;
-            }
-        }
-        bh++;
+      if(bh->valid_flag == true)
+      {
+        lock_acquire(&bh->lock);
+        return bh;
+      }
     }
-    return NULL;
+    bh++;
+  }
+  return NULL;
 }
 
 void bc_flush_entry(struct buffer_head *p_flush_entry)
