@@ -16,48 +16,40 @@ static struct buffer_head *clock_hand;
 //buffer_cache = bh->buffer
 bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chunk_size, int sector_ofs)
 {
-
-    struct buffer_head *bh;
-    bh = bc_lookup(sector_idx);
-    if(bh == NULL)
-    {
-        bh = bc_select_victim();
-        bc_flush_entry(bh);
-        bh->valid_flag = true;
-        bh->sector_addr = sector_idx;
-        bh->dirty_flag = false;
-        //lock_release(&cache_lock);
-        block_read(fs_device, sector_idx, bh->buffer);
-    }
-    bh->clock_bit = true;
-    //printf("\n 1: %#p, 2: %#p, 3: %d \n", buffer + bytes_read, bh->buffer + sector_ofs, chunk_size);
-    memcpy(buffer + bytes_read, bh->buffer + sector_ofs, chunk_size);
-    lock_release (&bh->lock);
-    return true;
+  if(bc_lookup(sector_idx) == NULL)
+  {
+    struct buffer_head bh = bc_select_victim();
+    bc_flush_entry(bh);
+    bh->valid_flag = true;
+    bh->sector_addr = sector_idx;
+    bh->dirty_flag = false;
+    block_read(fs_device, sector_idx, bh->buffer);
+  }
+  bh->clock_bit = true;
+  memcpy(buffer + bytes_read, bh->buffer + sector_ofs, chunk_size);
+  lock_release (&bh->lock);
+  return true;
 }
 
 bool bc_write(block_sector_t sector_idx, void *buffer, off_t bytes_written, int chunk_size, int sector_ofs)
 {
-    struct buffer_head *bh;
-    bh = bc_lookup(sector_idx);
-    if(bh == NULL)
-    {
-        bh = bc_select_victim();
-        bc_flush_entry(bh);
-        bh->valid_flag = true;
-        bh->sector_addr = sector_idx;
-        //lock_release(&cache_lock);
-        block_read(fs_device, sector_idx, bh->buffer);
-    }
-    
-    bh->clock_bit = true;
-    bh->dirty_flag = true;
-    memcpy(bh->buffer + sector_ofs, buffer + bytes_written, chunk_size);
-    lock_release(&bh->lock);
-    return true;
+  if(bh == NULL)
+  {
+    struct buffer_head bh = bc_select_victim();
+    bc_flush_entry(bh);
+    bh->valid_flag = true;
+    bh->sector_addr = sector_idx;
+    block_read(fs_device, sector_idx, bh->buffer);
+  }
+  bh->clock_bit = true;
+  bh->dirty_flag = true;
+  memcpy(bh->buffer + sector_ofs, buffer + bytes_written, chunk_size);
+  lock_release(&bh->lock);
+  return true;
 }
 
 
+// commit 2cf40d4
 void bc_init(void)
 {
   struct buffer_head *bh = buffer_head;
@@ -67,10 +59,8 @@ void bc_init(void)
       //printf("%x", bh);
       memset(bh, 0, sizeof(struct buffer_head));
       lock_init(&bh->lock);
-      //bh->buffer = cache;
       bh->buffer = p_buffer_cache + (i * BLOCK_SECTOR_SIZE);
       bh ++;
-      //cache += BLOCK_SECTOR_SIZE;
   }
   clock_hand = buffer_head;
 }
