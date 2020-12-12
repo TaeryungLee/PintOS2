@@ -18,7 +18,7 @@ bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chun
 {
   if(bc_lookup(sector_idx) == NULL)
   {
-    struct buffer_head bh = bc_select_victim();
+    struct buffer_head *bh = bc_select_victim();
     bc_flush_entry(bh);
     bh->valid_flag = true;
     bh->sector_addr = sector_idx;
@@ -35,7 +35,7 @@ bool bc_write(block_sector_t sector_idx, void *buffer, off_t bytes_written, int 
 {
   if(bh == NULL)
   {
-    struct buffer_head bh = bc_select_victim();
+    struct buffer_head *bh = bc_select_victim();
     bc_flush_entry(bh);
     bh->valid_flag = true;
     bh->sector_addr = sector_idx;
