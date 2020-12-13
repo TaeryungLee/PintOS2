@@ -883,6 +883,10 @@ bool chdir(const char* name)
 
   char file_name[512];
   struct dir *dir = parse_path(cp_name, file_name);
+  if(dir)
+  {
+    return false;
+  }
   struct dir *cur_dir = thread_current()->cur_dir;
   dir_close(cur_dir);
   cur_dir = dir;
