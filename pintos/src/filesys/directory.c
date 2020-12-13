@@ -244,8 +244,15 @@ dir_readdir (struct dir *dir, char name[NAME_MAX + 1])
       dir->pos += sizeof e;
       if (e.in_use)
         {
-          strlcpy (name, e.name, NAME_MAX + 1);
-          return true;
+          if(e.name == ".")
+          {
+            if(e.name == "..")
+            {
+              strlcpy (name, e.name, NAME_MAX + 1);
+              return true;
+            }
+          }
+
         } 
     }
   return false;
