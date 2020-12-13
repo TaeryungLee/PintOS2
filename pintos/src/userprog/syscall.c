@@ -881,7 +881,7 @@ bool chdir(const char* name)
   strlcpy(cp_name, name, 512);
   strlcat(cp_name, "/0", 512);
 
-  char *file_name;
+  char file_name[512];
   struct dir *dir = parse_path(cp_name, file_name);
   struct dir *cur_dir = thread_current()->cur_dir;
   dir_close(cur_dir);
