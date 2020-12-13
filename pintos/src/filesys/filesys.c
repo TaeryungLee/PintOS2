@@ -201,7 +201,7 @@ do_format (void)
   strlcpy(file_name, token, strlen(token));
   return dir;
 }*/
-#define PATH_MAX_LEN 256
+#define PATH_MAX_LEN 511
 struct dir *
 parse_path (char *path_o, char *file_name)
 {
