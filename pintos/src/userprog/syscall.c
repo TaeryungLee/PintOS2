@@ -888,9 +888,9 @@ bool chdir(const char* name)
   {
     return false;
   }
-  struct dir *cur_dir = thread_current()->cur_dir;
-  dir_close(cur_dir);
-  cur_dir = dir;
+  //struct dir *cur_dir = thread_current()->cur_dir;
+  dir_close(thread_current()->cur_dir);
+  thread_current()->cur_dir = dir;
   return true;  
 }
 
