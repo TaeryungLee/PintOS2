@@ -321,7 +321,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
   //modified 4-2
   struct inode_disk *inode_disk = malloc(sizeof (struct inode_disk));
   //printf("%d", sizeof(struct inode_disk));
-  lock_acquire(&inode->extend_lock);
+  //lock_acquire(&inode->extend_lock);
   get_disk_inode(inode, inode_disk);
 
 
@@ -350,7 +350,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
 
     }
   free(inode_disk);
-  lock_release(&inode->extend_lock);
+  //lock_release(&inode->extend_lock);
   return bytes_read;
 }
 
