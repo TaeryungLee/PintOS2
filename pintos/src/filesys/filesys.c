@@ -178,20 +178,15 @@ struct dir* parse_path(char *path_name, char *file_name)
     //struct dir *dir_temp = thread_current()->cur_dir;
     dir = dir_reopen(thread_current()->cur_dir);
   }
-  if (!inode_is_dir (dir_get_inode (dir)))
-    return NULL;
+  
 
   char *token;
   char *next_token;
   char *save_ptr;
 
-  token = strtok_r(path_name, "/", &save_ptr);
+  token = strtok_r(path, "/", &save_ptr);
   next_token = strtok_r(NULL, "/", &save_ptr);
-  if (token == NULL)
-    {
-      strlcpy (file_name, ".", 512);
-      return dir;
-    }
+
   while(token != NULL && next_token != NULL)
   {
 
