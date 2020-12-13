@@ -878,7 +878,7 @@ void do_munmap(struct mmap_file *mmap_file)
 
 bool chdir(const char* name)
 {
-  char *cp_name[512];
+  char cp_name[512];
   strlcpy(cp_name, name, 512);
   strlcat(cp_name, "/0", 512);
 
