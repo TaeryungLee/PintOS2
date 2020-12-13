@@ -875,6 +875,7 @@ void do_munmap(struct mmap_file *mmap_file)
 }
 
 //modified 4.3
+/*
 bool chdir(const char* name)
 {
   char *cp_name[512];
@@ -891,6 +892,21 @@ bool chdir(const char* name)
   dir_close(cur_dir);
   cur_dir = dir;
   return true;  
+}*/
+#define PATH_MAX_LEN 256
+bool chdir (char *path_o)
+{
+  char path[PATH_MAX_LEN + 1];
+  strlcpy (path, path_o, PATH_MAX_LEN);
+  strlcat (path, "/0", PATH_MAX_LEN);
+
+  char name[PATH_MAX_LEN + 1];
+  struct dir *dir = parse_path (path, name);
+  if (!dir)
+    return false;
+  dir_close (thread_current ()->cur_dir);
+  thread_current ()->cur_dir = dir;
+  return true;
 }
 
 //modified 4.3
