@@ -198,7 +198,7 @@ struct dir* parse_path(char *path_name, char *file_name)
 bool filesys_create_dir(const char* name)
 {
   char *cp_name = name;
-  char *file_name;
+  char file_name[512];
   struct dir *dir = parse_path(cp_name, file_name);
   block_sector_t inode_sector = 0;
 
