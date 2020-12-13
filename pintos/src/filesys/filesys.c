@@ -203,7 +203,7 @@ struct dir* parse_path(char *path_name, char *file_name)
     token = next_token;
     next_token = strtok_r(NULL, "/", &save_ptr);
   }
-  strlcpy(file_name, token, strlen(token));
+  strlcpy(file_name, token, 512);
   return dir;
 }
 /*
