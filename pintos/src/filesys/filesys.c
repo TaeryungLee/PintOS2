@@ -219,7 +219,7 @@ parse_path (char *path_o, char *file_name)
   if (path[0] == '/')
     dir = dir_open_root ();
   else
-    dir = dir_reopen (thread_current ()->working_dir);
+    dir = dir_reopen (thread_current ()->cur_dir);
 
   // 아이노드가 어떤 이유로 제거되었거나 디렉터리가 아닌 경우
   if (!inode_is_dir (dir_get_inode (dir)))
