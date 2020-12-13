@@ -164,13 +164,13 @@ struct dir* parse_path(char *path_name, char *file_name)
   }
   char path[512];
   strlcpy(path, path_name, 512);
-  if(path[0] == '/')
+  if(path[0] == "/")
   {
     dir_open_root();
   }else
   {
-    struct dir *dir_temp = thread_current()->cur_dir;
-    dir = dir_reopen(dir_temp);
+    //struct dir *dir_temp = thread_current()->cur_dir;
+    dir = dir_reopen(thread_current()->cur_dir);
   }
   
 
@@ -189,7 +189,12 @@ struct dir* parse_path(char *path_name, char *file_name)
       {
         dir_close(dir);
         dir = dir_open(inode);
+      }else
+      {
+        dir_close(dir);
+        return NULL;
       }
+      
     }else
     {
       dir_close(dir);
