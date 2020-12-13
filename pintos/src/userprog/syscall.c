@@ -923,7 +923,7 @@ return success;
 int inumber(int fd)
 {
   struct file *file = process_get_file(fd);
-  struct inode *inode = file->inode;
+  struct inode *inode = file_get_inode(file);
   block_sector_t sector = inode_get_inumber(inode);
   return sector;
 }
