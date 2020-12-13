@@ -87,6 +87,11 @@ filesys_open (const char *name)
 
   if (dir != NULL)
     dir_lookup (dir, file_name, &inode);
+  else
+  {
+    return NULL;
+  }
+  
   dir_close (dir);
 
   return file_open (inode);
