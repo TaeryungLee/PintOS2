@@ -150,23 +150,24 @@ do_format (void)
 //modified 4.3
 struct dir* parse_path(char *path_name, char *file_name)
 {
-  struct dir *dir=NULL;
+  struct dir *dir;
   struct inode *inode=NULL;
   //int max_len = 512;
+
   if(path_name == NULL || file_name == NULL)
   {
     return NULL;
   }
-
   if(strlen(path_name) == 0)
   {
     return NULL;
   }
+
   char path[513];
   strlcpy(path, path_name, 512);
   if(path[0] == "/")
   {
-    dir_open_root();
+    dir = dir_open_root();
   }else
   {
     //struct dir *dir_temp = thread_current()->cur_dir;
