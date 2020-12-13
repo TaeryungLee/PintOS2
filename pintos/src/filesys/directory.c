@@ -206,11 +206,11 @@ dir_remove (struct dir *dir, const char *name)
 
   if(name == ".")
   {
-    goto done;
+    return false;
   }
   if(name == "..")
   {
-    goto done;
+    return false;
   }
   /* Open inode. */
   inode = inode_open (e.inode_sector);
