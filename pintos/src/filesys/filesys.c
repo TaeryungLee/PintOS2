@@ -148,7 +148,7 @@ do_format (void)
 }
 
 //modified 4.3
-/*struct dir* parse_path(char *path_name, char *file_name)
+struct dir* parse_path(char *path_name, char *file_name)
 {
   struct dir *dir;
   struct inode *inode;
@@ -200,7 +200,8 @@ do_format (void)
   }
   strlcpy(file_name, token, strlen(token));
   return dir;
-}*/
+}
+/*
 #define PATH_MAX_LEN 256
 struct dir *
 parse_path (char *path_o, char *file_name)
@@ -256,7 +257,7 @@ parse_path (char *path_o, char *file_name)
     }
   strlcpy (file_name, token, PATH_MAX_LEN);
   return dir;
-}
+}*/
 
 bool filesys_create_dir(const char* name)
 {
