@@ -213,8 +213,9 @@ bool filesys_create_dir(const char* name)
   {
     struct inode *inode_new = inode_open(inode_sector);
     struct dir *dir_new = dir_open(inode_new);
+    block_sector_t double_dot_sector = dir->inode->sector;
     dir_add(dir_new, ".", inode_sector);
-    dir_add(dir_new, "..", inode_sector);
+    dir_add(dir_new, "..", double_dot_sector);
     dir_close(dir_new);
   }
   dir_close(dir);
