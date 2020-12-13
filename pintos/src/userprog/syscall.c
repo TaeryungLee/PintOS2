@@ -33,7 +33,7 @@ void check_valid_buffer (void *buffer, unsigned size, bool to_write);
 void check_vm (void *addr, unsigned size, bool to_write, void *esp);
 
 //modified 4.3
-bool chdir(const char* dir);
+bool chdir(char* dir);
 bool mkdir(const char *dir);
 bool readdir(int fd, char *name);
 int inumber(int fd);
@@ -876,7 +876,7 @@ void do_munmap(struct mmap_file *mmap_file)
 
 //modified 4.3
 
-bool chdir(const char* name)
+bool chdir(char* name)
 {
   char *cp_name[512];
   strlcpy(cp_name, name, 512);
