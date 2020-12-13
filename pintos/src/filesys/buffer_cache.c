@@ -116,6 +116,12 @@ struct buffer_head *bc_select_victim(void)
                 }*/
                 lock_release(&clock_hand->lock);
                 return clock_hand;
+            }else
+            {
+                if(clock_hand->dirty_flag == true)
+                {
+                    block_write(fs_device, clock_hand->sector_addr, clock_hand->buffer);
+                }
             }
             clock_hand->clock_bit = false;
             lock_release(&clock_hand->lock);
