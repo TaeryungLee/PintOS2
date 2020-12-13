@@ -164,7 +164,7 @@ struct dir* parse_path(char *path_name, char *file_name)
   }
   char path[513];
   strlcpy(path, path_name, 512);
-  if(path[0] == "/")
+  if(path[0] == '/')
   {
     dir_open_root();
   }else
