@@ -141,7 +141,7 @@ do_format (void)
   struct dir *dir_root = dir_open_dir();
   dir_add(dir_root, ".", ROOT_DIR_SECTOR);
   dir_add(dir_root, "..", ROOT_DIR_SECTOR);
-  dir_close(dir_new);
+  dir_close(dir_root);
 
   free_map_close ();
   printf ("done.\n");
