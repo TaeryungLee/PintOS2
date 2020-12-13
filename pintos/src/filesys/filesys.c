@@ -138,7 +138,7 @@ do_format (void)
     PANIC ("root directory creation failed");
   
   //modified 4.3
-  struct dir *dir_root = dir_open_dir();
+  struct dir *dir_root = dir_open_root();
   dir_add(dir_root, ".", ROOT_DIR_SECTOR);
   dir_add(dir_root, "..", ROOT_DIR_SECTOR);
   dir_close(dir_root);
