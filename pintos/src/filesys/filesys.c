@@ -265,7 +265,7 @@ bool filesys_create_dir(const char* name)
   struct dir *dir = parse_path(cp_name, file_name);
   block_sector_t inode_sector = 0;
 
-  struct inode *inode = dir_get_inode(dir); //왜 씨발 dir->inode는 안 되냐
+  
 
   bool success = (dir != NULL
                   && free_map_allocate (1, &inode_sector)
@@ -278,6 +278,7 @@ bool filesys_create_dir(const char* name)
   {
     struct inode *inode_new = inode_open(inode_sector);
     struct dir *dir_new = dir_open(inode_new);
+    struct inode *inode = dir_get_inode(dir); //왜 씨발 dir->inode는 안 되냐
     block_sector_t double_dot_sector = inode_get_inumber(inode); //이것도 왜 씨발 inode->sector 안 먹냐 
     dir_add(dir_new, ".", inode_sector);
     dir_add(dir_new, "..", double_dot_sector);
