@@ -203,7 +203,7 @@ do_format (void)
 }*/
 #define PATH_MAX_LEN 256
 struct dir *
-parse_path (const char *path_o, char *file_name)
+parse_path (char *path_o, char *file_name)
 {
   struct dir *dir = NULL;
 
