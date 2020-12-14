@@ -37,6 +37,7 @@ bool chdir(const char* dir);
 bool mkdir(const char *dir);
 bool readdir(int fd, char *name);
 int inumber(int fd);
+bool isdir(int fd);
 
 
 /* 
