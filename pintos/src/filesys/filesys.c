@@ -115,7 +115,7 @@ filesys_remove (const char *name)
   dir_lookup(dir, file_name, &inode_cur);
   char temp_name[512];
   struct dir *dir_cur = dir_open(inode_cur);
-  if(inode_is_dir(inode_cur) == true)
+  /*if(inode_is_dir(inode_cur) == true)
   {    
     if(dir_readdir(dir_cur, temp_name) == false)
     {
@@ -125,6 +125,10 @@ filesys_remove (const char *name)
   else
   {
     success = dir_remove(dir, file_name);
+  }*/
+  if(!inode_is_dir(inode_cur) || ((dir_cur = dir_open(inode_cur))&&!dir_readdir(dir_cur, temp_name)) )
+  {
+    success = (dir_cur !=NULL)&&dir_remove(dir_cur, file_name);
   }
   //dir_remove(dir, file_name);
   dir_close(dir);
