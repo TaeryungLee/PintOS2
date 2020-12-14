@@ -128,7 +128,7 @@ filesys_remove (const char *name)
   {
     success = dir_remove(dir, file_name);
   }*/
-  if(!inode_is_dir(inode_cur) || ((dir_cur = dir_open(inode_cur))&&!dir_readdir(dir_cur, temp_name)) )
+  if(!inode_is_dir(inode_cur) || (dir_cur&& (!dir_readdir(dir_cur, temp_name)) )
   {
     success = (dir_cur !=NULL)&&dir_remove(dir_cur, file_name);
   }
