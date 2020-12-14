@@ -204,11 +204,11 @@ dir_remove (struct dir *dir, const char *name)
   if (!lookup (dir, name, &e, &ofs))
     goto done;
   
-  if(name == '.')
+  if(!strcmp(name, "."))
   {
     return false;
   }
-  if(name == '..')
+  if(!strcmp(name, ".."))
   {
     return false;
   }
