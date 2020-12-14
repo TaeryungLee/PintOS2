@@ -162,7 +162,7 @@ do_format (void)
   free_map_close ();
   printf ("done.\n");
 }
-
+/*
 //modified 4.3
 struct dir* parse_path(char *path_name, char *file_name)
 {
@@ -222,7 +222,7 @@ struct dir* parse_path(char *path_name, char *file_name)
     {
       dir_close(dir);
       return NULL;
-    }*/
+    }
     if(dir_lookup(dir, token, &inode) == false || inode_is_dir(inode) == false)
     {
       dir_close(dir);
@@ -235,8 +235,8 @@ struct dir* parse_path(char *path_name, char *file_name)
   }
   strlcpy(file_name, token, 512);
   return dir;
-}
-/*
+}*/
+
 #define PATH_MAX_LEN 511
 struct dir *
 parse_path (char *path_o, char *file_name)
@@ -292,7 +292,7 @@ parse_path (char *path_o, char *file_name)
     }
   strlcpy (file_name, token, PATH_MAX_LEN);
   return dir;
-}*/
+}
 
 bool filesys_create_dir(const char* name)
 {
