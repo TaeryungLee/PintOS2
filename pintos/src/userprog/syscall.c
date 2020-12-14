@@ -905,8 +905,7 @@ bool mkdir(const char *dir)
 bool readdir(int fd, char *name)
 {
   struct file *f = process_get_file (fd);
-  if (f == NULL)
-    exit (-1);
+
   // 내부 아이노드 가져오기 및 디렉터리 열기
   struct inode *inode = file_get_inode (f);
   if (!inode || !inode_is_dir (inode))
