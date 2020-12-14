@@ -110,9 +110,11 @@ filesys_remove (const char *name)
   struct dir *dir = parse_path(cp_name, file_name);
   //bool success = dir != NULL && dir_remove (dir, name);
   //dir_close (dir); 
+ 
   struct inode *inode_cur;
   bool success = false;
   dir_lookup(dir, file_name, &inode_cur);
+
   char temp_name[512];
   struct dir *dir_cur = dir_open(inode_cur);
   /*if(inode_is_dir(inode_cur) == true)
@@ -132,10 +134,11 @@ filesys_remove (const char *name)
   }
   //dir_remove(dir, file_name);
   dir_close(dir);
-  if(dir_cur)
+  
+  /*if(dir_cur)
   {
     dir_close(dir_cur);
-  }
+  }*/
 
   return success;
 }
