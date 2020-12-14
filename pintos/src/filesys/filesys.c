@@ -113,7 +113,7 @@ filesys_remove (const char *name)
   struct inode *inode_cur;
   bool success = false;
   dir_lookup(dir, file_name, &inode_cur);
-  char temp_name[NAME_MAX+1];
+  char temp_name[512];
   struct dir *dir_cur = dir_open(inode_cur);
   if(inode_is_dir(inode_cur) == true)
   {    
