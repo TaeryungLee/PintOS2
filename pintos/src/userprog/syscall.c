@@ -904,23 +904,19 @@ bool mkdir(const char *dir)
 //modified 4.3
 bool readdir(int fd, char *name)
 {
-  struct file *f = process_get_file (fd);
+  struct file *file = process_get_file(fd);
+  struct inode *inode = file_get_inode(file);
+  bool success = false;
+  if(inode_is_dir(inode) == false)
+  {
+    return success;
+  }
+  struct dir *target = dir_open(inode);
+  success = dir_readdir(target, name);
+  
+  
+return success;
 
-  // 내부 아이노드 가져오기 및 디렉터리 열기
-  struct inode *inode = file_get_inode (f);
-  if (!inode || !inode_is_dir (inode))
-    return false;
-  struct dir *dir = dir_open (inode);
-  if (!dir)
-    return false;
-  int i;
-  bool result = true;
-  off_t *pos = (off_t *)f + 1;
-  for (i = 0; i <= *pos && result; i++)
-    result = dir_readdir (dir, name);
-  if ((i <= *pos) == false)
-    (*pos)++;
-  return result;
 }
 
 //modified 4.3
