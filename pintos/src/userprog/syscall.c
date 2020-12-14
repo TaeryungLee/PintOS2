@@ -307,6 +307,15 @@ syscall_handler (struct intr_frame *f)
       f->eax = ret;
       break;
     }
+    case SYS_ISDIR:
+    {
+      int fd;
+      read_addr(&fd, esp+4, 4);
+      
+      bool ret = isdir(fd);
+      f->eax = ret;
+      break;
+    }
 
   }
 }
@@ -928,6 +937,11 @@ int inumber(int fd)
   return sector;
 }
 
+bool isdir(int fd)
+{
+  struct file *file = process_get_file(fd);
+  return inode_is_dir(file_get_inode(file));
+}
 
 
 
