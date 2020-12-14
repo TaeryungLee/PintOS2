@@ -938,6 +938,7 @@ int inumber(int fd)
   return sector;
 }
 
+//modified 4.3
 bool isdir(int fd)
 {
   struct file *file = process_get_file(fd);
