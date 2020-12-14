@@ -196,7 +196,7 @@ struct dir* parse_path(char *path_name, char *file_name)
   while(token != NULL && next_token != NULL)
   {
 
-    if(dir_lookup(dir, token, &inode) == true)
+    /*if(dir_lookup(dir, token, &inode) == true)
     {
       if(inode_is_dir(inode) == true)
       {
@@ -212,13 +212,12 @@ struct dir* parse_path(char *path_name, char *file_name)
     {
       dir_close(dir);
       return NULL;
-    }
-    /*
+    }*/
     if(dir_lookup(dir, token, &inode) == false || inode_is_dir(inode) == false)
     {
       dir_close(dir);
       return NULL;
-    }*/
+    }
     dir_close(dir);
     dir = dir_open(inode);
     token = next_token;
