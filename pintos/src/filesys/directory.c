@@ -200,20 +200,18 @@ dir_remove (struct dir *dir, const char *name)
   ASSERT (dir != NULL);
   ASSERT (name != NULL);
 
-  if(!strcmp(name, "."))
-  {
-    return false;
-  }
-  if(!strcmp(name, ".."))
-  {
-    return false;
-  }
-  
   /* Find directory entry. */
   if (!lookup (dir, name, &e, &ofs))
     goto done;
-
-
+  
+  if(name == '.')
+  {
+    return false;
+  }
+  if(name == '..')
+  {
+    return false;
+  }
   /* Open inode. */
   inode = inode_open (e.inode_sector);
   if (inode == NULL)

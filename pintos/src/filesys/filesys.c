@@ -132,7 +132,10 @@ filesys_remove (const char *name)
   }
   //dir_remove(dir, file_name);
   dir_close(dir);
-  
+  if(dir_cur)
+  {
+    dir_close(dir_cur);
+  }
 
   return success;
 }
