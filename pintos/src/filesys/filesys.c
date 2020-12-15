@@ -148,20 +148,17 @@ filesys_remove (const char *name)
       goto done;
     }
     removed = dir_remove(dir, file_name);
+    dir_close(dir);
   }
   else
   {
     removed = dir_remove(dir,file_name);
+    dir_close(dir);
   }
   
   done:
     dir_close(dir);
-  
-  if(dir_cur)
-  {
-    dir_close(dir_cur);
-  }
-  
+
   /*if(dir_cur)
   {
     dir_close(dir_cur);
