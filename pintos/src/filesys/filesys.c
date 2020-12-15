@@ -215,10 +215,7 @@ struct dir* parse_path(char *path_name, char *file_name)
     //struct dir *dir_temp = thread_current()->cur_dir;
     dir = dir_reopen(thread_current()->cur_dir);
   }
-  for(int i=0; i<512; i++)
-  {
-    printf("%c   ",path[i]);
-  }
+
 
   char *token;
   char *next_token;
@@ -229,7 +226,7 @@ struct dir* parse_path(char *path_name, char *file_name)
 
   if (token == NULL)
   {
-    strlcpy (file_name, ".", 512);
+    strlcpy (file_name, '.', 512);
     return dir;
   }
   while(token != NULL && next_token != NULL)
