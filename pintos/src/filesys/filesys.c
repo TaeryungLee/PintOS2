@@ -205,6 +205,7 @@ struct dir* parse_path(char *path_name, char *file_name)
 
   if (token == NULL)
   {
+    printf("NULL token");
     strlcpy (file_name, ".", 512);
     return dir;
   }
