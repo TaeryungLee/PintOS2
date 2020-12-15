@@ -114,7 +114,7 @@ filesys_remove (const char *name)
   //dir_close (dir); 
  
   struct inode *inode_cur;
-  bool success = false;
+  bool removed = false;
   dir_lookup(dir, file_name, &inode_cur);
 
   char temp_name[512];
@@ -130,19 +130,44 @@ filesys_remove (const char *name)
   {
     success = dir_remove(dir, file_name);
   }*/
-  if(!inode_is_dir(inode_cur) || (dir_cur&& (!dir_readdir(dir_cur, temp_name)) ))
+  /*
+  if(!inode_is_dir(inode_cur) || (dir_cur && (!dir_readdir(dir_cur, temp_name)) ))
   {
     success = (dir_cur !=NULL) && dir_remove(dir, file_name);
+  }*/
+
+  if(dir_cur == NULL)
+  {
+    removed = false;
+    goto done;
   }
-  //dir_remove(dir, file_name);
-  dir_close(dir);
+  if(inode_is_dir == true)
+  {
+    if(dir_readdir(dir_cur, temp_name))
+    {
+      removed = dir_remove(dir, file_name);
+      goto done;
+    }
+    else
+    {
+      goto done;
+    }  
+  }
+  else
+  {
+    removed = dir_remove(dir,file_name);
+    goto done;
+  }
+  
+  done:
+    dir_close(dir);
   
   /*if(dir_cur)
   {
     dir_close(dir_cur);
   }*/
 
-  return success;
+  return removed;
 }
 
 
