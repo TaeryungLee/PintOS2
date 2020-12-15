@@ -135,7 +135,15 @@ dir_lookup (const struct dir *dir, const char *name,
   if (lookup (dir, name, &e, NULL))
     *inode = inode_open (e.inode_sector);
   else
-    *inode = NULL;
+    if(inode_removed(dir->inode)){
+      *inode = NULL;
+    }
+    else if((!strcmp(name, ".")) || (!strcmp(name, ""))){
+      //printf("reopen current dir\n");
+      *inode = inode_reopen(dir->inode);
+    } else if(!strcmp(name, "..")){
+      *inode = inode_open(inode_get_parent(dir->inode));
+    }
 
   return *inode != NULL;
 }
@@ -239,9 +247,14 @@ dir_readdir (struct dir *dir, char name[NAME_MAX + 1])
       dir->pos += sizeof e;
       if (e.in_use)
         {
-
+          if(strcmp(e.name, "."))
+          {
+            if(strcmp(e.name, ".."))
+            {
               strlcpy (name, e.name, NAME_MAX + 1);
               return true;
+            }
+          }
 
         } 
     }
