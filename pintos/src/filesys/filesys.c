@@ -230,14 +230,17 @@ struct dir* parse_path(char *path_name, char *file_name)
     }*/
     if(dir_lookup(dir, token, &inode) == false) 
     {
+      printf("lookup fail");
       dir_close(dir);
       return NULL;
     }
     if(inode_is_dir(inode) == false)
     {
+      printf("isdir fail");
       dir_close(dir);
       return NULL;
     }
+    printf("Tlqkf");
     dir_close(dir);
     dir = dir_open(inode);
     token = next_token;

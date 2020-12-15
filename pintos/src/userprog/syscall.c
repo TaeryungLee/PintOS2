@@ -523,7 +523,7 @@ void open(char *name, struct intr_frame *f)
 
   //printf("open called\n");
   //printf("thread name: %s, %d\n", thread_current()->name, thread_current()->tid);
-  printf("file name %s\n", name);
+  //printf("file name %s\n", name);
 
   //check(name, sizeof(name));
 
