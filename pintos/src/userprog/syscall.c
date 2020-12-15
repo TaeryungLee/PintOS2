@@ -920,7 +920,7 @@ bool mkdir(const char *dir)
 bool readdir(int fd, char *name)
 {
   struct file *file = process_get_file(fd);
-  struct inode *inode = file->inode;
+  struct inode *inode = file_get_inode(file);
   if(file == NULL)
   {
     exits(-1, NULL);
