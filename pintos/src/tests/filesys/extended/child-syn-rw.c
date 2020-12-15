@@ -24,7 +24,7 @@ main (int argc, const char *argv[])
   size_t ofs;
 
   test_name = "child-syn-rw";
-  quiet = true;
+  //quiet = true;
   
   CHECK (argc == 2, "argc must be 2, actually %d", argc);
   child_idx = atoi (argv[1]);
