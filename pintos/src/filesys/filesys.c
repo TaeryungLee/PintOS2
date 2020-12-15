@@ -81,12 +81,14 @@ filesys_open (const char *name)
 {
   //modified 4.3
   char *cp_name = name;
-  char file_name[512];
+  char file_name[513];
   struct dir *dir = parse_path(cp_name, file_name);
   struct inode *inode = NULL;
 
   if (dir != NULL)
+  {
     dir_lookup (dir, file_name, &inode);
+  }
   else
   {
     return NULL;
