@@ -131,13 +131,13 @@ filesys_remove (const char *name)
     success = dir_remove(dir, file_name);
   }*/
 
-  
+  /*
   if(!inode_is_dir(inode_cur) || (dir_cur && (!dir_readdir(dir_cur, temp_name)) ))
   {
     removed = (dir_cur !=NULL) && dir_remove(dir, file_name);
-  }
+  }*/
 
-/*
+
   if(inode_is_dir(inode_cur) == true)
   {
     if(dir_readdir(dir_cur, temp_name) == false)
@@ -152,11 +152,15 @@ filesys_remove (const char *name)
   }
   else
   {
+    if(dir_cur == NULL)
+    {
+      goto done;
+    }
     removed = dir_remove(dir,file_name);
     goto done;
   }
   
-  done:*/
+  done:
     dir_close(dir);
   
   /*if(dir_cur)
