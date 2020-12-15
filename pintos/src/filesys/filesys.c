@@ -171,7 +171,7 @@ do_format (void)
 //modified 4.3
 struct dir* parse_path(char *path_name, char *file_name)
 {
-  struct dir *dir;
+  struct dir *dir == NULL;
   struct inode *inode=NULL;
   //int max_len = 512;
 
