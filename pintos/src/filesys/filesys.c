@@ -162,6 +162,7 @@ filesys_remove (const char *name)
   
   done:
     dir_close(dir);
+    dir_close(dir_cur);
   
   /*if(dir_cur)
   {
