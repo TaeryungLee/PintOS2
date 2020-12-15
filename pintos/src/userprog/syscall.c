@@ -948,7 +948,7 @@ readdir (int fd, char *name)
   off_t *pos = (off_t *)f + 1;
   for (i = 0; i <= *pos && result; i++)
     result = dir_readdir (dir, name);
-  if (i <= *pos == false)
+  if ((i <= *pos) == false)
     (*pos)++;
   return result;
 }
