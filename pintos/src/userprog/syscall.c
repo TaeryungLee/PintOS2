@@ -388,6 +388,7 @@ void check(void *addr, int count)
     {
       exits(-1, NULL);
     }
+    printf("%#x %d\n", addr, count);
     if(((unsigned int) addr + count - 1) > up)
     	if (((unsigned int) addr == up) && ((unsigned int) addr == down))
     	{
