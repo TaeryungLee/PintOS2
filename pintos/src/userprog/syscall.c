@@ -208,12 +208,12 @@ syscall_handler (struct intr_frame *f)
       int fd;
       unsigned size;
       void *buffer;
-      printf("esp: %#x\n", esp);
+      //printf("esp: %#x\n", esp);
       read_addr(&fd, esp+4, 4);
       read_addr(&buffer, esp+8, 4);
       read_addr(&size, esp+12, 4);
 
-      printf("buf: %#x\n", buffer);
+      //printf("buf: %#x\n", buffer);
       check(buffer, 1);
       check_vm(buffer, 1, false, esp);
 
@@ -390,7 +390,7 @@ void check(void *addr, int count)
     {
       exits(-1, NULL);
     }
-    printf("%#x %#x %#x %d\n", addr, up, down, count);
+    //printf("%#x %#x %#x %d\n", addr, up, down, count);
     if(((unsigned int) addr + count - 1) > up)
     	if (((unsigned int) addr == up) && ((unsigned int) addr == down))
     	{
