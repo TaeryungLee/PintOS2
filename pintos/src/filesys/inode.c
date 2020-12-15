@@ -86,7 +86,7 @@ static void locate_byte(off_t pos, struct sector_location *sec_loc);
 static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_sector, struct sector_location sec_loc);
 bool inode_update_file_length(struct inode_disk *inode_disk, off_t length, off_t new_length);
 static void free_inode_sectors(struct inode_disk *inode_disk);
-block_sector_t inode_get_parent(struct inode *inode)
+block_sector_t inode_get_parent(struct inode *inode);
 
 
 /* Returns the block device sector that contains byte offset POS
