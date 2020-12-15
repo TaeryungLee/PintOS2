@@ -194,6 +194,7 @@ struct dir* parse_path(char *path_name, char *file_name)
     dir = dir_open_root();
   }else
   {
+    printf("not root \n");
     //struct dir *dir_temp = thread_current()->cur_dir;
     dir = dir_reopen(thread_current()->cur_dir);
   }
