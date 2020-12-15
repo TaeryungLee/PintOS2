@@ -228,7 +228,12 @@ struct dir* parse_path(char *path_name, char *file_name)
       dir_close(dir);
       return NULL;
     }*/
-    if(dir_lookup(dir, token, &inode) == false || inode_is_dir(inode) == false)
+    if(dir_lookup(dir, token, &inode) == false) 
+    {
+      dir_close(dir);
+      return NULL;
+    }
+    if(inode_is_dir(inode) == false)
     {
       dir_close(dir);
       return NULL;
