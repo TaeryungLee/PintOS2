@@ -206,7 +206,7 @@ struct dir* parse_path(char *path_name, char *file_name)
   }
 
   char path[512];
-  strlcpy(path, path_name, 512);
+  strlcpy(path, path_name, 511);
   if(path[0] == '/')
   {
     dir = dir_open_root();
@@ -226,7 +226,7 @@ struct dir* parse_path(char *path_name, char *file_name)
 
   if (token == NULL)
   {
-    strlcpy (file_name, ".", 512);
+    strlcpy (file_name, ".", 511);
     return dir;
   }
   while(token != NULL && next_token != NULL)
@@ -259,7 +259,7 @@ struct dir* parse_path(char *path_name, char *file_name)
     token = next_token;
     next_token = strtok_r(NULL, "/", &save_ptr);
   }
-  strlcpy(file_name, token, 512);
+  strlcpy(file_name, token, 511);
   return dir;
 }
 /*
