@@ -140,7 +140,7 @@ dir_lookup (const struct dir *dir, const char *name,
   else
   {
     if (!inode_is_dir (dir_get_inode (dir)))
-      return false;
+      *inode = NULL;
     if((!strcmp(name, ".")) || (!strcmp(name, "")))
     {
       //printf("reopen current dir\n");
