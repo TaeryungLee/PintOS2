@@ -134,31 +134,8 @@ dir_lookup (const struct dir *dir, const char *name,
   printf("lookup start \n");
   if (lookup (dir, name, &e, NULL))
     *inode = inode_open (e.inode_sector);
-  /*else
-    *inode = NULL;*/
-  
   else
-  {
-    if (!inode_is_dir (dir_get_inode (dir)))
-    {
-      printf("lookup_null 1 \n");
-      *inode = NULL;
-    }
-    if((!strcmp(name, ".")) || (!strcmp(name, "")))
-    {
-      printf("compare dot \n");
-      //printf("reopen current dir\n");
-      if (!inode_is_dir (dir_get_inode (dir)))
-      {
-        printf("lookup_null 2 \n");
-        *inode = NULL;
-      }
-      else
-        *inode = inode_reopen(dir->inode);
-    }
-    printf("lookup end \n");
-  }
-
+    *inode = NULL;
 
   return *inode != NULL;
 }
