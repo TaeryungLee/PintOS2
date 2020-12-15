@@ -119,23 +119,6 @@ filesys_remove (const char *name)
 
   char temp_name[512];
   struct dir *dir_cur = dir_open(inode_cur);
-  /*if(inode_is_dir(inode_cur) == true)
-  {    
-    if(dir_readdir(dir_cur, temp_name) == false)
-    {
-      success = dir_remove(dir, file_name);
-    }
-  }
-  else
-  {
-    success = dir_remove(dir, file_name);
-  }*/
-
-  /*
-  if(!inode_is_dir(inode_cur) || (dir_cur && (!dir_readdir(dir_cur, temp_name)) ))
-  {
-    removed = (dir_cur !=NULL) && dir_remove(dir, file_name);
-  }*/
 
   if(dir_cur == NULL)
   {
