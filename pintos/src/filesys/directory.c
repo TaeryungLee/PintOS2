@@ -207,8 +207,7 @@ dir_remove (struct dir *dir, const char *name)
   if(!strcmp(name, "."))
   {
     return false;
-  }
-  if(!strcmp(name, ".."))
+  }else if(!strcmp(name, ".."))
   {
     return false;
   }
