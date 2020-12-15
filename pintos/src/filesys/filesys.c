@@ -130,28 +130,25 @@ filesys_remove (const char *name)
   {
     success = dir_remove(dir, file_name);
   }*/
+
   /*
   if(!inode_is_dir(inode_cur) || (dir_cur && (!dir_readdir(dir_cur, temp_name)) ))
   {
     success = (dir_cur !=NULL) && dir_remove(dir, file_name);
   }*/
 
-  if(dir_cur == NULL)
-  {
-    removed = false;
-    goto done;
-  }
+
   if(inode_is_dir(inode_cur) == true)
   {
-    if(dir_readdir(dir_cur, temp_name))
+    if(dir_readdir(dir_cur, temp_name) == false)
     {
-      removed = dir_remove(dir, file_name);
       goto done;
     }
-    else
+    if(dir_cur == NULL)
     {
       goto done;
-    }  
+    }
+    removed = dir_remove(dir, file_name);
   }
   else
   {
