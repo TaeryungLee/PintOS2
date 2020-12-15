@@ -81,7 +81,7 @@ filesys_open (const char *name)
 {
   //modified 4.3
   char *cp_name = name;
-  char file_name[513];
+  char file_name[512];
   struct dir *dir = parse_path(cp_name, file_name);
   struct inode *inode = NULL;
 
@@ -132,7 +132,7 @@ filesys_remove (const char *name)
   }*/
   if(!inode_is_dir(inode_cur) || (dir_cur&& (!dir_readdir(dir_cur, temp_name)) ))
   {
-    success = (dir_cur !=NULL)&&dir_remove(dir_cur, file_name);
+    success = (dir_cur !=NULL) && dir_remove(dir, file_name);
   }
   //dir_remove(dir, file_name);
   dir_close(dir);
