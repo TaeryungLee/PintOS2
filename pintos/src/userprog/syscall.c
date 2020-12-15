@@ -506,9 +506,9 @@ void
 remove(char *name, struct intr_frame *f)
 {
   check(name, sizeof(name));
-  //lock_acquire(&memory);
+  lock_acquire(&memory);
   f->eax = filesys_remove(name);
-  //lock_release(&memory);
+  lock_release(&memory);
 }
 
 void open(char *name, struct intr_frame *f)
