@@ -169,6 +169,7 @@ do_format (void)
 }
 
 //modified 4.3
+/*
 struct dir* parse_path(char *path_name, char *file_name)
 {
   struct dir *dir = NULL;
@@ -216,24 +217,6 @@ struct dir* parse_path(char *path_name, char *file_name)
   }
   while(token && next_token)
   {
-
-    /*if(dir_lookup(dir, token, &inode) == true)
-    {
-      if(inode_is_dir(inode) == true)
-      {
-        dir_close(dir);
-        dir = dir_open(inode);
-      }else
-      {
-        dir_close(dir);
-        return NULL;
-      }
-      
-    }else
-    {
-      dir_close(dir);
-      return NULL;
-    }*/
     if(dir_lookup(dir, token, &inode) == false) 
     {
       printf("lookup fail \n");
@@ -254,6 +237,62 @@ struct dir* parse_path(char *path_name, char *file_name)
   }
   printf("end of while \n");
   strlcpy(file_name, token, 512);
+  return dir;
+}*/
+#define PATH_MAX_LEN 512
+struct dir *
+parse_path (char *path_o, char *file_name)
+{
+  struct dir *dir = NULL;
+
+  // 기본 예외 처리
+  if (!path_o || !file_name)
+    return NULL;
+  if (strlen (path_o) == 0)
+    return NULL;
+
+  char path[PATH_MAX_LEN + 1];
+  strlcpy (path, path_o, PATH_MAX_LEN);
+
+  if (path[0] == '/')
+    dir = dir_open_root ();
+  else
+    dir = dir_reopen (thread_current ()->cur_dir);
+
+  // 아이노드가 어떤 이유로 제거되었거나 디렉터리가 아닌 경우
+  if (!inode_is_dir (dir_get_inode (dir)))
+    return NULL;
+
+  char *token, *next_token, *save_ptr;
+  token = strtok_r (path, "/", &save_ptr);
+  next_token = strtok_r (NULL, "/", &save_ptr);
+
+  if (token == NULL)
+    {
+      strlcpy (file_name, ".", PATH_MAX_LEN);
+      return dir;
+    }
+
+  while (token && next_token)
+    {
+      struct inode *inode = NULL;
+      if (!dir_lookup (dir, token, &inode))
+        {
+          dir_close (dir);
+          return NULL;
+        }
+      if (!inode_is_dir (inode))
+        {
+          dir_close (dir);
+          return NULL;
+        }
+      dir_close (dir);
+      dir = dir_open (inode);
+
+      token = next_token;
+      next_token = strtok_r (NULL, "/", &save_ptr);
+    }
+  strlcpy (file_name, token, PATH_MAX_LEN);
   return dir;
 }
 
