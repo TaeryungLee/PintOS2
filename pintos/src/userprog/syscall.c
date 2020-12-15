@@ -919,13 +919,19 @@ bool readdir(int fd, char *name)
 {
   struct file *file = process_get_file(fd);
   struct inode *inode = file_get_inode(file);
-  bool success = false;
-  if(inode_is_dir(inode) == false)
+  if(file == NULL)
   {
-    return success;
+    exits(-1, NULL);
   }
-  struct dir *target = dir_open(inode);
-  success = dir_readdir(target, name);
+  bool success = false;
+  if(inode_is_dir(inode) == true)
+  {
+    struct dir *target = dir_open(inode);
+    success = dir_readdir(target, name);
+  }else
+  {
+    success = false;
+  }
   
 return success;
 }
