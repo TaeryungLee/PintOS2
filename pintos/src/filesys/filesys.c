@@ -226,7 +226,7 @@ struct dir* parse_path(char *path_name, char *file_name)
 
   if (token == NULL)
   {
-    strlcpy (file_name, ".", 511);
+    strlcpy (file_name, ".", 512);
     return dir;
   }
   while(token != NULL && next_token != NULL)
@@ -259,7 +259,7 @@ struct dir* parse_path(char *path_name, char *file_name)
     token = next_token;
     next_token = strtok_r(NULL, "/", &save_ptr);
   }
-  strlcpy(file_name, token, 511);
+  strlcpy(file_name, token, 512);
   return dir;
 }
 /*
