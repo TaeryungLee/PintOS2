@@ -294,6 +294,8 @@ syscall_handler (struct intr_frame *f)
     {
       int fd;
       char *name;
+      check(name, sizeof(name));
+      check_vm(name, sizeof(name), false, esp);
       read_addr(&fd, esp+4, 4);
       read_addr(&name, esp+8, 4);
       
