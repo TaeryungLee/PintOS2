@@ -139,11 +139,7 @@ dir_lookup (const struct dir *dir, const char *name,
   
   else
   {
-    if(inode_removed(dir->inode))
-    {
-      *inode = NULL;
-    }
-    else if((!strcmp(name, ".")) || (!strcmp(name, "")))
+    if((!strcmp(name, ".")) || (!strcmp(name, "")))
     {
       //printf("reopen current dir\n");
       *inode = inode_reopen(dir->inode);
