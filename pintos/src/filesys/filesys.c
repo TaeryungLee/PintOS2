@@ -205,7 +205,7 @@ struct dir* parse_path(char *path_name, char *file_name)
 
   token = strtok_r(path, "/", &save_ptr);
   next_token = strtok_r(NULL, "/", &save_ptr);
-  printf("token: %s  next_token: %s", token, next_token);
+  printf("token: %s  next_token: %s \n", token, next_token);
   if (token == NULL)
   {
     printf("NULL token \n");
