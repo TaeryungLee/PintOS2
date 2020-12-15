@@ -141,7 +141,7 @@ filesys_remove (const char *name)
     removed = false;
     goto done;
   }
-  if(inode_is_dir == true)
+  if(inode_is_dir(inode_cur) == true)
   {
     if(dir_readdir(dir_cur, temp_name))
     {
