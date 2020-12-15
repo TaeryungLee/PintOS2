@@ -935,7 +935,7 @@ readdir (int fd, char *name)
   // 파일 디스크립터를 이용하여 파일을 찾습니다.
   struct file *f = process_get_file (fd);
   if (f == NULL)
-    exit (-1);
+    exits (-1, NULL);
   // 내부 아이노드 가져오기 및 디렉터리 열기
   struct inode *inode = file_get_inode (f);
   if (!inode || !inode_is_dir (inode))
