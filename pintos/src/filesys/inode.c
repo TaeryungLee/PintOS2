@@ -29,7 +29,7 @@ struct inode_disk
 
     //modified 4.3
     uint32_t *is_dir;             //file=0, director=1
-    block_sector_t parent_inode;
+
     //modified 4.2
     block_sector_t direct_map_table[DIRECT_BLOCK_ENTRIES];
     block_sector_t indirect_block_sec;
@@ -86,7 +86,7 @@ static void locate_byte(off_t pos, struct sector_location *sec_loc);
 static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_sector, struct sector_location sec_loc);
 bool inode_update_file_length(struct inode_disk *inode_disk, off_t length, off_t new_length);
 static void free_inode_sectors(struct inode_disk *inode_disk);
-block_sector_t inode_get_parent(struct inode *inode);
+
 
 
 /* Returns the block device sector that contains byte offset POS
@@ -176,7 +176,7 @@ inode_init (void)
    Returns true if successful.
    Returns false if memory or disk allocation fails. */
 bool
-inode_create (block_sector_t sector, off_t length, uint32_t is_dir, block_sector_t parent)
+inode_create (block_sector_t sector, off_t length, uint32_t is_dir)
 {
   struct inode_disk *disk_inode;
   bool success = false;
@@ -192,7 +192,6 @@ inode_create (block_sector_t sector, off_t length, uint32_t is_dir, block_sector
     {
       //size_t sectors = bytes_to_sectors (length);
       memset(disk_inode, -1, sizeof( struct inode_disk));
-      disk_inode->parent_inode = parent;
       disk_inode->length = 0;
       disk_inode->magic = INODE_MAGIC;
       disk_inode->is_dir = is_dir;
@@ -716,11 +715,4 @@ bool inode_is_dir(const struct inode *inode)
   }
 
   return result;
-}
-
-block_sector_t inode_get_parent(struct inode *inode)
-{
-  struct inode_disk *disk_inode = malloc(sizeof(struct inode_disk));
-  bc_read(inode->sector, disk_inode, 0 , BLOCK_SECTOR_SIZE, 0);
-  return disk_inode -> parent_inode;
 }
