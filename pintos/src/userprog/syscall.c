@@ -918,7 +918,7 @@ bool mkdir(const char *dir)
 
 //modified 4.3
 bool readdir(int fd, char *name)
-{
+{/*
   struct file *file = process_get_file(fd);
   struct inode *inode = file_get_inode(file);
   if(file == NULL)
@@ -935,7 +935,26 @@ bool readdir(int fd, char *name)
     success = false;
   }
   
-return success;
+return success;*/
+  // 파일 디스크립터를 이용하여 파일을 찾습니다.
+  struct file *f = process_get_file (fd);
+  if (f == NULL)
+    exits (-1,NULL);
+  // 내부 아이노드 가져오기 및 디렉터리 열기
+  struct inode *inode = file_get_inode (f);
+  if (!inode || !inode_is_dir (inode))
+    return false;
+  struct dir *dir = dir_open (inode);
+  if (!dir)
+    return false;
+  int i;
+  bool result = true;
+  off_t *pos = (off_t *)f + 1;
+  for (i = 0; i <= *pos && result; i++)
+    result = dir_readdir (dir, name);
+  if ((i <= *pos) == false)
+    (*pos)++;
+  return result;
 }
 
 //modified 4.3
