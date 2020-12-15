@@ -199,12 +199,10 @@ dir_remove (struct dir *dir, const char *name)
 
   ASSERT (dir != NULL);
   ASSERT (name != NULL);
-
   if(!strcmp(name, ".") || !strcmp(name, ".."))
   {
     return false;
   }
-
   /* Find directory entry. */
   if (!lookup (dir, name, &e, &ofs))
     goto done;
@@ -239,12 +237,16 @@ dir_readdir (struct dir *dir, char name[NAME_MAX + 1])
   while (inode_read_at (dir->inode, &e, sizeof e, dir->pos) == sizeof e) 
     {
       dir->pos += sizeof e;
-      if (e.in_use && !strcmp(e.name, ".") && !strcmp(e.name,"."))
+      if (e.in_use)
         {
-
-          strlcpy (name, e.name, NAME_MAX + 1);
-          return true;
-
+          if(strcmp(e.name, "."))
+          {
+            if(strcmp(e.name, ".."))
+            {
+              strlcpy (name, e.name, NAME_MAX + 1);
+              return true;
+            }
+          }
 
         } 
     }
