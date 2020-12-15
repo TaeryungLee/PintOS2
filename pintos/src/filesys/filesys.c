@@ -84,7 +84,7 @@ filesys_open (const char *name)
   char file_name[512];
   struct dir *dir = parse_path(cp_name, file_name);
   struct inode *inode = NULL;
-  printf("name_dir %#x\n", dir)
+  printf("name_dir %#x\n", dir);
   if (dir != NULL)
   {
     dir_lookup (dir, file_name, &inode);
