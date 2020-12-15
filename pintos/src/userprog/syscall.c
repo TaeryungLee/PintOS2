@@ -114,6 +114,7 @@ syscall_handler (struct intr_frame *f)
   	{
   		int exit_code;
   		read_addr(&exit_code, esp+4, 4);
+      printf("1\n");
   		exits(exit_code, f);
   		break;
   	}
@@ -386,6 +387,7 @@ void check(void *addr, int count)
   {
     if(!check_byte((void *)(c + i)))
     {
+      printf("2\n");
       exits(-1, NULL);
     }
     if(((unsigned int) addr + count - 1) > up)
@@ -395,6 +397,7 @@ void check(void *addr, int count)
       }
     	else
       {
+        printf("3\n");
     		exits(-1, NULL);
       }
       // Modified 3-1.1 we do this at check_vm
@@ -446,7 +449,10 @@ void check_vm (void *addr, unsigned size, bool to_write, void *esp)
   }
 
   if (!write_res || !vm_res)
+  {
+    printf("4\n");
     exits(-1, NULL);
+  }
 }
 
 /* 
@@ -604,12 +610,16 @@ int read(int fd, void* buffer, int size, struct intr_frame *f)
   else
   {
     if ((unsigned int) fd > 131)
+    {
+      printf("5\n");
       exits(-1, NULL);
+    }
     struct file *cur = process_get_file(fd);
     int length = 0;
 
     if(cur == NULL)
     {
+      printf("6\n");
       exits(-1, NULL);
     }
     // printf("fd!=0");
@@ -634,7 +644,10 @@ write(int fd, void* buffer, int size, struct intr_frame *f)
   //printf("fd %d\n", fd);
 
   if ((unsigned int) fd > 131)
+  {
+    printf("7\n");
     exits(-1, NULL);
+  }
 
   
 
@@ -702,7 +715,10 @@ void close(int fd, struct intr_frame *f)
   //printf("fd %d\n", fd);
 
   if ((unsigned int) fd > 131)
+  {
+    printf("8\n");
     exits(-1, NULL);
+  }
   struct file *cur = process_get_file(fd);
   struct thread *cur_thread = thread_current();
   int fd_v = fd; //file descriptor value
