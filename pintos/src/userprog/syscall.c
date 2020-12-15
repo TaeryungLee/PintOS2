@@ -167,8 +167,8 @@ syscall_handler (struct intr_frame *f)
 
       char *name;
       read_addr(&name, esp+4, 4);
-      check(name, sizeof(name));
-      check_vm(name, sizeof(name), false, esp);
+      check(name, 1);
+      check_vm(name, 1, false, esp);
       //debug
       //printf("open called by %s\n", name);
 
@@ -193,8 +193,8 @@ syscall_handler (struct intr_frame *f)
       read_addr(&buffer, esp+8, 4);
       read_addr(&size, esp+12, 4);
 
-      check(buffer, sizeof(buffer));
-      check_vm(buffer, sizeof(buffer), true, esp);
+      check(buffer, 1);
+      check_vm(buffer, 1, true, esp);
 
       int ret = read(fd, buffer, size, f);
       f->eax = ret;
@@ -214,8 +214,8 @@ syscall_handler (struct intr_frame *f)
       read_addr(&size, esp+12, 4);
 
       printf("buf: %#x\n", buffer);
-      check(buffer, sizeof(buffer));
-      check_vm(buffer, sizeof(buffer), false, esp);
+      check(buffer, 1);
+      check_vm(buffer, 1, false, esp);
 
       int ret = write(fd, buffer, size, f);
       f->eax = ret;
