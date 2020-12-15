@@ -707,6 +707,10 @@ bool inode_is_dir(const struct inode *inode)
 {
   bool result = false;
   struct inode_disk *disk_inode = malloc(sizeof(struct inode_disk));
+  if(inode->removed)
+  {
+    return false;
+  }
   if(get_disk_inode(inode, disk_inode) == true)
   {
     result = (bool)disk_inode->is_dir;
