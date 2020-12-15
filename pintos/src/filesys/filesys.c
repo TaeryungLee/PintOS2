@@ -169,7 +169,7 @@ do_format (void)
 }
 
 //modified 4.3
-/*
+
 struct dir* parse_path(char *path_name, char *file_name)
 {
   struct dir *dir = NULL;
@@ -238,7 +238,8 @@ struct dir* parse_path(char *path_name, char *file_name)
   printf("end of while \n");
   strlcpy(file_name, token, 512);
   return dir;
-}*/
+}
+/*
 #define PATH_MAX_LEN 512
 struct dir *
 parse_path (char *path_o, char *file_name)
@@ -294,7 +295,7 @@ parse_path (char *path_o, char *file_name)
     }
   strlcpy (file_name, token, PATH_MAX_LEN);
   return dir;
-}
+}*/
 
 
 bool filesys_create_dir(const char* name)
