@@ -215,7 +215,10 @@ struct dir* parse_path(char *path_name, char *file_name)
     //struct dir *dir_temp = thread_current()->cur_dir;
     dir = dir_reopen(thread_current()->cur_dir);
   }
-  
+  for(int i=0; i<512; i++)
+  {
+    printf("%c   ",path[i]);
+  }
 
   char *token;
   char *next_token;
@@ -343,7 +346,7 @@ bool filesys_create_dir(const char* name)
     struct inode *inode = dir_get_inode(dir); //왜 씨발 dir->inode는 안 되냐
     block_sector_t double_dot_sector = inode_get_inumber(inode); //이것도 왜 씨발 inode->sector 안 먹냐 
     dir_add(dir_new, ".", inode_sector);
-    dir_add(dir_new, "..", inode_get_inumber (dir_get_inode (dir)));
+    dir_add(dir_new, "..", double_dot_sector);
     dir_close(dir_new);
   }
   dir_close(dir);
