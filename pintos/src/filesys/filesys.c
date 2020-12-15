@@ -160,11 +160,11 @@ filesys_remove (const char *name)
   
   done:
     dir_close(dir);
-/*
+
   if(dir_cur)
   {
     dir_close(dir_cur);
-  }*/
+  }
 
   return removed;
 }
