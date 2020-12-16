@@ -9,7 +9,7 @@
 #define ROOT_DIR_SECTOR 1       /* Root directory file inode sector. */
 
 //modified 4.3
-#define PATH_MAX_LEN 512
+#define PATH_MAX_LEN 256
 
 /* Block device that contains the file system. */
 extern struct block *fs_device;
