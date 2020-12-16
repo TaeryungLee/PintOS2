@@ -173,11 +173,16 @@ struct dir* parse_path(char *path_name, char *file_name)
   struct dir *dir = NULL;
   struct inode *inode = NULL;
 
-  if(path_name == NULL || file_name == NULL)
+  if(path_name == NULL)
   {
     //printf("NULL 1 \n");
     return NULL;
   }
+  else if(file_name == NULL))
+  {
+    return NULL;
+  }
+
   if(strlen(path_name) == 0)
   {
     //printf("NULL 2 \n");
@@ -197,8 +202,8 @@ struct dir* parse_path(char *path_name, char *file_name)
     //struct dir *dir_temp = thread_current()->cur_dir;
     dir = dir_reopen(thread_current()->cur_dir);
   }
-
-  if (inode_is_dir (dir_get_inode (dir)) == false)
+  inode = dir_get_inode(dir);
+  if (inode_is_dir (inode) == false)
   {
     return NULL;
   }
