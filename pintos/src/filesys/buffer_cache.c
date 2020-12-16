@@ -13,7 +13,7 @@ static char p_buffer_cache[BUFFER_CACHE_ENTRY_NB * BLOCK_SECTOR_SIZE];
 //static void *p_buffer_cache;
 static struct buffer_head  buffer_head[BUFFER_CACHE_ENTRY_NB];
 static struct buffer_head *clock_hand;
-//static struct lock cache_lock;
+static struct lock cache_lock;
 
 //buffer_cache = bh->buffer
 bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chunk_size, int sector_ofs)
@@ -29,7 +29,7 @@ bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chun
         bh->valid_flag = true;
         bh->sector_addr = sector_idx;
         bh->dirty_flag = false;
-        //lock_release(&cache_lock);
+        lock_release(&cache_lock);
         block_read(fs_device, sector_idx, bh->buffer);
     }else
     {
@@ -53,7 +53,7 @@ bool bc_write(block_sector_t sector_idx, void *buffer, off_t bytes_written, int 
         bc_flush_entry(bh);
         bh->valid_flag = true;
         bh->sector_addr = sector_idx;
-        //lock_release(&cache_lock);
+        lock_release(&cache_lock);
         block_read(fs_device, sector_idx, bh->buffer);
     }else
     {
@@ -89,7 +89,7 @@ void bc_init(void)
         }
     }
     clock_hand = buffer_head;
-    //lock_init(&cache_lock);
+    lock_init(&cache_lock);
 }
 
 void bc_term(void)
@@ -133,7 +133,7 @@ struct buffer_head *bc_select_victim(void)
 
 struct buffer_head *bc_lookup(block_sector_t sector)
 {
-    //lock_acquire(&cache_lock);
+    lock_acquire(&cache_lock);
     struct buffer_head *bh = buffer_head;
     for(int i=0; i < BUFFER_CACHE_ENTRY_NB; i++)
     {
@@ -141,7 +141,7 @@ struct buffer_head *bc_lookup(block_sector_t sector)
         {
             if(bh->valid_flag == true)
             {
-                //lock_release(&cache_lock);
+                lock_release(&cache_lock);
                 return bh;
             }
         }
