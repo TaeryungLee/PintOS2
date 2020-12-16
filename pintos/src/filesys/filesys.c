@@ -250,26 +250,31 @@ bool filesys_create_dir(const char* name)
   struct dir *dir = parse_path(cp_name, file_name);
   block_sector_t inode_sector = 0;
 
-  
-
-  bool success = (dir != NULL
+  /*bool success = (dir != NULL
                   && free_map_allocate (1, &inode_sector)
                   && dir_create(inode_sector, 16)
                   && dir_add (dir, file_name, inode_sector));
   if (!success && inode_sector != 0) 
-    free_map_release (inode_sector, 1);
-  
-  if(success == true)
+    free_map_release (inode_sector, 1);*/
+  if(dir!=NULL && (free_map_allocate (1, &inode_sector) == true)
+    && (dir_create(inode_sector, 16) == true) && (dir_add (dir, file_name, inode_sector) == true))
   {
     struct inode *inode_new = inode_open(inode_sector);
     struct dir *dir_new = dir_open(inode_new);
-    struct inode *inode = dir->inode; //왜 씨발 dir->inode는 안 되냐
+    struct inode *inode = dir_get_inode(dir); //왜 씨발 dir->inode는 안 되냐
     block_sector_t double_dot_sector = inode_get_inumber(inode); //이것도 왜 씨발 inode->sector 안 먹냐 
     
     dir_add(dir_new, ".", inode_sector);
     dir_add(dir_new, "..", double_dot_sector);
     dir_close(dir_new);
+    dir_close(dir);
+    return true;
+  }else if(inode_sector != 0)
+  {
+    free_map_release(inode_sector, 1);
+    dir_close(dir);
+    return false;
   }
-  dir_close(dir);
-  return success;
+
+  //return success;
 }
