@@ -192,7 +192,7 @@ do_format (void)
 }
 
 //modified 4.3
-/*
+
 struct dir* parse_path(char *path_name, char *file_name)
 {
   struct dir *dir = NULL;
@@ -262,8 +262,8 @@ struct dir* parse_path(char *path_name, char *file_name)
   strlcpy(file_name, token, PATH_MAX_LEN);
   return dir;
 }
-*/
 
+/*
 struct dir *
 parse_path (char *path_o, char *file_name)
 {
@@ -318,9 +318,9 @@ parse_path (char *path_o, char *file_name)
     }
   strlcpy (file_name, token, PATH_MAX_LEN);
   return dir;
-}
+}*/
 
-/*
+
 bool filesys_create_dir(const char* name)
 {
   char *cp_name = name;
@@ -350,8 +350,8 @@ bool filesys_create_dir(const char* name)
   dir_close(dir);
   return success;
 }
-*/
 
+/*
 bool
 filesys_create_dir (const char *path)
 {
@@ -376,3 +376,4 @@ filesys_create_dir (const char *path)
   dir_close (dir);
   return success;
 }
+*/
