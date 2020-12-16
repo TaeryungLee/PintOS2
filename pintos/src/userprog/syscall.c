@@ -920,11 +920,12 @@ bool mkdir(const char *dir)
 bool readdir(int fd, char *name)
 {
   struct file *file = process_get_file(fd);
-  struct inode *inode = file_get_inode(file);
   if(file == NULL)
   {
     exits(-1, NULL);
   }
+  struct inode *inode = file_get_inode(file);
+
   bool success = false;
   if(inode_is_dir(inode) == true)
   {
@@ -942,6 +943,10 @@ return success;
 int inumber(int fd)
 {
   struct file *file = process_get_file(fd);
+  if(file == NULL)
+  {
+    exits(-1, NULL);
+  }
   struct inode *inode = file_get_inode(file);
   block_sector_t sector = inode_get_inumber(inode);
   return sector;
@@ -951,6 +956,10 @@ int inumber(int fd)
 bool isdir(int fd)
 {
   struct file *file = process_get_file(fd);
+  if(file == NULL)
+  {
+    exits(-1, NULL);
+  }
   return inode_is_dir(file_get_inode(file));
 }
 
