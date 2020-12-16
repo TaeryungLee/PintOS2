@@ -706,6 +706,7 @@ static void free_inode_sectors(struct inode_disk *inode_disk)
 }
 
 //modified 4.3
+/*
 bool inode_is_dir(const struct inode *inode)
 {
   bool result = false;
@@ -716,4 +717,15 @@ bool inode_is_dir(const struct inode *inode)
   }
   free(disk_inode);
   return result;
+}
+*/
+bool
+inode_is_dir (const struct inode *inode)
+{
+  struct inode_disk inode_disk;
+  if (inode->removed)
+    return false;
+  if (!get_disk_inode (inode, &inode_disk))
+    return false;
+  return inode_disk.is_dir;
 }
