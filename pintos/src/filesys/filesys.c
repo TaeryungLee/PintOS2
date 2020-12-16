@@ -191,7 +191,7 @@ struct dir* parse_path(char *path_name, char *file_name)
 
   char path[PATH_MAX_LEN+1];
   strlcpy(path, path_name, strlen(path_name)+1);
-  
+  struct dir *d_cur= thread_current()->cur_dir;
   if(path[0] == '/')
   {
     //printf("open root \n");
@@ -199,8 +199,7 @@ struct dir* parse_path(char *path_name, char *file_name)
   }else
   {
     //printf("not root \n");
-    //struct dir *dir_temp = thread_current()->cur_dir;
-    dir = dir_reopen(thread_current()->cur_dir);
+    dir = dir_reopen(d_cur);
   }
   inode = dir_get_inode(dir);
   if (inode_is_dir (inode) == false)
@@ -214,13 +213,6 @@ struct dir* parse_path(char *path_name, char *file_name)
 
   token = strtok_r(path, "/", &save_ptr);
   next_token = strtok_r(NULL, "/", &save_ptr);
-  //printf("token: %s  next_token: %s \n", token, next_token);
-  /*if (token == NULL)
-  {
-    //printf("NULL token \n");
-    strlcpy (file_name, ".", 2);
-    return dir;
-  }*/
 
   while((token != NULL) && (next_token != NULL))
   {
@@ -230,12 +222,6 @@ struct dir* parse_path(char *path_name, char *file_name)
       dir_close(dir);
       return NULL;
     }
-    /*if(inode_is_dir(inode) == false)
-    {
-      //printf("isdir fail \n");
-      dir_close(dir);
-      return NULL;
-    }*/
     //printf("Tlqkf \n");
     dir_close(dir);
     dir = dir_open(inode);
@@ -279,6 +265,7 @@ bool filesys_create_dir(const char* name)
     struct dir *dir_new = dir_open(inode_new);
     struct inode *inode = dir_get_inode(dir); //왜 씨발 dir->inode는 안 되냐
     block_sector_t double_dot_sector = inode_get_inumber(inode); //이것도 왜 씨발 inode->sector 안 먹냐 
+    
     dir_add(dir_new, ".", inode_sector);
     dir_add(dir_new, "..", double_dot_sector);
     dir_close(dir_new);
