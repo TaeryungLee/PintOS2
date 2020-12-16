@@ -197,6 +197,7 @@ struct dir* parse_path(char *path_name, char *file_name)
     //struct dir *dir_temp = thread_current()->cur_dir;
     dir = dir_reopen(thread_current()->cur_dir);
   }
+  //struct inode *inode = dir_get_inode(dir);
   if (!inode_is_dir (dir_get_inode (dir)))
     return NULL;
 
@@ -207,12 +208,12 @@ struct dir* parse_path(char *path_name, char *file_name)
   token = strtok_r(path, "/", &save_ptr);
   next_token = strtok_r(NULL, "/", &save_ptr);
   //printf("token: %s  next_token: %s \n", token, next_token);
-  if (token == NULL)
+  /*if (token == NULL)
   {
     //printf("NULL token \n");
     strlcpy (file_name, ".", 2);
     return dir;
-  }
+  }*/
 
   while((token != NULL) && (next_token != NULL))
   {
@@ -235,7 +236,16 @@ struct dir* parse_path(char *path_name, char *file_name)
     next_token = strtok_r(NULL, "/", &save_ptr);
   }
   //printf("end of while \n");
-  strlcpy(file_name, token, strlen(token)+1);
+  if(token == NULL)
+  {
+    strlcpy (file_name, ".", 2);
+    return dir;
+  }
+  else
+  {
+    strlcpy(file_name, token, strlen(token)+1);
+  }
+  
   return dir;
 }
 
