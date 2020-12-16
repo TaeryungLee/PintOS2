@@ -98,7 +98,7 @@ thread_init (void)
   list_init (&all_list);
 
   //modified 4.3
-  initial_thread->cur_dir = NULL;
+  //initial_thread->cur_dir = NULL;
   /* Set up a thread structure for the running thread. */
   initial_thread = running_thread ();
   init_thread (initial_thread, "main", PRI_DEFAULT);
