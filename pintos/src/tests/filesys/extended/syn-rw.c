@@ -29,7 +29,7 @@ test_main (void)
     CHECK (write (fd, buf + ofs, CHUNK_SIZE) > 0,
            "write %d bytes at offset %zu in \"%s\"",
            (int) CHUNK_SIZE, ofs, file_name);
-  //quiet = false;
+  quiet = false;
 
   wait_children (children, CHILD_CNT);
 }
