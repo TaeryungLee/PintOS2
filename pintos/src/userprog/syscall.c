@@ -907,7 +907,7 @@ bool chdir(const char* name)
     return false;
   }
   struct inode *target_inode = NULL;
-  idir_lookup(target_dir, file_name, &target_inode);
+  dir_lookup(target_dir, file_name, &target_inode);
   
   dir_close(cur_dir);
   cur_dir = dir_open(target_inode); //dir_open(target_inode);
