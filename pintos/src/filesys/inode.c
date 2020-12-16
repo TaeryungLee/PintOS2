@@ -656,6 +656,10 @@ bool inode_is_dir(const struct inode *inode)
 {
   bool result = false;
   struct inode_disk *disk_inode;
+  if(inode->removed)
+  {
+    result = false;
+  }
   if(get_disk_inode(inode, disk_inode) == true)
   {
     result = disk_inode->is_dir;
