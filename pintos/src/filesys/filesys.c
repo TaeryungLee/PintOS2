@@ -216,18 +216,18 @@ struct dir* parse_path(char *path_name, char *file_name)
 
   while((token != NULL) && (next_token != NULL))
   {
-    if(dir_lookup(dir, token, &inode) == false) 
+    if((dir_lookup(dir, token, &inode) == false) || (inode_is_dir(inode) == false))
     {
       //printf("lookup fail \n");
       dir_close(dir);
       return NULL;
     }
-    if(inode_is_dir(inode) == false)
+    /*if(inode_is_dir(inode) == false)
     {
       //printf("isdir fail \n");
       dir_close(dir);
       return NULL;
-    }
+    }*/
     //printf("Tlqkf \n");
     dir_close(dir);
     dir = dir_open(inode);
