@@ -178,7 +178,7 @@ struct dir* parse_path(char *path_name, char *file_name)
     //printf("NULL 1 \n");
     return NULL;
   }
-  else if(file_name == NULL))
+  else if(file_name == NULL)
   {
     return NULL;
   }
