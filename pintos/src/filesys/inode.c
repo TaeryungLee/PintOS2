@@ -655,7 +655,7 @@ static void free_inode_sectors(struct inode_disk *inode_disk)
 bool inode_is_dir(const struct inode *inode)
 {
   bool result = false;
-  struct inode_disk *disk_inode = malloc(sizeof (struct inode_disk));
+  struct inode_disk *disk_inode = malloc(sizeof (BLOCK_SECTOR_SIZE));
   if(inode->removed)
   {
     result = false;
