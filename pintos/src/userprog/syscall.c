@@ -963,6 +963,7 @@ bool readdir (int fd, char *name)
 }
 
 //modified 4.3
+/*
 int inumber(int fd)
 {
   struct file *file = process_get_file(fd);
@@ -973,6 +974,15 @@ int inumber(int fd)
   struct inode *inode = file_get_inode(file);
   block_sector_t sector = inode_get_inumber(inode);
   return sector;
+}*/
+
+int inumber (int fd)
+{
+  // 파일 디스크립터를 이용하여 파일을 찾습니다.
+  struct file *f = process_get_file (fd);
+  if (f == NULL)
+    exits (-1, NULL);
+  return inode_get_inumber (file_get_inode (f));
 }
 
 //modified 4.3
