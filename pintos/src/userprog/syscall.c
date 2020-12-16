@@ -903,14 +903,14 @@ bool chdir(const char* name)
   struct dir *cur_dir = t_cur->cur_dir;
   if(!dir)
   {
-    struct inode *target_inode = NULL;
-    if(dir_lookup(dir, file_name, &target_inode))
-    {
-      dir_close(cur_dir);
-      cur_dir = dir; //dir_open(target_inode);
-      return true;
-    }
+
     return false;
+  }
+  struct inode *target_inode = NULL;
+  if(dir_lookup(dir, file_name, &target_inode))
+  {
+    dir_close(cur_dir);
+    cur_dir = dir; //dir_open(target_inode);
   }
   dir_close(dir);
   //struct dir *cur_dir = thread_current()->cur_dir;
