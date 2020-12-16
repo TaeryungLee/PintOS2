@@ -548,7 +548,7 @@ init_thread (struct thread *t, const char *name, int priority)
   t->priority = priority;
   
   //modified 4.3
-  initial_thread->cur_dir = NULL;
+  t->cur_dir = NULL;
   
   t->magic = THREAD_MAGIC;
   list_push_back (&all_list, &t->allelem);
