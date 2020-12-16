@@ -898,7 +898,7 @@ bool chdir(const char* name)
   strlcat(cp_name, "/0", PATH_MAX_LEN);
 
   char file_name[PATH_MAX_LEN+1];
-  struct dir *dir = parse_path(cp_name, file_name);
+  struct dir *target_dir = parse_path(cp_name, file_name);
   struct thread *t_cur = thread_current();
   struct dir *cur_dir = t_cur->cur_dir;
   if(!dir)
@@ -907,11 +907,11 @@ bool chdir(const char* name)
     return false;
   }
   struct inode *target_inode = NULL;
-  if(dir_lookup(dir, file_name, &target_inode))
-  {
-    dir_close(cur_dir);
-    cur_dir = dir_open(target_inode); //dir_open(target_inode);
-  }
+  idir_lookup(target_dir, file_name, &target_inode);
+  
+  dir_close(cur_dir);
+  cur_dir = dir_open(target_inode); //dir_open(target_inode);
+
   //struct dir *cur_dir = thread_current()->cur_dir;
   //dir_close(thread_current()->cur_dir);
   //thread_current()->cur_dir = dir;
