@@ -173,16 +173,16 @@ struct dir* parse_path(char *path_name, char *file_name)
   struct dir *dir = NULL;
   struct inode *inode=NULL;
 
-  if(path_name == NULL || file_name == NULL)
+  if(path_name == NULL || file_name == NULL || strlen(path_name == 0))
   {
     //printf("NULL 1 \n");
     return NULL;
   }
-  if(strlen(path_name) == 0)
+  /*if(strlen(path_name) == 0)
   {
     //printf("NULL 2 \n");
     return NULL;
-  }
+  }*/
 
   char path[PATH_MAX_LEN+1];
   strlcpy(path, path_name, PATH_MAX_LEN);
