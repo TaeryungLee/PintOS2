@@ -198,6 +198,10 @@ struct dir* parse_path(char *path_name, char *file_name)
     dir = dir_reopen(thread_current()->cur_dir);
   }
 
+  if (inode_is_dir (dir_get_inode (dir)) == false)
+  {
+    return NULL;
+  }
 
   char *token;
   char *next_token;
@@ -212,12 +216,8 @@ struct dir* parse_path(char *path_name, char *file_name)
     strlcpy (file_name, ".", 2);
     return dir;
   }*/
-  do
-  {
-    if (!inode_is_dir (dir_get_inode (dir)))
-      return NULL;
-  }
-  while((token != NULL) && (next_token != NULL));
+  
+  while((token != NULL) && (next_token != NULL))
   {
     if((dir_lookup(dir, token, &inode) == false) || (inode_is_dir(inode) == false))
     {
