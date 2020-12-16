@@ -106,7 +106,7 @@ byte_to_sector (const struct inode_disk *inode_disk, off_t pos)
   {
     struct inode_indirect_block *ind_block;
     struct sector_location sec_loc;
-    locate_byte(pos, &sec_loc); //인덱스 블록 offset 계산
+    locate_byte(pos, &sec_loc); 
     block_sector_t temp_sec;
     block_sector_t error = (block_sector_t) -1;
 
@@ -549,60 +549,6 @@ static bool register_sector(struct inode_disk *inode_disk, block_sector_t new_se
   return true;
 }
 
-/*
-bool inode_update_file_length(struct inode_disk *inode_disk, off_t start_pos, off_t end_pos)
-{
-  static char zeroes[BLOCK_SECTOR_SIZE];
-  off_t size_old = inode_disk->length;
-  off_t size = end_pos - start_pos;
-  off_t offset = start_pos;
-
-
-  //off_t inode_left = size_old - offset;
-  //int sector_left = BLOCK_SECTOR_SIZE - (offset % BLOCK_SECTOR_SIZE);
-  //int min_left = inode_left < sector_left ? inode_left : sector_left;
-  //int chunk_size = size < min_left ? size : min_left;
-
-  int chunk_size = BLOCK_SECTOR_SIZE;
-  if(chunk_size < 0)
-  {
-    return false;
-  }
-  printf("size:%d  size_old:%d", size, size_old);
-  if(size_old > size)
-  {
-    return false;
-  }
-
-  while(size > 0)
-  {
-    int sector_ofs = offset % BLOCK_SECTOR_SIZE;
-    if(sector_ofs > 0) //오프셋이 0보다 큰 경우, 이미 할당된 블록
-    {
-      continue;
-    } 
-    else
-    {
-      block_sector_t sector_idx = byte_to_sector(inode_disk, offset);
-      struct sector_location sec_loc;
-      if(free_map_allocate(1, &sector_idx))
-      {
-        locate_byte(offset, &sec_loc);
-        register_sector(inode_disk, sector_idx, sec_loc);
-      }
-      else
-      {
-        //free(zeroes);
-        return false;
-      }
-      bc_write(sector_idx, zeroes, 0, BLOCK_SECTOR_SIZE, 0);  
-    }
-    size -= chunk_size;
-    offset += chunk_size;
-  }
-  //free(zeroes);
-  return true;
-}*/
 
 //need to change
 bool inode_update_file_length(struct inode_disk *inode_disk, off_t length, off_t new_length)
@@ -706,19 +652,17 @@ static void free_inode_sectors(struct inode_disk *inode_disk)
 }
 
 //modified 4.3
-/*
 bool inode_is_dir(const struct inode *inode)
 {
   bool result = false;
-  struct inode_disk *disk_inode = malloc(sizeof(struct inode_disk));
+  struct inode_disk *disk_inode;
   if(get_disk_inode(inode, disk_inode) == true)
   {
     result = disk_inode->is_dir;
   }
-  free(disk_inode);
   return result;
 }
-*/
+/*
 bool
 inode_is_dir (const struct inode *inode)
 {
@@ -728,4 +672,4 @@ inode_is_dir (const struct inode *inode)
   if (!get_disk_inode (inode, &inode_disk))
     return false;
   return inode_disk.is_dir;
-}
+}*/
