@@ -171,21 +171,22 @@ do_format (void)
 struct dir* parse_path(char *path_name, char *file_name)
 {
   struct dir *dir = NULL;
-  struct inode *inode=NULL;
+  struct inode *inode = NULL;
 
-  if(path_name == NULL || file_name == NULL || strlen(path_name == 0))
+  if(path_name == NULL || file_name == NULL)
   {
     //printf("NULL 1 \n");
     return NULL;
   }
-  /*if(strlen(path_name) == 0)
+  if(strlen(path_name) == 0)
   {
     //printf("NULL 2 \n");
     return NULL;
-  }*/
+  }
 
   char path[PATH_MAX_LEN+1];
   strlcpy(path, path_name, PATH_MAX_LEN);
+  
   if(path[0] == '/')
   {
     //printf("open root \n");
@@ -196,8 +197,8 @@ struct dir* parse_path(char *path_name, char *file_name)
     //struct dir *dir_temp = thread_current()->cur_dir;
     dir = dir_reopen(thread_current()->cur_dir);
   }
-  if (!inode_is_dir (dir_get_inode (dir)))
-    return NULL;
+  /*if (!inode_is_dir (dir_get_inode (dir)))
+    return NULL;*/
 
   char *token;
   char *next_token;
