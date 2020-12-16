@@ -218,7 +218,7 @@ struct dir* parse_path(char *path_name, char *file_name)
   }*/
   if(token == NULL)
   {
-    strlcpy (file_name, "", 1);
+    strlcpy (file_name, ".", 1);
     return dir;
   }
   while((token != NULL) && (next_token != NULL))
