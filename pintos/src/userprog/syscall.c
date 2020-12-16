@@ -901,7 +901,7 @@ bool chdir(const char* name)
   struct dir *target_dir = parse_path(cp_name, file_name);
   struct thread *t_cur = thread_current();
   struct dir *cur_dir = t_cur->cur_dir;
-  if(!dir)
+  if(!target_dir)
   {
 
     return false;
