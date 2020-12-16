@@ -912,6 +912,7 @@ bool chdir(const char* name)
     }
     return false;
   }
+  dir_close(dir);
   //struct dir *cur_dir = thread_current()->cur_dir;
   //dir_close(thread_current()->cur_dir);
   //thread_current()->cur_dir = dir;
