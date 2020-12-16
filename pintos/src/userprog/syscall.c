@@ -899,13 +899,22 @@ bool chdir(const char* name)
 
   char file_name[PATH_MAX_LEN+1];
   struct dir *dir = parse_path(cp_name, file_name);
+  struct thread *t_cur = thread_current();
+  struct dir *cur_dir = t_cur->cur_dir;
   if(!dir)
   {
+    struct inode *target_inode = NULL;
+    if(dir_lookup(dir, file_name, &target_inode))
+    {
+      dir_close(cur_dir);
+      cur_dir = dir; //dir_open(target_inode);
+      return true;
+    }
     return false;
   }
   //struct dir *cur_dir = thread_current()->cur_dir;
-  dir_close(thread_current()->cur_dir);
-  thread_current()->cur_dir = dir;
+  //dir_close(thread_current()->cur_dir);
+  //thread_current()->cur_dir = dir;
   return true;  
 }
 
@@ -963,7 +972,6 @@ bool readdir (int fd, char *name)
 }
 
 //modified 4.3
-/*
 int inumber(int fd)
 {
   struct file *file = process_get_file(fd);
@@ -974,15 +982,6 @@ int inumber(int fd)
   struct inode *inode = file_get_inode(file);
   block_sector_t sector = inode_get_inumber(inode);
   return sector;
-}*/
-
-int inumber (int fd)
-{
-  // 파일 디스크립터를 이용하여 파일을 찾습니다.
-  struct file *f = process_get_file (fd);
-  if (f == NULL)
-    exits (-1, NULL);
-  return inode_get_inumber (file_get_inode (f));
 }
 
 //modified 4.3
