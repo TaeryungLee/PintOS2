@@ -213,7 +213,8 @@ struct dir* parse_path(char *path_name, char *file_name)
     strlcpy (file_name, ".", PATH_MAX_LEN);
     return dir;
   }
-  while(token && next_token)
+  int count = 0;
+  for(token = strtok_r(path, "/", &save_ptr); token != NULL; token = strtok_r(NULL, "/", &save_ptr))
   {
     if(dir_lookup(dir, token, &inode) == false) 
     {
@@ -230,8 +231,9 @@ struct dir* parse_path(char *path_name, char *file_name)
     //printf("Tlqkf \n");
     dir_close(dir);
     dir = dir_open(inode);
-    token = next_token;
-    next_token = strtok_r(NULL, "/", &save_ptr);
+    //token = next_token;
+    //next_token = strtok_r(NULL, "/", &save_ptr);
+    count++;
   }
   //printf("end of while \n");
   strlcpy(file_name, token, PATH_MAX_LEN);
