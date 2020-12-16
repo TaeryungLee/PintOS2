@@ -231,8 +231,8 @@ struct dir* parse_path(char *path_name, char *file_name)
     //printf("Tlqkf \n");
     dir_close(dir);
     dir = dir_open(inode);
-    token = next_token;
-    //next_token = strtok_r(NULL, "/", &save_ptr);
+    //token = next_token;
+    next_token = strtok_r(NULL, "/", &save_ptr);
     //count++;
   }
   //printf("end of while \n");
