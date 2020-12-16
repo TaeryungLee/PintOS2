@@ -28,7 +28,7 @@ struct inode_disk
     //uint32_t unused[125];               /* Not used. */
 
     //modified 4.3
-    uint32_t *is_dir;             //file=0, director=1
+    uint32_t is_dir;             //file=0, director=1
 
     //modified 4.2
     block_sector_t direct_map_table[DIRECT_BLOCK_ENTRIES];
