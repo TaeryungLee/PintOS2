@@ -540,7 +540,7 @@ void open(char *name, struct intr_frame *f)
   new = filesys_open(name);
 
   // debug
-  printf("name addr %#x, %d\n", name, new);
+  //printf("name addr %#x, %d\n", name, new);
 
   if(new != NULL)
   {

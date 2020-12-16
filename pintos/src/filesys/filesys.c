@@ -84,7 +84,7 @@ filesys_open (const char *name)
   char file_name[PATH_MAX_LEN+1];
   struct dir *dir = parse_path(cp_name, file_name);
   struct inode *inode = NULL;
-  printf("name_dir %#x\n", dir);
+  //printf("name_dir %#x\n", dir);
   if (dir != NULL)
   {
     dir_lookup (dir, file_name, &inode);
@@ -178,12 +178,12 @@ struct dir* parse_path(char *path_name, char *file_name)
 
   if(path_name == NULL || file_name == NULL)
   {
-    printf("NULL 1 \n");
+    //printf("NULL 1 \n");
     return NULL;
   }
   if(strlen(path_name) == 0)
   {
-    printf("NULL 2 \n");
+    //printf("NULL 2 \n");
     return NULL;
   }
 
@@ -191,11 +191,11 @@ struct dir* parse_path(char *path_name, char *file_name)
   strlcpy(path, path_name, PATH_MAX_LEN);
   if(path[0] == '/')
   {
-    printf("open root \n");
+    //printf("open root \n");
     dir = dir_open_root();
   }else
   {
-    printf("not root \n");
+    //printf("not root \n");
     //struct dir *dir_temp = thread_current()->cur_dir;
     dir = dir_reopen(thread_current()->cur_dir);
   }
@@ -208,10 +208,10 @@ struct dir* parse_path(char *path_name, char *file_name)
 
   token = strtok_r(path, "/", &save_ptr);
   next_token = strtok_r(NULL, "/", &save_ptr);
-  printf("token: %s  next_token: %s \n", token, next_token);
+  //printf("token: %s  next_token: %s \n", token, next_token);
   if (token == NULL)
   {
-    printf("NULL token \n");
+    //printf("NULL token \n");
     strlcpy (file_name, ".", PATH_MAX_LEN);
     return dir;
   }
@@ -219,23 +219,23 @@ struct dir* parse_path(char *path_name, char *file_name)
   {
     if(dir_lookup(dir, token, &inode) == false) 
     {
-      printf("lookup fail \n");
+      //printf("lookup fail \n");
       dir_close(dir);
       return NULL;
     }
     if(inode_is_dir(inode) == false)
     {
-      printf("isdir fail \n");
+      //printf("isdir fail \n");
       dir_close(dir);
       return NULL;
     }
-    printf("Tlqkf \n");
+    //printf("Tlqkf \n");
     dir_close(dir);
     dir = dir_open(inode);
     token = next_token;
     next_token = strtok_r(NULL, "/", &save_ptr);
   }
-  printf("end of while \n");
+  //printf("end of while \n");
   strlcpy(file_name, token, PATH_MAX_LEN);
   return dir;
 }
