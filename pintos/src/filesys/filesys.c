@@ -214,7 +214,7 @@ struct dir* parse_path(char *path_name, char *file_name)
     return dir;
   }
   //int count = 0;
-  for(token = strtok_r(path, "/", &save_ptr); (token!=NULL) && (next_token!=NULL); token = next_token)
+  for(token; (token!=NULL) && (next_token!=NULL); token = next_token)
   {
     if(dir_lookup(dir, token, &inode) == false) 
     {
