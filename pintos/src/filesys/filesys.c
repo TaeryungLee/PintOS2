@@ -103,7 +103,7 @@ filesys_open (const char *name)
    Returns true if successful, false on failure.
    Fails if no file named NAME exists,
    or if an internal memory allocation fails. */
-bool
+/*bool
 filesys_remove (const char *name) 
 {
   //modified 4.3
@@ -146,6 +146,28 @@ filesys_remove (const char *name)
 
 
   return removed;
+}*/
+bool
+filesys_remove (const char *path) 
+{
+  char name[PATH_MAX_LEN + 1];
+  struct dir *dir = parse_path (path, name);
+
+  struct inode *inode;
+  dir_lookup (dir, name, &inode);
+
+  struct dir *cur_dir = NULL;
+  char temp[PATH_MAX_LEN + 1];
+
+  bool success = false;
+  if (!inode_is_dir (inode) ||
+    ((cur_dir = dir_open (inode)) && !dir_readdir (cur_dir, temp)))
+    success = dir != NULL && dir_remove (dir, name);
+  dir_close (dir);
+  
+  if (cur_dir)
+    dir_close (cur_dir);
+  return success;
 }
 
 
