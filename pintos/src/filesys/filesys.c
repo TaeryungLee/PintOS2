@@ -103,7 +103,7 @@ filesys_open (const char *name)
    Returns true if successful, false on failure.
    Fails if no file named NAME exists,
    or if an internal memory allocation fails. */
-/*bool
+bool
 filesys_remove (const char *name) 
 {
   //modified 4.3
@@ -146,7 +146,8 @@ filesys_remove (const char *name)
 
 
   return removed;
-}*/
+}
+/*
 bool
 filesys_remove (const char *path) 
 {
@@ -168,7 +169,7 @@ filesys_remove (const char *path)
   if (cur_dir)
     dir_close (cur_dir);
   return success;
-}
+}*/
 
 
 /* Formats the file system. */
