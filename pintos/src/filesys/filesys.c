@@ -216,7 +216,11 @@ struct dir* parse_path(char *path_name, char *file_name)
     strlcpy (file_name, ".", 2);
     return dir;
   }*/
-  
+  if(token == NULL)
+  {
+    strlcpy (file_name, "", 1);
+    return dir;
+  }
   while((token != NULL) && (next_token != NULL))
   {
     if((dir_lookup(dir, token, &inode) == false) || (inode_is_dir(inode) == false))
@@ -238,15 +242,11 @@ struct dir* parse_path(char *path_name, char *file_name)
     next_token = strtok_r(NULL, "/", &save_ptr);
   }
   //printf("end of while \n");
-  if(token == NULL)
-  {
-    strlcpy (file_name, "", 1);
-    return dir;
-  }
-  else
-  {
-    strlcpy(file_name, token, strlen(token)+1);
-  }
+
+  //else
+  //{
+  strlcpy(file_name, token, strlen(token)+1);
+  //}
   
   return dir;
 }
