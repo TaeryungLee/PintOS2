@@ -319,7 +319,7 @@ parse_path (char *path_o, char *file_name)
   return dir;
 }
 
-
+/*
 bool filesys_create_dir(const char* name)
 {
   char *cp_name = name;
@@ -347,5 +347,31 @@ bool filesys_create_dir(const char* name)
     dir_close(dir_new);
   }
   dir_close(dir);
+  return success;
+}
+*/
+
+bool
+filesys_create_dir (const char *path)
+{
+  block_sector_t inode_sector = 0;
+  char name[PATH_MAX_LEN + 1];
+  struct dir *dir = parse_path (path, name);
+
+  bool success = (dir != NULL
+                  && free_map_allocate (1, &inode_sector)
+                  && dir_create (inode_sector, 16)
+                  && dir_add (dir, name, inode_sector));
+  if (!success && inode_sector != 0)
+    free_map_release (inode_sector, 1);
+
+  if (success)
+    {
+      struct dir *new_dir = dir_open (inode_open (inode_sector));
+      dir_add (new_dir, ".", inode_sector);
+      dir_add (new_dir, "..", inode_get_inumber (dir_get_inode (dir)));
+      dir_close (new_dir);
+    }
+  dir_close (dir);
   return success;
 }
