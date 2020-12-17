@@ -892,14 +892,15 @@ void do_munmap(struct mmap_file *mmap_file)
 
 bool chdir (const char *name)
 {
-  /*char cp_name[PATH_MAX_LEN + 1];
-  strlcpy (cp_name, name, PATH_MAX_LEN);
-  strlcat (cp_name, "/0", PATH_MAX_LEN);*/
-  char *cp_name = name;
+  char *name_ = name;
+  char cp_name[PATH_MAX_LEN + 1];
+  strlcpy (cp_name, name_, PATH_MAX_LEN);
   strlcat (cp_name, "/0", PATH_MAX_LEN);
+
   char file_name[PATH_MAX_LEN + 1];
   struct inode *target_inode = dir_get_inode(parse_path (cp_name, file_name));
   struct dir *target_dir;
+  struct dir *cur_dir = thread_current()->cur_dir;
   if(cp_name[0] == '/')
   {
     target_dir = dir_open_root();
@@ -910,8 +911,8 @@ bool chdir (const char *name)
   
   if (target_dir != NULL)
   {
-    dir_close (thread_current ()->cur_dir);
-    thread_current ()->cur_dir = target_dir;
+    dir_close (cur_dir);
+    cur_dir = target_dir;
     return true;
   }
   else
