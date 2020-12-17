@@ -958,14 +958,14 @@ bool readdir(int fd, char *name)
   if(inode != NULL && inode_is_dir(inode) == true && dir !=NULL)
   {
     result = true;
-    off_t pos = (off_t) file + 1;
-    for(int i = 0; i <= &pos; i++)
+    off_t *pos = (off_t) file + 1;
+    for(int i = 0; i <= *pos; i++)
     {
       if(result == false)
       {
         if(i > &pos)
         {
-          pos++;
+          *pos++;
         }
         break;
       }
