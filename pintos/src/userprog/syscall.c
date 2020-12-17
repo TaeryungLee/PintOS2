@@ -956,15 +956,23 @@ bool readdir(int fd, char *name)
   if(inode_is_dir(inode) == true)
   {
     struct dir *target = dir_open(inode);
-    success = dir_readdir(target, name);
-    
+    //success = dir_readdir(target, name);
     if(target == NULL)
     {
-      success = false;
+      return false;
     }
-  }else
+    int i;
+    bool result = true;
+    off_t *pos = (off_t *)file + 1;
+    for (i = 0; i <= *pos && result; i++)
+      result = dir_readdir (target, name);
+    if ((i <= *pos) == false)
+      (*pos)++;
+    return result;
+  }
+  else
   {
-    success = false;
+    return false;
   }
 
   
