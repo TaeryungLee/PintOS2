@@ -942,7 +942,7 @@ bool mkdir(const char *dir)
   return filesys_create_dir(dir);
 }
 
-/*
+
 //modified 4.3
 bool readdir(int fd, char *name)
 {
@@ -978,8 +978,8 @@ bool readdir(int fd, char *name)
   {
     return result;
   }
-}*/
-
+}
+/*
 bool readdir (int fd, char *name)
 {
   // 파일 디스크립터를 이용하여 파일을 찾습니다.
@@ -1001,7 +1001,7 @@ bool readdir (int fd, char *name)
   if ((i <= *pos) == false)
     (*pos)++;
   return result;
-}
+}*/
 
 //modified 4.3
 int inumber(int fd)
