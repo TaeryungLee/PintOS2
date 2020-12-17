@@ -963,7 +963,7 @@ bool readdir(int fd, char *name)
     {
       if(result == false)
       {
-        if(i > &pos)
+        if(i > *pos)
         {
           *pos++;
         }
