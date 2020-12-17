@@ -889,34 +889,7 @@ void do_munmap(struct mmap_file *mmap_file)
   }
 }
 
-//modified 4.3
-/*
-bool chdir(const char* name)
-{
-  char cp_name[PATH_MAX_LEN+1];
-  strlcpy(cp_name, name, PATH_MAX_LEN);
-  strlcat(cp_name, "/0", PATH_MAX_LEN);
 
-  char file_name[PATH_MAX_LEN+1];
-  struct dir *target_dir = parse_path(cp_name, file_name);
-  //struct thread *t_cur = thread_current();
-  //struct dir *cur_dir = t_cur->cur_dir;
-  if(!target_dir)
-  {
-
-    return false;
-  }
-  struct inode *target_inode = NULL;
-  if(dir_lookup(target_dir, file_name, &target_inode))
-  {
-    dir_close(thread_current()->cur_dir);
-    thread_current()->cur_dir = dir_open(target_inode); //dir_open(target_inode);
-  }
-  //struct dir *cur_dir = thread_current()->cur_dir;
-  //dir_close(thread_current()->cur_dir);
-  //thread_current()->cur_dir = dir;
-  return true;  
-}*/
 
 bool chdir (const char *name)
 {
@@ -925,17 +898,36 @@ bool chdir (const char *name)
   strlcat (cp_name, "/0", PATH_MAX_LEN);
 
   char file_name[PATH_MAX_LEN + 1];
-  struct dir *target_dir = parse_path (cp_name, file_name);
-  struct inode *target_inode = NULL;
-  target_inode = dir_get_inode(target_dir);
-  if (target_dir == NULL)
+  struct inode *target_inode = dir_get_inode(parse_path (cp_name, file_name));
+  struct dir *target_dir = dir_open(target_inode);
+
+  if (target_dir != NULL)
+  {
+    dir_close (thread_current ()->cur_dir);
+    thread_current ()->cur_dir = dir_open(target_inode);
+    dir_close(target_dir);
+    return true;
+  }
+  else
   {
     return false;
   }
-  dir_close (thread_current ()->cur_dir);
-  thread_current ()->cur_dir = dir_open(target_inode);
-  return true;
 }
+/*
+bool chdir (char *path_o)
+{
+  char path[PATH_MAX_LEN + 1];
+  strlcpy (path, path_o, PATH_MAX_LEN);
+  strlcat (path, "/0", PATH_MAX_LEN);
+
+  char name[PATH_MAX_LEN + 1];
+  struct dir *dir = parse_path (path, name);
+  if (!dir)
+    return false;
+  dir_close (thread_current ()->cur_dir);
+  thread_current ()->cur_dir= dir;
+  return true;
+}*/
 
 //modified 4.3
 bool mkdir(const char *dir)
