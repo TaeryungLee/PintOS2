@@ -905,7 +905,7 @@ bool chdir (const char *name)
   {
     dir_close (thread_current ()->cur_dir);
     thread_current ()->cur_dir = target_dir;
-    //dir_close(target_dir);
+    dir_close(target_dir);
     return true;
   }
   else
