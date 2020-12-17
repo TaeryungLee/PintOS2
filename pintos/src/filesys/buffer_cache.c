@@ -2,7 +2,6 @@
 #include "filesys/buffer_cache.h"
 #include "threads/palloc.h"
 #include "threads/malloc.h"
-//#include "threads/synch.h"
 #include "devices/block.h"
 #include <debug.h>
 #include <stdio.h>
@@ -10,12 +9,11 @@
 //buffer cache 전역변수
 #define BUFFER_CACHE_ENTRY_NB 64
 static char p_buffer_cache[BUFFER_CACHE_ENTRY_NB * BLOCK_SECTOR_SIZE];
-//static void *p_buffer_cache;
 static struct buffer_head  buffer_head[BUFFER_CACHE_ENTRY_NB];
 static struct buffer_head *clock_hand;
 static struct lock cache_lock;
 
-//buffer_cache = bh->buffer
+
 bool bc_read(block_sector_t sector_idx, void *buffer, off_t bytes_read, int chunk_size, int sector_ofs)
 {
 
@@ -70,19 +68,16 @@ bool bc_write(block_sector_t sector_idx, void *buffer, off_t bytes_written, int 
 void bc_init(void)
 {
     struct buffer_head *bh = buffer_head;
-    //void *p_buffer_cache = buffer_cache;
+
     for(int i=0; i < BUFFER_CACHE_ENTRY_NB; i++)
     {
         //printf("%x", bh);
         memset(bh, 0, sizeof(struct buffer_head));
-        //bh = calloc(0, sizeof(struct buffer_head));
         lock_init(&bh->lock);
-        //bh->buffer = p_buffer_cache;
         bh->buffer = p_buffer_cache + (i * BLOCK_SECTOR_SIZE);
         bh->dirty_flag = false;
         bh->valid_flag = false;
         bh ++;
-        //p_buffer_cache += BLOCK_SECTOR_SIZE;
         if(i == 0)
         {
             clock_hand = bh;
@@ -100,7 +95,6 @@ void bc_term(void)
 
 struct buffer_head *bc_select_victim(void)
 {
-  //  struct buffer_head *ch = clock_hand;
     while(true)
     {        
         while(clock_hand < buffer_head + BUFFER_CACHE_ENTRY_NB)
@@ -110,9 +104,7 @@ struct buffer_head *bc_select_victim(void)
             {
                 if(clock_hand->dirty_flag == true)
                 {
-                    //lock_acquire(&clock_hand->lock);
                     block_write(fs_device, clock_hand->sector_addr, clock_hand->buffer);
-                    //lock_release(&clock_hand->lock);
                 }
                 lock_release(&clock_hand->lock);
                 return clock_hand;
