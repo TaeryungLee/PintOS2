@@ -977,11 +977,8 @@ bool readdir(int fd, char *name)
   else
   {
     return result;
-  }*/
-  
-
-
-}
+  }
+}*/
 
 bool readdir (int fd, char *name)
 {
