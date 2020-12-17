@@ -919,7 +919,7 @@ bool chdir (const char *name)
     return false;
   }
 }
-
+/*
 bool chdir (const char *path_o)
 {
   char path[PATH_MAX_LEN + 1];
@@ -933,7 +933,7 @@ bool chdir (const char *path_o)
   dir_close (thread_current ()->cur_dir);
   thread_current ()->cur_dir= dir;
   return true;
-}
+}*/
 
 //modified 4.3
 bool mkdir(const char *dir)
