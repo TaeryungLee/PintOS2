@@ -957,27 +957,27 @@ bool readdir(int fd, char *name)
   bool result = false;
   if(inode != NULL && inode_is_dir(inode) == true)
   {
-    result = true;
     struct dir *dir = dir_open (inode);
     if(dir !=NULL)
     {
+      int i;
+      result = true;
       off_t *pos = (off_t *) file + 1;
-      for(int i = 0; i <= *pos; i++)
+      for(i = 0; i <= *pos; i++)
       {
         if(result == false)
         {
-          if((i <= *pos) == false)
-          {
-            (*pos)++;
-          }
           break;
         }
         result = dir_readdir(dir, name);
+      }
+      if((i <= *pos) == false)
+      {
+        (*pos)++;
       }  
     }
     else
     {
-      result = false;
       return result;
     }
   }
