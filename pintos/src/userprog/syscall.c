@@ -927,7 +927,7 @@ bool chdir (const char *name)
   char file_name[PATH_MAX_LEN + 1];
   struct dir *target_dir = parse_path (cp_name, file_name);
   struct inode *target_inode = NULL;
-  dir_lookup(target_dir, name, &target_inode);
+  dir_lookup(target_dir, file_name, &target_inode);
   if (target_dir == NULL)
   {
     return false;
