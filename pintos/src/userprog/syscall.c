@@ -953,11 +953,12 @@ bool readdir(int fd, char *name)
   }
   
   struct inode *inode = file_get_inode(file);
-  struct dir *dir = dir_open (inode);
+  
   bool result = false;
   if(inode != NULL && inode_is_dir(inode) == true && dir !=NULL)
   {
     result = true;
+    struct dir *dir = dir_open (inode);
     off_t *pos = (off_t *) file + 1;
     for(int i = 0; i <= *pos; i++)
     {
