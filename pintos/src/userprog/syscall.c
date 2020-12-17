@@ -900,7 +900,7 @@ bool chdir (const char *name)
   char file_name[PATH_MAX_LEN + 1];
   struct inode *target_inode = dir_get_inode(parse_path (cp_name, file_name));
   struct dir *target_dir;
-  struct dir *cur_dir = thread_current()->cur_dir;
+  
   if(cp_name[0] == '/')
   {
     target_dir = dir_open_root();
@@ -911,8 +911,8 @@ bool chdir (const char *name)
   
   if (target_dir != NULL)
   {
-    dir_close (cur_dir);
-    cur_dir = target_dir;
+    dir_close (thread_current()->cur_dir);
+    thread_current()->cur_dir = target_dir;
     return true;
   }
   else
@@ -943,7 +943,7 @@ bool mkdir(const char *dir)
 }
 
 //modified 4.3
-/*
+
 bool readdir(int fd, char *name)
 {
   struct file *file = process_get_file(fd);
@@ -959,11 +959,11 @@ bool readdir(int fd, char *name)
   {
     return false;
   }
-  if(inode_is_dir(inode) == false)
+  else if(inode_is_dir(inode) == false)
   {
     return false;
   }
-  if(dir == NULL)
+  else if(dir == NULL)
   {
     return false;
   }
@@ -983,8 +983,8 @@ bool readdir(int fd, char *name)
   }
   
 return result;
-}*/
-
+}
+/*
 bool readdir (int fd, char *name)
 {
   // 파일 디스크립터를 이용하여 파일을 찾습니다.
@@ -1006,7 +1006,7 @@ bool readdir (int fd, char *name)
   if ((i <= *pos) == false)
     (*pos)++;
   return result;
-}
+}*/
 
 //modified 4.3
 int inumber(int fd)
