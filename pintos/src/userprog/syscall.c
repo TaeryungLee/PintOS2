@@ -955,25 +955,31 @@ bool readdir(int fd, char *name)
   struct inode *inode = file_get_inode(file);
   
   bool result = false;
-  if(inode != NULL && inode_is_dir(inode) == true && dir !=NULL)
+  if(inode != NULL && inode_is_dir(inode) == true)
   {
     result = true;
     struct dir *dir = dir_open (inode);
-    off_t *pos = (off_t *) file + 1;
-    for(int i = 0; i <= *pos; i++)
+    if(dir !=NULL)
     {
-      if(result == false)
+      off_t *pos = (off_t *) file + 1;
+      for(int i = 0; i <= *pos; i++)
       {
-        if((i <= *pos) == false)
+        if(result == false)
         {
-          (*pos)++;
+          if((i <= *pos) == false)
+          {
+            (*pos)++;
+          }
+          break;
         }
-        break;
-      }
-      result = dir_readdir(dir, name);
+        result = dir_readdir(dir, name);
+      }  
     }
-    
-    return result;
+    else
+    {
+      result = false;
+      return result;
+    }
   }
   else
   {
