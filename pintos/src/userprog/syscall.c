@@ -926,13 +926,14 @@ bool chdir (const char *name)
 
   char file_name[PATH_MAX_LEN + 1];
   struct dir *target_dir = parse_path (cp_name, file_name);
+  struct inode *target_inode = NULL;
+  dir_lookup(target_dir, name, &target_inode);
   if (target_dir == NULL)
   {
     return false;
   }
-  
   dir_close (thread_current ()->cur_dir);
-  thread_current ()->cur_dir = target_dir;
+  thread_current ()->cur_dir = dir_open(target_inode);
   return true;
 }
 
