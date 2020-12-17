@@ -894,7 +894,7 @@ bool chdir (const char *name)
 {
   char cp_name[PATH_MAX_LEN + 1];
   strlcpy (cp_name, name, PATH_MAX_LEN);
-  strlcat (cp_name, "/0", PATH_MAX_LEN);
+  //strlcat (cp_name, "/0", PATH_MAX_LEN);
 
   char file_name[PATH_MAX_LEN + 1];
   struct inode *target_inode = dir_get_inode(parse_path (cp_name, file_name));
@@ -907,7 +907,6 @@ bool chdir (const char *name)
     target_dir = dir_open(target_inode);
   }
   
-
   if (target_dir != NULL)
   {
     dir_close (thread_current ()->cur_dir);
