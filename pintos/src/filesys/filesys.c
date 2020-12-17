@@ -222,7 +222,7 @@ struct dir* parse_path(char *path_name, char *file_name)
       dir_close(dir);
       return NULL;
     }
-    //printf("Tlqkf \n");
+    //printf("debug \n");
     dir_close(dir);
     dir = dir_open(inode);
     token = next_token;
@@ -261,15 +261,14 @@ bool filesys_create_dir(const char* name)
     {
       free_map_release(inode_sector, 1);
       dir_close(dir);
-      
     }
   }
   else
   {
     struct inode *inode_new = inode_open(inode_sector);
     struct dir *dir_new = dir_open(inode_new);
-    struct inode *inode = dir_get_inode(dir); //왜 씨발 dir->inode는 안 되냐
-    block_sector_t double_dot_sector = inode_get_inumber(inode); //이것도 왜 씨발 inode->sector 안 먹냐 
+    struct inode *inode = dir_get_inode(dir); 
+    block_sector_t double_dot_sector = inode_get_inumber(inode); 
     
     dir_add(dir_new, ".", inode_sector);
     dir_add(dir_new, "..", double_dot_sector);
