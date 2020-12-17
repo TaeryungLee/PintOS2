@@ -889,7 +889,7 @@ void do_munmap(struct mmap_file *mmap_file)
   }
 }
 
-
+//MODIFIED 4.3
 bool chdir (const char *name)
 {
   char *name_ = name;
@@ -920,21 +920,6 @@ bool chdir (const char *name)
     return false;
   }
 }
-/*
-bool chdir (const char *path_o)
-{
-  char path[PATH_MAX_LEN + 1];
-  strlcpy (path, path_o, PATH_MAX_LEN);
-  strlcat (path, "/0", PATH_MAX_LEN);
-
-  char name[PATH_MAX_LEN + 1];
-  struct dir *dir = parse_path (path, name);
-  if (!dir)
-    return false;
-  dir_close (thread_current ()->cur_dir);
-  thread_current ()->cur_dir= dir;
-  return true;
-}*/
 
 //modified 4.3
 bool mkdir(const char *dir)
@@ -986,29 +971,6 @@ bool readdir(int fd, char *name)
     return result;
   }
 }
-/*
-bool readdir (int fd, char *name)
-{
-  // 파일 디스크립터를 이용하여 파일을 찾습니다.
-  struct file *f = process_get_file (fd);
-  if (f == NULL)
-    exits (-1, NULL);
-  // 내부 아이노드 가져오기 및 디렉터리 열기
-  struct inode *inode = file_get_inode (f);
-  if (!inode || !inode_is_dir (inode))
-    return false;
-  struct dir *dir = dir_open (inode);
-  if (!dir)
-    return false;
-  int i;
-  bool result = true;
-  off_t *pos = (off_t *)f + 1;
-  for (i = 0; i <= *pos && result; i++)
-    result = dir_readdir (dir, name);
-  if ((i <= *pos) == false)
-    (*pos)++;
-  return result;
-}*/
 
 //modified 4.3
 int inumber(int fd)

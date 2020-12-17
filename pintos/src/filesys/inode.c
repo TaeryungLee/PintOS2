@@ -196,6 +196,7 @@ inode_create (block_sector_t sector, off_t length, uint32_t is_dir)
       disk_inode->magic = INODE_MAGIC;
       disk_inode->is_dir = is_dir;
       //printf("inode_length: %d \n", disk_inode->length);
+      
       //modified 4-2
       if(length > 0)
       {
@@ -668,14 +669,3 @@ bool inode_is_dir(const struct inode *inode)
   free(disk_inode);
   return result;
 }
-/*
-bool
-inode_is_dir (const struct inode *inode)
-{
-  struct inode_disk inode_disk;
-  if (inode->removed)
-    return false;
-  if (!get_disk_inode (inode, &inode_disk))
-    return false;
-  return inode_disk.is_dir;
-}*/
