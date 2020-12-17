@@ -941,7 +941,7 @@ bool mkdir(const char *dir)
 }
 
 //modified 4.3
-/*
+
 bool readdir(int fd, char *name)
 {
   struct file *file = process_get_file(fd);
@@ -962,7 +962,8 @@ bool readdir(int fd, char *name)
   }
   
 return success;
-}*/
+}
+/*
 bool readdir (int fd, char *name)
 {
   // 파일 디스크립터를 이용하여 파일을 찾습니다.
@@ -985,7 +986,7 @@ bool readdir (int fd, char *name)
     (*pos)++;
   return result;
 }
-
+*/
 //modified 4.3
 int inumber(int fd)
 {
