@@ -912,7 +912,7 @@ bool chdir (const char *name)
   }
 }*/
 
-bool chdir (char *path_o)
+bool chdir (const char *path_o)
 {
   char path[PATH_MAX_LEN + 1];
   strlcpy (path, path_o, PATH_MAX_LEN);
